@@ -311,6 +311,16 @@ export type Database = {
         | "inventory"
         | "taxes"
         | "other"
+        | "housing"
+        | "food"
+        | "healthcare"
+        | "education"
+        | "entertainment"
+        | "personal_care"
+        | "clothing"
+        | "transportation"
+        | "debt_payment"
+        | "savings"
       income_category:
         | "sales"
         | "services"
@@ -321,6 +331,12 @@ export type Database = {
         | "investment"
         | "grants"
         | "other"
+        | "salary"
+        | "wages"
+        | "pension"
+        | "dividends"
+        | "gifts"
+        | "freelance"
       invoice_status: "draft" | "sent" | "paid" | "overdue" | "cancelled"
     }
     CompositeTypes: {
@@ -464,6 +480,16 @@ export const Constants = {
         "inventory",
         "taxes",
         "other",
+        "housing",
+        "food",
+        "healthcare",
+        "education",
+        "entertainment",
+        "personal_care",
+        "clothing",
+        "transportation",
+        "debt_payment",
+        "savings",
       ],
       income_category: [
         "sales",
@@ -475,6 +501,12 @@ export const Constants = {
         "investment",
         "grants",
         "other",
+        "salary",
+        "wages",
+        "pension",
+        "dividends",
+        "gifts",
+        "freelance",
       ],
       invoice_status: ["draft", "sent", "paid", "overdue", "cancelled"],
     },
