@@ -81,7 +81,7 @@ export const IncomeDialog = ({
       description: "",
       amount: 0,
       date: new Date(),
-      client_id: "",
+      client_id: "none",
       notes: "",
     },
   });
@@ -93,7 +93,7 @@ export const IncomeDialog = ({
         description: income.description,
         amount: Number(income.amount),
         date: new Date(income.date),
-        client_id: income.client_id || "",
+        client_id: income.client_id || "none",
         notes: income.notes || "",
       });
     } else {
@@ -102,7 +102,7 @@ export const IncomeDialog = ({
         description: "",
         amount: 0,
         date: new Date(),
-        client_id: "",
+        client_id: "none",
         notes: "",
       });
     }
@@ -114,7 +114,7 @@ export const IncomeDialog = ({
       description: data.description,
       amount: data.amount,
       date: format(data.date, "yyyy-MM-dd"),
-      client_id: data.client_id || null,
+      client_id: data.client_id === "none" ? null : data.client_id || null,
       notes: data.notes || null,
     };
 
@@ -248,7 +248,7 @@ export const IncomeDialog = ({
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value="">No client</SelectItem>
+                      <SelectItem value="none">No client</SelectItem>
                       {clients.map((client) => (
                         <SelectItem key={client.id} value={client.id}>
                           {client.name}
