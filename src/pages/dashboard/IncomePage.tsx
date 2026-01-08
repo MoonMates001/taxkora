@@ -1,7 +1,7 @@
 import { useState, useMemo } from "react";
 import { format } from "date-fns";
 import { useAuth } from "@/hooks/useAuth";
-import { useIncome, INCOME_CATEGORIES, IncomeRecord } from "@/hooks/useIncome";
+import { useIncome, getIncomeCategoriesByType, IncomeRecord } from "@/hooks/useIncome";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -54,6 +54,11 @@ const IncomePage = () => {
   const { profile } = useAuth();
   const { incomeRecords, isLoading, totalIncome, deleteIncome } = useIncome();
   const isBusinessAccount = profile?.account_type === "business";
+  
+  const categories = useMemo(
+    () => getIncomeCategoriesByType(profile?.account_type || null),
+    [profile?.account_type]
+  );
 
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingIncome, setEditingIncome] = useState<IncomeRecord | null>(null);
@@ -111,7 +116,7 @@ const IncomePage = () => {
   };
 
   const getCategoryLabel = (category: string) => {
-    return INCOME_CATEGORIES.find((c) => c.value === category)?.label || category;
+    return categories.find((c) => c.value === category)?.label || category;
   };
 
   const handleEdit = (income: IncomeRecord) => {
@@ -219,7 +224,7 @@ const IncomePage = () => {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Categories</SelectItem>
-                {INCOME_CATEGORIES.map((cat) => (
+                {categories.map((cat) => (
                   <SelectItem key={cat.value} value={cat.value}>
                     {cat.label}
                   </SelectItem>

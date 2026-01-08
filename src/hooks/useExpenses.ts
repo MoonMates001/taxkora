@@ -16,23 +16,67 @@ export type ExpenseCategory =
   | "maintenance"
   | "inventory"
   | "taxes"
+  | "housing"
+  | "food"
+  | "healthcare"
+  | "education"
+  | "entertainment"
+  | "personal_care"
+  | "clothing"
+  | "transportation"
+  | "debt_payment"
+  | "savings"
   | "other";
 
-export const EXPENSE_CATEGORIES: { value: ExpenseCategory; label: string }[] = [
+// Business/Corporate expense categories
+export const BUSINESS_EXPENSE_CATEGORIES: { value: ExpenseCategory; label: string }[] = [
   { value: "office_supplies", label: "Office Supplies" },
   { value: "utilities", label: "Utilities" },
-  { value: "rent", label: "Rent" },
+  { value: "rent", label: "Rent & Lease" },
   { value: "salaries", label: "Salaries & Wages" },
   { value: "marketing", label: "Marketing & Advertising" },
-  { value: "travel", label: "Travel & Transport" },
+  { value: "travel", label: "Business Travel" },
   { value: "professional_services", label: "Professional Services" },
-  { value: "insurance", label: "Insurance" },
-  { value: "equipment", label: "Equipment" },
+  { value: "insurance", label: "Business Insurance" },
+  { value: "equipment", label: "Equipment & Machinery" },
   { value: "maintenance", label: "Maintenance & Repairs" },
   { value: "inventory", label: "Inventory & Stock" },
-  { value: "taxes", label: "Taxes & Fees" },
-  { value: "other", label: "Other" },
+  { value: "taxes", label: "Taxes & Licenses" },
+  { value: "other", label: "Other Expenses" },
 ];
+
+// Personal/Individual expense categories
+export const PERSONAL_EXPENSE_CATEGORIES: { value: ExpenseCategory; label: string }[] = [
+  { value: "housing", label: "Housing & Rent" },
+  { value: "utilities", label: "Utilities" },
+  { value: "food", label: "Food & Groceries" },
+  { value: "transportation", label: "Transportation" },
+  { value: "healthcare", label: "Healthcare & Medical" },
+  { value: "insurance", label: "Insurance" },
+  { value: "education", label: "Education" },
+  { value: "entertainment", label: "Entertainment & Leisure" },
+  { value: "personal_care", label: "Personal Care" },
+  { value: "clothing", label: "Clothing & Accessories" },
+  { value: "debt_payment", label: "Debt Payments" },
+  { value: "savings", label: "Savings & Investments" },
+  { value: "taxes", label: "Taxes" },
+  { value: "other", label: "Other Expenses" },
+];
+
+// Default categories (all combined for backward compatibility)
+export const EXPENSE_CATEGORIES: { value: ExpenseCategory; label: string }[] = [
+  ...BUSINESS_EXPENSE_CATEGORIES,
+  ...PERSONAL_EXPENSE_CATEGORIES.filter(
+    (p) => !BUSINESS_EXPENSE_CATEGORIES.some((b) => b.value === p.value)
+  ),
+];
+
+// Helper to get categories by account type
+export const getExpenseCategoriesByType = (accountType: "business" | "personal" | null) => {
+  if (accountType === "business") return BUSINESS_EXPENSE_CATEGORIES;
+  if (accountType === "personal") return PERSONAL_EXPENSE_CATEGORIES;
+  return EXPENSE_CATEGORIES;
+};
 
 export interface Expense {
   id: string;

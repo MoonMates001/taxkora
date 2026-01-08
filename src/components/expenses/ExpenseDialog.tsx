@@ -33,26 +33,13 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
-import { useExpenses, EXPENSE_CATEGORIES, Expense, ExpenseCategory } from "@/hooks/useExpenses";
+import { useExpenses, getExpenseCategoriesByType, Expense, ExpenseCategory } from "@/hooks/useExpenses";
+import { useAuth } from "@/hooks/useAuth";
 import { cn } from "@/lib/utils";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 
 const expenseSchema = z.object({
-  category: z.enum([
-    "office_supplies",
-    "utilities",
-    "rent",
-    "salaries",
-    "marketing",
-    "travel",
-    "professional_services",
-    "insurance",
-    "equipment",
-    "maintenance",
-    "inventory",
-    "taxes",
-    "other",
-  ] as const),
+  category: z.string().min(1, "Category is required"),
   description: z.string().min(1, "Description is required").max(255),
   amount: z.number().min(0.01, "Amount must be greater than 0"),
   date: z.date(),
@@ -74,12 +61,20 @@ export const ExpenseDialog = ({
   expense,
 }: ExpenseDialogProps) => {
   const { createExpense, updateExpense } = useExpenses();
+  const { profile } = useAuth();
   const isEditing = !!expense;
+
+  const categories = useMemo(
+    () => getExpenseCategoriesByType(profile?.account_type || null),
+    [profile?.account_type]
+  );
+
+  const defaultCategory = categories[0]?.value || "other";
 
   const form = useForm<ExpenseFormData>({
     resolver: zodResolver(expenseSchema),
     defaultValues: {
-      category: "office_supplies",
+      category: defaultCategory,
       description: "",
       amount: 0,
       date: new Date(),
@@ -100,7 +95,7 @@ export const ExpenseDialog = ({
       });
     } else {
       form.reset({
-        category: "office_supplies",
+        category: defaultCategory,
         description: "",
         amount: 0,
         date: new Date(),
@@ -108,7 +103,7 @@ export const ExpenseDialog = ({
         notes: "",
       });
     }
-  }, [expense, form]);
+  }, [expense, form, defaultCategory]);
 
   const onSubmit = async (data: ExpenseFormData) => {
     const expenseData = {
@@ -153,7 +148,7 @@ export const ExpenseDialog = ({
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      {EXPENSE_CATEGORIES.map((cat) => (
+                      {categories.map((cat) => (
                         <SelectItem key={cat.value} value={cat.value}>
                           {cat.label}
                         </SelectItem>

@@ -1,7 +1,7 @@
 import { useState, useMemo } from "react";
 import { format } from "date-fns";
 import { useAuth } from "@/hooks/useAuth";
-import { useExpenses, EXPENSE_CATEGORIES, Expense } from "@/hooks/useExpenses";
+import { useExpenses, getExpenseCategoriesByType, Expense } from "@/hooks/useExpenses";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -54,6 +54,11 @@ const ExpensesPage = () => {
   const { profile } = useAuth();
   const { expenses, isLoading, totalExpenses, deleteExpense } = useExpenses();
   const isBusinessAccount = profile?.account_type === "business";
+
+  const categories = useMemo(
+    () => getExpenseCategoriesByType(profile?.account_type || null),
+    [profile?.account_type]
+  );
 
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingExpense, setEditingExpense] = useState<Expense | null>(null);
@@ -108,7 +113,7 @@ const ExpensesPage = () => {
   };
 
   const getCategoryLabel = (category: string) => {
-    return EXPENSE_CATEGORIES.find((c) => c.value === category)?.label || category;
+    return categories.find((c) => c.value === category)?.label || category;
   };
 
   const handleEdit = (expense: Expense) => {
@@ -218,7 +223,7 @@ const ExpensesPage = () => {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Categories</SelectItem>
-                {EXPENSE_CATEGORIES.map((cat) => (
+                {categories.map((cat) => (
                   <SelectItem key={cat.value} value={cat.value}>
                     {cat.label}
                   </SelectItem>

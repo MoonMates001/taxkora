@@ -33,23 +33,14 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
-import { useIncome, INCOME_CATEGORIES, IncomeRecord, IncomeCategory } from "@/hooks/useIncome";
+import { useIncome, getIncomeCategoriesByType, IncomeRecord, IncomeCategory } from "@/hooks/useIncome";
 import { useClients } from "@/hooks/useClients";
+import { useAuth } from "@/hooks/useAuth";
 import { cn } from "@/lib/utils";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 
 const incomeSchema = z.object({
-  category: z.enum([
-    "sales",
-    "services",
-    "consulting",
-    "commission",
-    "interest",
-    "rental",
-    "investment",
-    "grants",
-    "other",
-  ] as const),
+  category: z.string().min(1, "Category is required"),
   description: z.string().min(1, "Description is required").max(255),
   amount: z.number().min(0.01, "Amount must be greater than 0"),
   date: z.date(),
@@ -72,12 +63,20 @@ export const IncomeDialog = ({
 }: IncomeDialogProps) => {
   const { createIncome, updateIncome } = useIncome();
   const { clients } = useClients();
+  const { profile } = useAuth();
   const isEditing = !!income;
+
+  const categories = useMemo(
+    () => getIncomeCategoriesByType(profile?.account_type || null),
+    [profile?.account_type]
+  );
+
+  const defaultCategory = categories[0]?.value || "other";
 
   const form = useForm<IncomeFormData>({
     resolver: zodResolver(incomeSchema),
     defaultValues: {
-      category: "sales",
+      category: defaultCategory,
       description: "",
       amount: 0,
       date: new Date(),
@@ -98,7 +97,7 @@ export const IncomeDialog = ({
       });
     } else {
       form.reset({
-        category: "sales",
+        category: defaultCategory,
         description: "",
         amount: 0,
         date: new Date(),
@@ -106,7 +105,7 @@ export const IncomeDialog = ({
         notes: "",
       });
     }
-  }, [income, form]);
+  }, [income, form, defaultCategory]);
 
   const onSubmit = async (data: IncomeFormData) => {
     const incomeData = {
@@ -151,7 +150,7 @@ export const IncomeDialog = ({
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      {INCOME_CATEGORIES.map((cat) => (
+                      {categories.map((cat) => (
                         <SelectItem key={cat.value} value={cat.value}>
                           {cat.label}
                         </SelectItem>
