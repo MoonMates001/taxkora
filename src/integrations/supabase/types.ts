@@ -288,6 +288,57 @@ export type Database = {
         }
         Relationships: []
       }
+      statutory_deductions: {
+        Row: {
+          annual_rent_paid: number
+          created_at: string
+          employment_compensation: number
+          gifts_received: number
+          housing_loan_interest: number
+          id: string
+          life_insurance_premium: number
+          nhf_contribution: number
+          nhis_contribution: number
+          pension_benefits_received: number
+          pension_contribution: number
+          updated_at: string
+          user_id: string
+          year: number
+        }
+        Insert: {
+          annual_rent_paid?: number
+          created_at?: string
+          employment_compensation?: number
+          gifts_received?: number
+          housing_loan_interest?: number
+          id?: string
+          life_insurance_premium?: number
+          nhf_contribution?: number
+          nhis_contribution?: number
+          pension_benefits_received?: number
+          pension_contribution?: number
+          updated_at?: string
+          user_id: string
+          year?: number
+        }
+        Update: {
+          annual_rent_paid?: number
+          created_at?: string
+          employment_compensation?: number
+          gifts_received?: number
+          housing_loan_interest?: number
+          id?: string
+          life_insurance_premium?: number
+          nhf_contribution?: number
+          nhis_contribution?: number
+          pension_benefits_received?: number
+          pension_contribution?: number
+          updated_at?: string
+          user_id?: string
+          year?: number
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
