@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
@@ -111,9 +112,10 @@ export function useStatutoryDeductions(year?: number) {
     },
   });
 
-  // Return default values if no record exists
-  const deductionsWithDefaults: Omit<StatutoryDeductionsRecord, "id" | "user_id" | "created_at" | "updated_at"> = 
-    deductions || { ...DEFAULT_DEDUCTIONS, year: currentYear };
+  // Memoize default values to prevent infinite re-renders
+  const deductionsWithDefaults = useMemo(() => {
+    return deductions || { ...DEFAULT_DEDUCTIONS, year: currentYear };
+  }, [deductions, currentYear]);
 
   return {
     deductions: deductionsWithDefaults,
