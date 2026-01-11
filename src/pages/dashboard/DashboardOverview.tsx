@@ -5,6 +5,7 @@ import { useExpenses, EXPENSE_CATEGORIES } from "@/hooks/useExpenses";
 import { useInvoices } from "@/hooks/useInvoices";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import TaxSummaryWidget from "@/components/dashboard/TaxSummaryWidget";
 import {
   FileText,
   TrendingUp,
@@ -398,6 +399,9 @@ const DashboardOverview = () => {
           )}
         </div>
       )}
+
+      {/* Tax Summary Widget */}
+      <TaxSummaryWidget />
 
       {/* Quick Actions */}
       <Card className="shadow-card">
