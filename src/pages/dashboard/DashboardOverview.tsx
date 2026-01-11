@@ -6,6 +6,8 @@ import { useInvoices } from "@/hooks/useInvoices";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import TaxSummaryWidget from "@/components/dashboard/TaxSummaryWidget";
+import TaxProjectionChart from "@/components/dashboard/TaxProjectionChart";
+import SmartDeductionsCard from "@/components/dashboard/SmartDeductionsCard";
 import {
   FileText,
   TrendingUp,
@@ -400,8 +402,16 @@ const DashboardOverview = () => {
         </div>
       )}
 
-      {/* Tax Summary Widget */}
-      <TaxSummaryWidget />
+      {/* Tax Intelligence Section */}
+      <div className="grid lg:grid-cols-3 gap-6">
+        <div className="lg:col-span-2">
+          <TaxProjectionChart />
+        </div>
+        <div className="space-y-6">
+          <TaxSummaryWidget />
+          <SmartDeductionsCard />
+        </div>
+      </div>
 
       {/* Quick Actions */}
       <Card className="shadow-card">
