@@ -16,6 +16,8 @@ import {
   Building2,
   User,
   Wallet,
+  Briefcase,
+  Package,
 } from "lucide-react";
 
 const DashboardSidebar = () => {
@@ -30,7 +32,9 @@ const DashboardSidebar = () => {
     { href: "/dashboard/invoices", label: "Invoices", icon: FileText },
     { href: "/dashboard/income", label: "Income", icon: TrendingUp },
     { href: "/dashboard/expenses", label: "Expenses", icon: TrendingDown },
-    { href: "/dashboard/tax", label: "Tax Computation", icon: Calculator },
+    { href: "/dashboard/capital-assets", label: "Capital Assets", icon: Package },
+    { href: "/dashboard/tax", label: "Personal Tax", icon: Calculator },
+    { href: "/dashboard/business-tax", label: "Business Tax", icon: Briefcase },
     { href: "/dashboard/filing", label: "Tax Filing", icon: Send },
   ];
 

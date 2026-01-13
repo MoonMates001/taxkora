@@ -117,3 +117,41 @@ export function applyCapitalAllowanceRestriction(
     carryForward,
   };
 }
+
+/**
+ * Compute capital allowances with restriction - main entry point
+ */
+export function computeCapitalAllowances(
+  assets: CapitalAsset[],
+  assessableProfit: number,
+  currentYear: number
+): {
+  assetBreakdown: CapitalAllowanceResult[];
+  totalInitial: number;
+  totalAnnual: number;
+  totalAllowance: number;
+  maxAllowableAmount: number;
+  allowableAmount: number;
+  carriedForward: number;
+  isRestricted: boolean;
+} {
+  const { breakdown, totalAllowance } = calculateTotalCapitalAllowances(assets, currentYear);
+  const restriction = applyCapitalAllowanceRestriction(totalAllowance, assessableProfit);
+  
+  const totalInitial = breakdown.reduce((sum, a) => sum + a.initialAllowance, 0);
+  const totalAnnual = breakdown.reduce((sum, a) => sum + a.annualAllowance, 0);
+  const maxAllowableAmount = assessableProfit > 0 
+    ? assessableProfit * CAPITAL_ALLOWANCE_RESTRICTION_RATE 
+    : 0;
+  
+  return {
+    assetBreakdown: breakdown,
+    totalInitial,
+    totalAnnual,
+    totalAllowance,
+    maxAllowableAmount,
+    allowableAmount: restriction.allowedAmount,
+    carriedForward: restriction.carryForward,
+    isRestricted: restriction.carryForward > 0,
+  };
+}

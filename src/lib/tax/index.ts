@@ -18,6 +18,12 @@ export * from "./pitBusiness";
 // CIT for Incorporated Companies
 export * from "./cit";
 
+// VAT
+export * from "./vat";
+
+// WHT
+export * from "./wht";
+
 // Re-export the original PIT engine for personal use
 export { computeTax2026, calculatePIT2026 } from "../taxEngine2026";
 
