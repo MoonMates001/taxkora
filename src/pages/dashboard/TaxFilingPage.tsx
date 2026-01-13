@@ -277,8 +277,92 @@ const TaxFilingPage = () => {
       },
     });
 
+    // Supporting Documents Section
+    if (documents.length > 0) {
+      yPos = (doc as any).lastAutoTable.finalY + 15;
+
+      if (yPos > 220) {
+        doc.addPage();
+        yPos = 20;
+      }
+
+      doc.setFontSize(14);
+      doc.setFont("helvetica", "bold");
+      doc.text("SUPPORTING DOCUMENTS", 14, yPos);
+
+      const documentData = documents.map((doc, index) => [
+        (index + 1).toString(),
+        getDocumentTypeLabel(doc.document_type),
+        doc.file_name,
+        doc.description || "—",
+        format(new Date(doc.created_at), "MMM d, yyyy"),
+      ]);
+
+      autoTable(doc, {
+        startY: yPos + 5,
+        head: [["#", "Document Type", "File Name", "Description", "Date Uploaded"]],
+        body: documentData,
+        theme: "striped",
+        headStyles: { fillColor: [0, 128, 128] },
+        columnStyles: {
+          0: { cellWidth: 10 },
+          1: { cellWidth: 35 },
+          2: { cellWidth: 50 },
+          3: { cellWidth: 50 },
+          4: { cellWidth: 30 },
+        },
+      });
+
+      // Note about document access
+      yPos = (doc as any).lastAutoTable.finalY + 8;
+      doc.setFontSize(9);
+      doc.setFont("helvetica", "italic");
+      doc.setTextColor(100, 100, 100);
+      doc.text(
+        "Note: Original documents are stored digitally and available upon request.",
+        14,
+        yPos
+      );
+      doc.text(
+        `Total supporting documents: ${documents.length}`,
+        14,
+        yPos + 5
+      );
+    }
+
+    // Payment History Section
+    if (payments.length > 0) {
+      yPos = (doc as any).lastAutoTable?.finalY + 15 || yPos + 15;
+
+      if (yPos > 220) {
+        doc.addPage();
+        yPos = 20;
+      }
+
+      doc.setTextColor(0, 0, 0);
+      doc.setFontSize(14);
+      doc.setFont("helvetica", "bold");
+      doc.text("PAYMENT HISTORY", 14, yPos);
+
+      const paymentData = payments.map((payment) => [
+        format(new Date(payment.payment_date), "MMM d, yyyy"),
+        getPaymentTypeLabel(payment.payment_type),
+        formatCurrencyPlain(payment.amount),
+        payment.payment_reference || "—",
+        payment.status.charAt(0).toUpperCase() + payment.status.slice(1),
+      ]);
+
+      autoTable(doc, {
+        startY: yPos + 5,
+        head: [["Date", "Type", "Amount", "Reference", "Status"]],
+        body: paymentData,
+        theme: "striped",
+        headStyles: { fillColor: [0, 128, 128] },
+      });
+    }
+
     // Footer
-    const finalY = (doc as any).lastAutoTable.finalY + 20;
+    const finalY = (doc as any).lastAutoTable?.finalY + 20 || 260;
 
     if (finalY < 250) {
       doc.setFontSize(9);

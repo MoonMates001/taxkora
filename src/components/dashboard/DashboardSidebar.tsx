@@ -35,6 +35,7 @@ const DashboardSidebar = () => {
     { href: "/dashboard/capital-assets", label: "Capital Assets", icon: Package },
     { href: "/dashboard/tax", label: "Personal Tax", icon: Calculator },
     { href: "/dashboard/business-tax", label: "Business Tax", icon: Briefcase },
+    { href: "/dashboard/wht", label: "WHT Management", icon: Wallet },
     { href: "/dashboard/filing", label: "Tax Filing", icon: Send },
   ];
 
