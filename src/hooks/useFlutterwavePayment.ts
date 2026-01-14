@@ -7,7 +7,7 @@ interface PaymentParams {
   email: string;
   name: string;
   phone?: string;
-  payment_type: "tax_payment" | "invoice" | "subscription";
+  payment_type: "invoice" | "subscription";
   reference_id?: string;
   description?: string;
 }
