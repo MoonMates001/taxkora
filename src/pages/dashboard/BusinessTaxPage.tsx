@@ -137,8 +137,8 @@ const BusinessTaxPage = () => {
   // Annual turnover (for CIT)
   const [annualTurnover, setAnnualTurnover] = useState(0);
 
-  // Auto-populate from recorded income/expenses
-  useMemo(() => {
+  // Auto-populate from recorded income/expenses - compute values without side effects
+  const autoPopulatedData = useMemo(() => {
     const yearlyIncome = incomeRecords.filter(
       (r) => new Date(r.date).getFullYear() === selectedYear
     );
@@ -159,14 +159,6 @@ const BusinessTaxPage = () => {
     const otherReceipts = yearlyIncome
       .filter((r) => !["sales", "services", "consulting", "freelance", "commission"].includes(r.category))
       .reduce((sum, r) => sum + Number(r.amount), 0);
-
-    setBusinessIncome((prev) => ({
-      ...prev,
-      salesRevenue: salesRevenue || prev.salesRevenue,
-      serviceFees: serviceFees || prev.serviceFees,
-      commissions: commissions || prev.commissions,
-      otherReceipts: otherReceipts || prev.otherReceipts,
-    }));
 
     // Map expense categories
     const rentPremises = yearlyExpenses
@@ -191,38 +183,51 @@ const BusinessTaxPage = () => {
       .filter((e) => ["travel", "transportation"].includes(e.category))
       .reduce((sum, e) => sum + Number(e.amount), 0);
 
-    setBusinessExpenses((prev) => ({
-      ...prev,
-      rentPremises: rentPremises || prev.rentPremises,
-      utilities: utilities || prev.utilities,
-      staffSalaries: staffSalaries || prev.staffSalaries,
-      marketingAdvertising: marketingAdvertising || prev.marketingAdvertising,
-      professionalFees: professionalFees || prev.professionalFees,
-      repairsMaintenance: repairsMaintenance || prev.repairsMaintenance,
-      transport: transport || prev.transport,
-    }));
-
-    // Set annual turnover
     const totalRevenue = salesRevenue + serviceFees + commissions + otherReceipts;
-    if (totalRevenue > 0) {
-      setAnnualTurnover(totalRevenue);
-    }
+
+    return {
+      income: { salesRevenue, serviceFees, commissions, otherReceipts },
+      expenses: { rentPremises, utilities, staffSalaries, marketingAdvertising, professionalFees, repairsMaintenance, transport },
+      totalRevenue,
+    };
   }, [incomeRecords, expenses, selectedYear]);
+
+  // Merge auto-populated data with user-entered data
+  const effectiveBusinessIncome = useMemo(() => ({
+    ...businessIncome,
+    salesRevenue: businessIncome.salesRevenue || autoPopulatedData.income.salesRevenue,
+    serviceFees: businessIncome.serviceFees || autoPopulatedData.income.serviceFees,
+    commissions: businessIncome.commissions || autoPopulatedData.income.commissions,
+    otherReceipts: businessIncome.otherReceipts || autoPopulatedData.income.otherReceipts,
+  }), [businessIncome, autoPopulatedData.income]);
+
+  const effectiveBusinessExpenses = useMemo(() => ({
+    ...businessExpenses,
+    rentPremises: businessExpenses.rentPremises || autoPopulatedData.expenses.rentPremises,
+    utilities: businessExpenses.utilities || autoPopulatedData.expenses.utilities,
+    staffSalaries: businessExpenses.staffSalaries || autoPopulatedData.expenses.staffSalaries,
+    marketingAdvertising: businessExpenses.marketingAdvertising || autoPopulatedData.expenses.marketingAdvertising,
+    professionalFees: businessExpenses.professionalFees || autoPopulatedData.expenses.professionalFees,
+    repairsMaintenance: businessExpenses.repairsMaintenance || autoPopulatedData.expenses.repairsMaintenance,
+    transport: businessExpenses.transport || autoPopulatedData.expenses.transport,
+  }), [businessExpenses, autoPopulatedData.expenses]);
+
+  const effectiveAnnualTurnover = annualTurnover || autoPopulatedData.totalRevenue;
 
   // Compute tax
   const taxResult = useMemo(() => {
     const input: BusinessTaxInput = {
       entityType,
       year: selectedYear,
-      annualTurnover,
-      businessIncome,
-      businessExpenses,
+      annualTurnover: effectiveAnnualTurnover,
+      businessIncome: effectiveBusinessIncome,
+      businessExpenses: effectiveBusinessExpenses,
       capitalAssets,
       personalReliefs,
       citAdjustments,
     };
     return computeBusinessTax(input);
-  }, [entityType, selectedYear, annualTurnover, businessIncome, businessExpenses, capitalAssets, personalReliefs, citAdjustments]);
+  }, [entityType, selectedYear, effectiveAnnualTurnover, effectiveBusinessIncome, effectiveBusinessExpenses, capitalAssets, personalReliefs, citAdjustments]);
 
   const isPIT = taxResult.taxationType === "PIT";
   const pitResult = isPIT ? (taxResult as PITBusinessResult) : null;
