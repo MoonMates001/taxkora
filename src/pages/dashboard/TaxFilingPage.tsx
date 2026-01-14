@@ -47,6 +47,7 @@ import { toast } from "sonner";
 import { TaxPaymentDialog } from "@/components/tax/TaxPaymentDialog";
 import { DocumentUploadDialog } from "@/components/tax/DocumentUploadDialog";
 import { format } from "date-fns";
+import SubscriptionGate from "@/components/subscription/SubscriptionGate";
 
 const TaxFilingPage = () => {
   const { profile } = useAuth();
@@ -449,6 +450,7 @@ const TaxFilingPage = () => {
   };
 
   return (
+    <SubscriptionGate feature="Tax Filing & Reports">
     <div className="space-y-8">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -921,6 +923,7 @@ const TaxFilingPage = () => {
         year={selectedYear}
       />
     </div>
+    </SubscriptionGate>
   );
 };
 

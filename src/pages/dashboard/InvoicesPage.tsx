@@ -11,6 +11,7 @@ import { CreateInvoiceDialog } from "@/components/invoices/CreateInvoiceDialog";
 import { ClientDialog } from "@/components/invoices/ClientDialog";
 import { InvoiceList } from "@/components/invoices/InvoiceList";
 import { InvoicePreviewDialog } from "@/components/invoices/InvoicePreviewDialog";
+import SubscriptionGate from "@/components/subscription/SubscriptionGate";
 
 const InvoicesPage = () => {
   const [createInvoiceOpen, setCreateInvoiceOpen] = useState(false);
@@ -33,6 +34,7 @@ const InvoicesPage = () => {
   );
 
   return (
+    <SubscriptionGate requiredPlan={["pit_business", "cit"]} feature="Invoice Management">
     <div className="space-y-8">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -215,6 +217,7 @@ const InvoicesPage = () => {
         profile={profile}
       />
     </div>
+    </SubscriptionGate>
   );
 };
 
