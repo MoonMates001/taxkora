@@ -426,6 +426,48 @@ export type Database = {
         }
         Relationships: []
       }
+      subscriptions: {
+        Row: {
+          amount: number
+          created_at: string
+          end_date: string | null
+          flutterwave_tx_ref: string | null
+          id: string
+          payment_reference: string | null
+          plan: Database["public"]["Enums"]["subscription_plan"]
+          start_date: string | null
+          status: Database["public"]["Enums"]["subscription_status"]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          end_date?: string | null
+          flutterwave_tx_ref?: string | null
+          id?: string
+          payment_reference?: string | null
+          plan: Database["public"]["Enums"]["subscription_plan"]
+          start_date?: string | null
+          status?: Database["public"]["Enums"]["subscription_status"]
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          end_date?: string | null
+          flutterwave_tx_ref?: string | null
+          id?: string
+          payment_reference?: string | null
+          plan?: Database["public"]["Enums"]["subscription_plan"]
+          start_date?: string | null
+          status?: Database["public"]["Enums"]["subscription_status"]
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       tax_payments: {
         Row: {
           amount: number
@@ -676,6 +718,8 @@ export type Database = {
         | "gifts"
         | "freelance"
       invoice_status: "draft" | "sent" | "paid" | "overdue" | "cancelled"
+      subscription_plan: "pit_individual" | "pit_business" | "cit"
+      subscription_status: "active" | "expired" | "cancelled" | "pending"
       vat_transaction_type: "output" | "input"
       wht_payment_type:
         | "dividends"
@@ -871,6 +915,8 @@ export const Constants = {
         "freelance",
       ],
       invoice_status: ["draft", "sent", "paid", "overdue", "cancelled"],
+      subscription_plan: ["pit_individual", "pit_business", "cit"],
+      subscription_status: ["active", "expired", "cancelled", "pending"],
       vat_transaction_type: ["output", "input"],
       wht_payment_type: [
         "dividends",

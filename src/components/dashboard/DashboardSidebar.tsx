@@ -20,6 +20,7 @@ import {
   Package,
   Receipt,
   CreditCard,
+  Crown,
 } from "lucide-react";
 
 const DashboardSidebar = () => {
@@ -31,6 +32,7 @@ const DashboardSidebar = () => {
 
   const businessLinks = [
     { href: "/dashboard", label: "Overview", icon: LayoutDashboard },
+    { href: "/dashboard/subscription", label: "Subscription", icon: Crown },
     { href: "/dashboard/invoices", label: "Invoices", icon: FileText },
     { href: "/dashboard/income", label: "Income", icon: TrendingUp },
     { href: "/dashboard/expenses", label: "Expenses", icon: TrendingDown },
@@ -45,6 +47,7 @@ const DashboardSidebar = () => {
 
   const personalLinks = [
     { href: "/dashboard", label: "Overview", icon: LayoutDashboard },
+    { href: "/dashboard/subscription", label: "Subscription", icon: Crown },
     { href: "/dashboard/income", label: "Income", icon: Wallet },
     { href: "/dashboard/expenses", label: "Expenditure", icon: TrendingDown },
     { href: "/dashboard/tax", label: "Tax Computation", icon: Calculator },

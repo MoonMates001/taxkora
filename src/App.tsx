@@ -21,6 +21,7 @@ import WHTManagementPage from "./pages/dashboard/WHTManagementPage";
 import VATReturnsPage from "./pages/dashboard/VATReturnsPage";
 import TaxPaymentsPage from "./pages/dashboard/TaxPaymentsPage";
 import PaymentCallbackPage from "./pages/dashboard/PaymentCallbackPage";
+import SubscriptionPage from "./pages/dashboard/SubscriptionPage";
 
 const queryClient = new QueryClient();
 
@@ -36,6 +37,7 @@ const App = () => (
             <Route path="/auth" element={<Auth />} />
             <Route path="/dashboard" element={<DashboardLayout />}>
               <Route index element={<DashboardOverview />} />
+              <Route path="subscription" element={<SubscriptionPage />} />
               <Route path="invoices" element={<InvoicesPage />} />
               <Route path="income" element={<IncomePage />} />
               <Route path="expenses" element={<ExpensesPage />} />

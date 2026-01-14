@@ -69,6 +69,45 @@ serve(async (req) => {
     // Extract metadata
     const { user_id, payment_type, reference_id } = transaction.meta || {};
 
+    // Handle subscription payment
+    if (payment_type === "subscription" && user_id) {
+      console.log("Processing subscription payment for user:", user_id);
+      
+      // Find the pending subscription with this tx_ref
+      const { data: pendingSubscription, error: findError } = await supabase
+        .from("subscriptions")
+        .select("*")
+        .eq("flutterwave_tx_ref", transaction.tx_ref)
+        .eq("status", "pending")
+        .single();
+
+      if (findError) {
+        console.error("Failed to find pending subscription:", findError);
+      } else if (pendingSubscription) {
+        // Calculate subscription dates (1 year from now)
+        const startDate = new Date();
+        const endDate = new Date();
+        endDate.setFullYear(endDate.getFullYear() + 1);
+
+        // Update subscription to active
+        const { error: updateError } = await supabase
+          .from("subscriptions")
+          .update({
+            status: "active",
+            start_date: startDate.toISOString().split("T")[0],
+            end_date: endDate.toISOString().split("T")[0],
+            payment_reference: `FLW-${transaction_id}`,
+          })
+          .eq("id", pendingSubscription.id);
+
+        if (updateError) {
+          console.error("Failed to activate subscription:", updateError);
+        } else {
+          console.log("Subscription activated successfully:", pendingSubscription.id);
+        }
+      }
+    }
+
     // If it's a tax payment, record it in tax_payments table
     if (payment_type === "tax_payment" && user_id) {
       const currentYear = new Date().getFullYear();
@@ -76,7 +115,7 @@ serve(async (req) => {
       const { error: insertError } = await supabase.from("tax_payments").insert({
         user_id,
         amount: transaction.amount,
-        payment_type: "annual", // Could be dynamic based on reference
+        payment_type: "annual",
         payment_date: new Date().toISOString().split("T")[0],
         payment_reference: transaction.tx_ref,
         payment_method: transaction.payment_type || "card",
@@ -106,6 +145,7 @@ serve(async (req) => {
       JSON.stringify({
         status: "success",
         message: "Payment verified successfully",
+        payment_type,
         transaction: {
           id: transaction.id,
           tx_ref: transaction.tx_ref,
