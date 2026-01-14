@@ -2,7 +2,8 @@ import { useState } from "react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Check, Crown, Loader2, Building2, User, Building, Clock, Gift, CreditCard, Info } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
+import { Check, Crown, Loader2, Building2, User, Building, Clock, Gift, CreditCard, Info, Trash2, AlertTriangle } from "lucide-react";
 import { useSubscription, SUBSCRIPTION_PLANS, SubscriptionPlan } from "@/hooks/useSubscription";
 import { useFlutterwavePayment } from "@/hooks/useFlutterwavePayment";
 import { useAuth } from "@/hooks/useAuth";
@@ -35,6 +36,8 @@ export default function SubscriptionPage() {
     activePlan, 
     createPendingSubscription,
     initiateTrialWithCard,
+    toggleAutoRenew,
+    removeSavedCard,
     hasHadSubscription,
     isTrialSubscription,
     daysRemaining,
@@ -44,6 +47,7 @@ export default function SubscriptionPage() {
   const [selectedPlan, setSelectedPlan] = useState<SubscriptionPlan | null>(null);
   const [isStartingTrial, setIsStartingTrial] = useState(false);
   const [showCardInfoDialog, setShowCardInfoDialog] = useState(false);
+  const [showRemoveCardDialog, setShowRemoveCardDialog] = useState(false);
   const [pendingTrialPlan, setPendingTrialPlan] = useState<SubscriptionPlan | null>(null);
 
   const handleSubscribe = async (plan: SubscriptionPlan) => {
@@ -335,6 +339,109 @@ export default function SubscriptionPage() {
           )}
         </div>
 
+        {/* Subscription Settings */}
+        {isSubscriptionActive && subscription && (
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <CreditCard className="h-5 w-5" />
+                Subscription Settings
+              </CardTitle>
+              <CardDescription>
+                Manage your payment method and auto-renewal preferences
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              {/* Auto-Renewal Toggle */}
+              <div className="flex items-center justify-between p-4 border rounded-lg">
+                <div className="space-y-1">
+                  <div className="font-medium">Auto-Renewal</div>
+                  <p className="text-sm text-muted-foreground">
+                    {subscription.auto_renew
+                      ? "Your subscription will automatically renew when it expires"
+                      : "You'll need to manually renew when your subscription expires"}
+                  </p>
+                </div>
+                <Switch
+                  checked={subscription.auto_renew || false}
+                  onCheckedChange={(checked) => {
+                    if (!hasCardOnFile && checked) {
+                      toast.error("Please add a payment method first");
+                      return;
+                    }
+                    toggleAutoRenew.mutate({ 
+                      subscriptionId: subscription.id, 
+                      autoRenew: checked 
+                    });
+                  }}
+                  disabled={toggleAutoRenew.isPending || (!hasCardOnFile && !subscription.auto_renew)}
+                />
+              </div>
+
+              {/* Saved Payment Method */}
+              <div className="p-4 border rounded-lg space-y-4">
+                <div className="flex items-center justify-between">
+                  <div className="space-y-1">
+                    <div className="font-medium">Payment Method</div>
+                    {hasCardOnFile && subscription.card_last_four ? (
+                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                        <CreditCard className="h-4 w-4" />
+                        <span>Card ending in •••• {subscription.card_last_four}</span>
+                        {subscription.card_expiry && (
+                          <span className="text-xs">({subscription.card_expiry})</span>
+                        )}
+                      </div>
+                    ) : (
+                      <p className="text-sm text-muted-foreground">
+                        No payment method saved
+                      </p>
+                    )}
+                  </div>
+                </div>
+
+                {hasCardOnFile && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="text-destructive hover:text-destructive"
+                    onClick={() => setShowRemoveCardDialog(true)}
+                    disabled={removeSavedCard.isPending}
+                  >
+                    {removeSavedCard.isPending ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Removing...
+                      </>
+                    ) : (
+                      <>
+                        <Trash2 className="mr-2 h-4 w-4" />
+                        Remove Payment Method
+                      </>
+                    )}
+                  </Button>
+                )}
+              </div>
+
+              {/* Warning for trial users without card */}
+              {isTrialSubscription && !hasCardOnFile && (
+                <div className="p-4 bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800 rounded-lg">
+                  <div className="flex items-start gap-3">
+                    <AlertTriangle className="h-5 w-5 text-amber-600 mt-0.5" />
+                    <div>
+                      <p className="font-medium text-amber-700 dark:text-amber-400">
+                        No payment method on file
+                      </p>
+                      <p className="text-sm text-amber-600 dark:text-amber-500 mt-1">
+                        Your trial won't auto-renew when it ends. Subscribe before your trial expires to continue using TaxKora.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        )}
+
         {/* Subscription History */}
         {allSubscriptions && allSubscriptions.length > 0 && (
           <Card>
@@ -455,6 +562,65 @@ export default function SubscriptionPage() {
                 <>
                   <CreditCard className="mr-2 h-4 w-4" />
                   Continue to Card Verification
+                </>
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Remove Card Confirmation Dialog */}
+      <Dialog open={showRemoveCardDialog} onOpenChange={setShowRemoveCardDialog}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-destructive">
+              <AlertTriangle className="h-5 w-5" />
+              Remove Payment Method
+            </DialogTitle>
+            <DialogDescription>
+              Are you sure you want to remove your saved payment method?
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="py-4">
+            <div className="p-4 bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800 rounded-lg">
+              <div className="flex items-start gap-3">
+                <AlertTriangle className="h-5 w-5 text-amber-600 mt-0.5" />
+                <div className="text-sm">
+                  <p className="font-medium text-amber-700 dark:text-amber-400">
+                    This will also disable auto-renewal
+                  </p>
+                  <p className="text-amber-600 dark:text-amber-500 mt-1">
+                    You'll need to manually renew your subscription before it expires to continue using TaxKora.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <DialogFooter className="flex gap-2">
+            <Button variant="outline" onClick={() => setShowRemoveCardDialog(false)}>
+              Cancel
+            </Button>
+            <Button 
+              variant="destructive" 
+              onClick={() => {
+                if (subscription) {
+                  removeSavedCard.mutate(subscription.id);
+                  setShowRemoveCardDialog(false);
+                }
+              }}
+              disabled={removeSavedCard.isPending}
+            >
+              {removeSavedCard.isPending ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Removing...
+                </>
+              ) : (
+                <>
+                  <Trash2 className="mr-2 h-4 w-4" />
+                  Remove Card
                 </>
               )}
             </Button>

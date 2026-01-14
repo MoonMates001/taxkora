@@ -222,6 +222,63 @@ export const useSubscription = () => {
     },
   });
 
+  // Toggle auto-renew setting
+  const toggleAutoRenew = useMutation({
+    mutationFn: async ({ subscriptionId, autoRenew }: { subscriptionId: string; autoRenew: boolean }) => {
+      if (!user?.id) throw new Error("User not authenticated");
+
+      const { data, error } = await supabase
+        .from("subscriptions")
+        .update({ auto_renew: autoRenew })
+        .eq("id", subscriptionId)
+        .eq("user_id", user.id)
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ["subscription"] });
+      queryClient.invalidateQueries({ queryKey: ["all-subscriptions"] });
+      toast.success(variables.autoRenew ? "Auto-renewal enabled" : "Auto-renewal disabled");
+    },
+    onError: (error) => {
+      toast.error("Failed to update setting: " + error.message);
+    },
+  });
+
+  // Remove saved card
+  const removeSavedCard = useMutation({
+    mutationFn: async (subscriptionId: string) => {
+      if (!user?.id) throw new Error("User not authenticated");
+
+      const { data, error } = await supabase
+        .from("subscriptions")
+        .update({ 
+          card_token: null, 
+          card_last_four: null, 
+          card_expiry: null,
+          auto_renew: false 
+        })
+        .eq("id", subscriptionId)
+        .eq("user_id", user.id)
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["subscription"] });
+      queryClient.invalidateQueries({ queryKey: ["all-subscriptions"] });
+      toast.success("Payment method removed");
+    },
+    onError: (error) => {
+      toast.error("Failed to remove card: " + error.message);
+    },
+  });
+
   // Check if user has ever had a subscription (to determine trial eligibility)
   const hasHadSubscription = allSubscriptions && allSubscriptions.length > 0;
 
@@ -259,6 +316,8 @@ export const useSubscription = () => {
     createPendingSubscription,
     startTrialSubscription,
     initiateTrialWithCard,
+    toggleAutoRenew,
+    removeSavedCard,
     hasHadSubscription,
     isTrialSubscription,
     daysRemaining: getDaysRemaining(),

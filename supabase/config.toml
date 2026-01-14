@@ -6,6 +6,9 @@ verify_jwt = false
 [functions.subscription-reminders]
 verify_jwt = false
 
+[functions.subscription-auto-renew]
+verify_jwt = false
+
 [functions.trial-welcome-email]
 verify_jwt = false
 
@@ -16,4 +19,10 @@ verify_jwt = false
 verify_jwt = false
 
 [functions.referral-notification]
+verify_jwt = false
+
+[functions.flutterwave-tokenize]
+verify_jwt = false
+
+[functions.flutterwave-trial-verify]
 verify_jwt = false
