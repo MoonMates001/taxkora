@@ -33,6 +33,7 @@ import {
   CAPITAL_ALLOWANCE_RATES,
   computeCapitalAllowances,
 } from "@/lib/tax";
+import SubscriptionGate from "@/components/subscription/SubscriptionGate";
 
 const CATEGORY_ICONS: Record<CapitalAssetCategory, typeof Car> = {
   plant_machinery: Wrench,
@@ -155,6 +156,7 @@ const CapitalAssetsPage = () => {
   }
 
   return (
+    <SubscriptionGate requiredPlan={["pit_business", "cit"]} feature="Capital Assets Management">
     <div className="space-y-8">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -583,6 +585,7 @@ const CapitalAssetsPage = () => {
         </DialogContent>
       </Dialog>
     </div>
+    </SubscriptionGate>
   );
 };
 

@@ -27,6 +27,7 @@ import { VAT_RATE } from "@/lib/tax/constants";
 import { format, addDays, endOfMonth } from "date-fns";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
+import SubscriptionGate from "@/components/subscription/SubscriptionGate";
 
 const MONTHS = [
   { value: 1, label: "January" },
@@ -190,6 +191,7 @@ const VATReturnsPage = () => {
   }
 
   return (
+    <SubscriptionGate requiredPlan={["pit_business", "cit"]} feature="VAT Returns Management">
     <div className="space-y-8">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -528,6 +530,7 @@ const VATReturnsPage = () => {
         </DialogContent>
       </Dialog>
     </div>
+    </SubscriptionGate>
   );
 };
 

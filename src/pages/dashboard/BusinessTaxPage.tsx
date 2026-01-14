@@ -46,6 +46,7 @@ import {
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import { toast } from "sonner";
+import SubscriptionGate from "@/components/subscription/SubscriptionGate";
 
 type EntityOption = { value: BusinessEntityType; label: string; icon: typeof User; description: string };
 
@@ -277,6 +278,10 @@ const BusinessTaxPage = () => {
   const years = Array.from({ length: 5 }, (_, i) => currentYear - i);
 
   return (
+    <SubscriptionGate 
+      requiredPlan={["pit_business", "cit"]} 
+      feature="Business Tax Computation"
+    >
     <div className="space-y-8">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -770,6 +775,7 @@ const BusinessTaxPage = () => {
         </Tabs>
       )}
     </div>
+    </SubscriptionGate>
   );
 };
 

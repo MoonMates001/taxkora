@@ -48,6 +48,7 @@ import {
 import { jsPDF } from "jspdf";
 import autoTable from "jspdf-autotable";
 import { toast } from "sonner";
+import SubscriptionGate from "@/components/subscription/SubscriptionGate";
 import { format } from "date-fns";
 import {
   WHTPaymentType,
@@ -346,6 +347,7 @@ const WHTManagementPage = () => {
   }
 
   return (
+    <SubscriptionGate requiredPlan={["pit_business", "cit"]} feature="WHT Management">
     <div className="space-y-8">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -843,6 +845,7 @@ const WHTManagementPage = () => {
         </DialogContent>
       </Dialog>
     </div>
+    </SubscriptionGate>
   );
 };
 
