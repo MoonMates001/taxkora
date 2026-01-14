@@ -26,6 +26,7 @@ import { format } from "date-fns";
 const ReferralsPage = () => {
   const [inviteEmail, setInviteEmail] = useState("");
   const [copied, setCopied] = useState(false);
+  const [selectedPlan, setSelectedPlan] = useState<"pit_individual" | "pit_business">("pit_individual");
   
   const {
     userReferralCode,
@@ -160,18 +161,31 @@ const ReferralsPage = () => {
                     Reward Activated!
                   </Badge>
                 ) : (
-                  <Button 
-                    onClick={() => claimReward.mutate()}
-                    disabled={claimReward.isPending}
-                    className="bg-green-500 hover:bg-green-600 text-white"
-                  >
-                    {claimReward.isPending ? (
-                      <Loader2 className="w-4 h-4 animate-spin mr-2" />
-                    ) : (
-                      <Trophy className="w-4 h-4 mr-2" />
-                    )}
-                    Claim 1 Year Free!
-                  </Button>
+                  <div className="flex flex-col sm:flex-row items-end gap-3">
+                    <div className="flex flex-col gap-1">
+                      <label className="text-xs text-muted-foreground">Choose your plan:</label>
+                      <select
+                        value={selectedPlan}
+                        onChange={(e) => setSelectedPlan(e.target.value as "pit_individual" | "pit_business")}
+                        className="px-3 py-2 rounded-md border border-input bg-background text-sm"
+                      >
+                        <option value="pit_individual">Individual PIT (₦2,500 value)</option>
+                        <option value="pit_business">Business PIT (₦7,500 value)</option>
+                      </select>
+                    </div>
+                    <Button 
+                      onClick={() => claimReward.mutate(selectedPlan)}
+                      disabled={claimReward.isPending}
+                      className="bg-green-500 hover:bg-green-600 text-white"
+                    >
+                      {claimReward.isPending ? (
+                        <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                      ) : (
+                        <Trophy className="w-4 h-4 mr-2" />
+                      )}
+                      Claim 1 Year Free!
+                    </Button>
+                  </div>
                 )
               )}
             </div>
