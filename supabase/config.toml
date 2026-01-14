@@ -2,3 +2,6 @@ project_id = "xvrmtsgagzcbdgxrwdly"
 
 [functions.tax-deadline-reminders]
 verify_jwt = false
+
+[functions.subscription-reminders]
+verify_jwt = false
