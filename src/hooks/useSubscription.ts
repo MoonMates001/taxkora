@@ -25,6 +25,7 @@ export const SUBSCRIPTION_PLANS = {
     name: "Individual PIT",
     description: "Personal Income Tax filing for individuals without business",
     amount: 2500,
+    trialDays: 90, // 3 months
     features: [
       "Annual PIT computation",
       "Tax liability tracking",
@@ -36,6 +37,7 @@ export const SUBSCRIPTION_PLANS = {
     name: "Business PIT",
     description: "Personal Income Tax filing for business owners",
     amount: 7500,
+    trialDays: 90, // 3 months
     features: [
       "Full PIT computation with business income",
       "Expense tracking & deductions",
@@ -48,6 +50,7 @@ export const SUBSCRIPTION_PLANS = {
     name: "Companies Income Tax",
     description: "Corporate tax filing for registered companies",
     amount: 25000,
+    trialDays: 90, // 3 months
     features: [
       "Complete CIT computation",
       "Capital allowance tracking",
@@ -135,6 +138,45 @@ export const useSubscription = () => {
     },
   });
 
+  const startTrialSubscription = useMutation({
+    mutationFn: async (plan: SubscriptionPlan) => {
+      if (!user?.id) throw new Error("User not authenticated");
+
+      const planDetails = SUBSCRIPTION_PLANS[plan];
+      const startDate = new Date();
+      const endDate = new Date();
+      endDate.setDate(endDate.getDate() + planDetails.trialDays);
+
+      const { data, error } = await supabase
+        .from("subscriptions")
+        .insert({
+          user_id: user.id,
+          plan,
+          status: "active",
+          amount: 0, // Trial is free
+          start_date: startDate.toISOString().split("T")[0],
+          end_date: endDate.toISOString().split("T")[0],
+          payment_reference: "TRIAL",
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["subscription"] });
+      queryClient.invalidateQueries({ queryKey: ["all-subscriptions"] });
+      toast.success("Your 3-month free trial has started!");
+    },
+    onError: (error) => {
+      toast.error("Failed to start trial: " + error.message);
+    },
+  });
+
+  // Check if user has ever had a subscription (to determine trial eligibility)
+  const hasHadSubscription = allSubscriptions && allSubscriptions.length > 0;
+
   const isSubscriptionActive = (): boolean => {
     if (!subscription) return false;
     if (subscription.status !== "active") return false;
@@ -149,6 +191,17 @@ export const useSubscription = () => {
     return subscription?.plan || null;
   };
 
+  const isTrialSubscription = subscription?.payment_reference === "TRIAL";
+
+  const getDaysRemaining = (): number | null => {
+    if (!subscription?.end_date) return null;
+    const endDate = new Date(subscription.end_date);
+    const today = new Date();
+    const diffTime = endDate.getTime() - today.getTime();
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    return diffDays > 0 ? diffDays : 0;
+  };
+
   return {
     subscription,
     allSubscriptions,
@@ -156,5 +209,9 @@ export const useSubscription = () => {
     isSubscriptionActive: isSubscriptionActive(),
     activePlan: getActiveplan(),
     createPendingSubscription,
+    startTrialSubscription,
+    hasHadSubscription,
+    isTrialSubscription,
+    daysRemaining: getDaysRemaining(),
   };
 };
