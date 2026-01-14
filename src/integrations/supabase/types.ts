@@ -423,6 +423,57 @@ export type Database = {
         }
         Relationships: []
       }
+      wht_transactions: {
+        Row: {
+          created_at: string
+          description: string | null
+          gross_amount: number
+          id: string
+          net_amount: number
+          payment_date: string
+          payment_type: Database["public"]["Enums"]["wht_payment_type"]
+          recipient_name: string
+          recipient_tin: string | null
+          recipient_type: Database["public"]["Enums"]["wht_recipient_type"]
+          updated_at: string
+          user_id: string
+          wht_amount: number
+          wht_rate: number
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          gross_amount: number
+          id?: string
+          net_amount: number
+          payment_date?: string
+          payment_type: Database["public"]["Enums"]["wht_payment_type"]
+          recipient_name: string
+          recipient_tin?: string | null
+          recipient_type: Database["public"]["Enums"]["wht_recipient_type"]
+          updated_at?: string
+          user_id: string
+          wht_amount: number
+          wht_rate: number
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          gross_amount?: number
+          id?: string
+          net_amount?: number
+          payment_date?: string
+          payment_type?: Database["public"]["Enums"]["wht_payment_type"]
+          recipient_name?: string
+          recipient_tin?: string | null
+          recipient_type?: Database["public"]["Enums"]["wht_recipient_type"]
+          updated_at?: string
+          user_id?: string
+          wht_amount?: number
+          wht_rate?: number
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -473,6 +524,20 @@ export type Database = {
         | "gifts"
         | "freelance"
       invoice_status: "draft" | "sent" | "paid" | "overdue" | "cancelled"
+      wht_payment_type:
+        | "dividends"
+        | "interest"
+        | "royalties"
+        | "rent"
+        | "commissions"
+        | "professionalFees"
+        | "constructionContracts"
+        | "managementFees"
+        | "technicalFees"
+        | "consultingFees"
+        | "directorsFees"
+        | "other"
+      wht_recipient_type: "corporate" | "individual" | "non_resident"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -644,6 +709,21 @@ export const Constants = {
         "freelance",
       ],
       invoice_status: ["draft", "sent", "paid", "overdue", "cancelled"],
+      wht_payment_type: [
+        "dividends",
+        "interest",
+        "royalties",
+        "rent",
+        "commissions",
+        "professionalFees",
+        "constructionContracts",
+        "managementFees",
+        "technicalFees",
+        "consultingFees",
+        "directorsFees",
+        "other",
+      ],
+      wht_recipient_type: ["corporate", "individual", "non_resident"],
     },
   },
 } as const

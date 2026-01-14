@@ -1,5 +1,6 @@
 import { useState, useMemo } from "react";
 import { useAuth } from "@/hooks/useAuth";
+import { useWHTTransactions } from "@/hooks/useWHTTransactions";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -42,18 +43,16 @@ import {
   FileText,
   Clock,
   AlertCircle,
+  Loader2,
 } from "lucide-react";
 import { jsPDF } from "jspdf";
 import autoTable from "jspdf-autotable";
 import { toast } from "sonner";
-import { format, addDays } from "date-fns";
+import { format } from "date-fns";
 import {
-  WHTTransaction,
   WHTPaymentType,
   RecipientType,
-  WHT_PAYMENT_TYPES,
   WHT_RATE_CONFIG,
-  createWHTTransaction,
   computeWHT,
   getWHTRate,
 } from "@/lib/tax/wht";
@@ -65,8 +64,10 @@ const WHTManagementPage = () => {
 
   const [selectedYear, setSelectedYear] = useState(currentYear);
   const [selectedMonth, setSelectedMonth] = useState<number | null>(null);
-  const [transactions, setTransactions] = useState<WHTTransaction[]>([]);
   const [dialogOpen, setDialogOpen] = useState(false);
+
+  // Use the database-backed hook
+  const { transactions, isLoading, createTransaction, deleteTransaction } = useWHTTransactions(selectedYear);
 
   // Form state for new transaction
   const [form, setForm] = useState({
@@ -99,14 +100,13 @@ const WHTManagementPage = () => {
   const filteredTransactions = useMemo(() => {
     return transactions.filter((tx) => {
       const txDate = new Date(tx.paymentDate);
-      const txYear = txDate.getFullYear();
       const txMonth = txDate.getMonth() + 1;
       if (selectedMonth) {
-        return txYear === selectedYear && txMonth === selectedMonth;
+        return txMonth === selectedMonth;
       }
-      return txYear === selectedYear;
+      return true;
     });
-  }, [transactions, selectedYear, selectedMonth]);
+  }, [transactions, selectedMonth]);
 
   // Compute WHT summary
   const whtSummary = useMemo(() => {
@@ -128,12 +128,10 @@ const WHTManagementPage = () => {
 
     // Group transactions by month
     const byMonth = new Map<number, number>();
-    transactions
-      .filter((tx) => new Date(tx.paymentDate).getFullYear() === selectedYear)
-      .forEach((tx) => {
-        const month = new Date(tx.paymentDate).getMonth() + 1;
-        byMonth.set(month, (byMonth.get(month) || 0) + tx.whtAmount);
-      });
+    transactions.forEach((tx) => {
+      const month = new Date(tx.paymentDate).getMonth() + 1;
+      byMonth.set(month, (byMonth.get(month) || 0) + tx.whtAmount);
+    });
 
     byMonth.forEach((amount, month) => {
       const deadlineMonth = month === 12 ? 1 : month + 1;
@@ -167,7 +165,7 @@ const WHTManagementPage = () => {
     }).format(amount);
   };
 
-  const handleAddTransaction = () => {
+  const handleAddTransaction = async () => {
     if (!form.recipientName || !form.grossAmount) {
       toast.error("Please fill in recipient name and gross amount");
       return;
@@ -179,17 +177,16 @@ const WHTManagementPage = () => {
       return;
     }
 
-    const newTransaction = createWHTTransaction(
-      form.paymentType,
-      form.recipientType,
-      form.recipientName,
+    await createTransaction.mutateAsync({
+      paymentType: form.paymentType,
+      recipientType: form.recipientType,
+      recipientName: form.recipientName,
+      recipientTIN: form.recipientTIN || undefined,
       grossAmount,
-      form.paymentDate,
-      form.description,
-      form.recipientTIN
-    );
+      paymentDate: form.paymentDate,
+      description: form.description || undefined,
+    });
 
-    setTransactions([...transactions, newTransaction]);
     setDialogOpen(false);
     setForm({
       paymentType: "professionalFees",
@@ -200,12 +197,10 @@ const WHTManagementPage = () => {
       paymentDate: format(new Date(), "yyyy-MM-dd"),
       description: "",
     });
-    toast.success("WHT transaction added");
   };
 
   const handleDeleteTransaction = (id: string) => {
-    setTransactions(transactions.filter((tx) => tx.id !== id));
-    toast.success("Transaction deleted");
+    deleteTransaction.mutate(id);
   };
 
   const getRecipientIcon = (type: RecipientType) => {
@@ -341,6 +336,14 @@ const WHTManagementPage = () => {
   const previewAmount = parseFloat(form.grossAmount) || 0;
   const previewWHT = previewAmount * currentRate;
   const previewNet = previewAmount - previewWHT;
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-8">
