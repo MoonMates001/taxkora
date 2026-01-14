@@ -4,17 +4,21 @@ import { Button } from "@/components/ui/button";
 import { Plus, FileText, Search, Users } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useInvoices } from "@/hooks/useInvoices";
+import { useInvoices, Invoice } from "@/hooks/useInvoices";
 import { useClients } from "@/hooks/useClients";
+import { useAuth } from "@/hooks/useAuth";
 import { CreateInvoiceDialog } from "@/components/invoices/CreateInvoiceDialog";
 import { ClientDialog } from "@/components/invoices/ClientDialog";
 import { InvoiceList } from "@/components/invoices/InvoiceList";
+import { InvoicePreviewDialog } from "@/components/invoices/InvoicePreviewDialog";
 
 const InvoicesPage = () => {
   const [createInvoiceOpen, setCreateInvoiceOpen] = useState(false);
   const [clientDialogOpen, setClientDialogOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [previewInvoice, setPreviewInvoice] = useState<Invoice | null>(null);
 
+  const { profile } = useAuth();
   const { invoices, isLoading: invoicesLoading } = useInvoices();
   const { clients, isLoading: clientsLoading, deleteClient } = useClients();
 
@@ -107,7 +111,10 @@ const InvoicesPage = () => {
                   )}
                 </div>
               ) : (
-                <InvoiceList invoices={filteredInvoices} />
+                <InvoiceList 
+                  invoices={filteredInvoices} 
+                  onPreviewInvoice={(invoice) => setPreviewInvoice(invoice)}
+                />
               )}
             </CardContent>
           </Card>
@@ -200,6 +207,13 @@ const InvoicesPage = () => {
         onOpenChange={setCreateInvoiceOpen}
       />
       <ClientDialog open={clientDialogOpen} onOpenChange={setClientDialogOpen} />
+      <InvoicePreviewDialog
+        open={!!previewInvoice}
+        onOpenChange={(open) => !open && setPreviewInvoice(null)}
+        invoice={previewInvoice}
+        items={previewInvoice?.items}
+        profile={profile}
+      />
     </div>
   );
 };

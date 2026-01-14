@@ -1,9 +1,9 @@
 import { useAuth } from "@/hooks/useAuth";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Building2, User, Mail, Phone, Save } from "lucide-react";
+import { Building2, User } from "lucide-react";
+import { BusinessProfileForm } from "@/components/settings/BusinessProfileForm";
+import { InvoiceCustomizationForm } from "@/components/settings/InvoiceCustomizationForm";
 
 const SettingsPage = () => {
   const { profile } = useAuth();
@@ -20,76 +20,10 @@ const SettingsPage = () => {
       </div>
 
       {/* Profile Section */}
-      <Card className="shadow-card">
-        <CardHeader>
-          <CardTitle className="font-display flex items-center gap-2">
-            {isBusinessAccount ? (
-              <Building2 className="w-5 h-5 text-primary" />
-            ) : (
-              <User className="w-5 h-5 text-accent" />
-            )}
-            {isBusinessAccount ? "Business Profile" : "Personal Profile"}
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          <div className="grid sm:grid-cols-2 gap-6">
-            <div className="space-y-2">
-              <Label htmlFor="fullName">Full Name</Label>
-              <Input
-                id="fullName"
-                defaultValue={profile?.full_name || ""}
-                placeholder="Enter your full name"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="email">Email Address</Label>
-              <div className="relative">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                <Input
-                  id="email"
-                  defaultValue={profile?.email || ""}
-                  placeholder="Enter your email"
-                  className="pl-10"
-                  disabled
-                />
-              </div>
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="phone">Phone Number</Label>
-              <div className="relative">
-                <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                <Input
-                  id="phone"
-                  defaultValue={profile?.phone || ""}
-                  placeholder="Enter your phone number"
-                  className="pl-10"
-                />
-              </div>
-            </div>
-            {isBusinessAccount && (
-              <div className="space-y-2">
-                <Label htmlFor="businessName">Business Name</Label>
-                <div className="relative">
-                  <Building2 className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                  <Input
-                    id="businessName"
-                    defaultValue={profile?.business_name || ""}
-                    placeholder="Enter your business name"
-                    className="pl-10"
-                  />
-                </div>
-              </div>
-            )}
-          </div>
+      <BusinessProfileForm />
 
-          <div className="pt-4">
-            <Button className="gap-2">
-              <Save className="w-4 h-4" />
-              Save Changes
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
+      {/* Invoice Customization - Only for business accounts */}
+      {isBusinessAccount && <InvoiceCustomizationForm />}
 
       {/* Account Type */}
       <Card className="shadow-card">
