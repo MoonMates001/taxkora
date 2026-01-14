@@ -5,3 +5,9 @@ verify_jwt = false
 
 [functions.subscription-reminders]
 verify_jwt = false
+
+[functions.trial-welcome-email]
+verify_jwt = false
+
+[functions.onboarding-email-sequence]
+verify_jwt = false
