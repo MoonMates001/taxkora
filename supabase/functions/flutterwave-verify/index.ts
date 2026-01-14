@@ -179,27 +179,6 @@ serve(async (req) => {
       }
     }
 
-    // If it's a tax payment, record it in tax_payments table
-    if (payment_type === "tax_payment" && user_id) {
-      const currentYear = new Date().getFullYear();
-      
-      const { error: insertError } = await supabase.from("tax_payments").insert({
-        user_id,
-        amount: transaction.amount,
-        payment_type: "annual",
-        payment_date: new Date().toISOString().split("T")[0],
-        payment_reference: transaction.tx_ref,
-        payment_method: transaction.payment_type || "card",
-        status: "completed",
-        year: currentYear,
-        notes: `Paid via Flutterwave. Transaction ID: ${transaction_id}`,
-      });
-
-      if (insertError) {
-        console.error("Failed to record tax payment:", insertError);
-      }
-    }
-
     // If it's an invoice payment, update invoice status
     if (payment_type === "invoice" && reference_id) {
       const { error: updateError } = await supabase

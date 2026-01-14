@@ -20,7 +20,6 @@ import CapitalAssetsPage from "./pages/dashboard/CapitalAssetsPage";
 import WHTManagementPage from "./pages/dashboard/WHTManagementPage";
 import VATReturnsPage from "./pages/dashboard/VATReturnsPage";
 import TaxPaymentsPage from "./pages/dashboard/TaxPaymentsPage";
-import PaymentCallbackPage from "./pages/dashboard/PaymentCallbackPage";
 import SubscriptionPage from "./pages/dashboard/SubscriptionPage";
 import ReferralsPage from "./pages/dashboard/ReferralsPage";
 
@@ -48,7 +47,6 @@ const App = () => (
               <Route path="wht" element={<WHTManagementPage />} />
               <Route path="vat" element={<VATReturnsPage />} />
               <Route path="payments" element={<TaxPaymentsPage />} />
-              <Route path="payment-callback" element={<PaymentCallbackPage />} />
               <Route path="filing" element={<TaxFilingPage />} />
               <Route path="referrals" element={<ReferralsPage />} />
               <Route path="settings" element={<SettingsPage />} />
