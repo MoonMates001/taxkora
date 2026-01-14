@@ -54,6 +54,7 @@ const DashboardSidebar = () => {
     { href: "/dashboard/vat", label: "VAT Returns", icon: Receipt },
     { href: "/dashboard/payments", label: "Tax Payments", icon: CreditCard },
     { href: "/dashboard/filing", label: "Tax Filing", icon: Send },
+    { href: "/dashboard/referrals", label: "Referrals", icon: Gift },
   ];
 
   const personalLinks = [
@@ -63,6 +64,7 @@ const DashboardSidebar = () => {
     { href: "/dashboard/expenses", label: "Expenditure", icon: TrendingDown },
     { href: "/dashboard/tax", label: "Tax Computation", icon: Calculator },
     { href: "/dashboard/filing", label: "Tax Filing", icon: Send },
+    { href: "/dashboard/referrals", label: "Referrals", icon: Gift },
   ];
 
   const links = isBusinessAccount ? businessLinks : personalLinks;

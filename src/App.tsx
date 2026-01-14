@@ -22,6 +22,7 @@ import VATReturnsPage from "./pages/dashboard/VATReturnsPage";
 import TaxPaymentsPage from "./pages/dashboard/TaxPaymentsPage";
 import PaymentCallbackPage from "./pages/dashboard/PaymentCallbackPage";
 import SubscriptionPage from "./pages/dashboard/SubscriptionPage";
+import ReferralsPage from "./pages/dashboard/ReferralsPage";
 
 const queryClient = new QueryClient();
 
@@ -49,6 +50,7 @@ const App = () => (
               <Route path="payments" element={<TaxPaymentsPage />} />
               <Route path="payment-callback" element={<PaymentCallbackPage />} />
               <Route path="filing" element={<TaxFilingPage />} />
+              <Route path="referrals" element={<ReferralsPage />} />
               <Route path="settings" element={<SettingsPage />} />
             </Route>
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
