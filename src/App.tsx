@@ -18,6 +18,7 @@ import SettingsPage from "./pages/dashboard/SettingsPage";
 import BusinessTaxPage from "./pages/dashboard/BusinessTaxPage";
 import CapitalAssetsPage from "./pages/dashboard/CapitalAssetsPage";
 import WHTManagementPage from "./pages/dashboard/WHTManagementPage";
+import VATReturnsPage from "./pages/dashboard/VATReturnsPage";
 
 const queryClient = new QueryClient();
 
@@ -40,6 +41,7 @@ const App = () => (
               <Route path="business-tax" element={<BusinessTaxPage />} />
               <Route path="capital-assets" element={<CapitalAssetsPage />} />
               <Route path="wht" element={<WHTManagementPage />} />
+              <Route path="vat" element={<VATReturnsPage />} />
               <Route path="filing" element={<TaxFilingPage />} />
               <Route path="settings" element={<SettingsPage />} />
             </Route>

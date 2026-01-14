@@ -18,6 +18,7 @@ import {
   Wallet,
   Briefcase,
   Package,
+  Receipt,
 } from "lucide-react";
 
 const DashboardSidebar = () => {
@@ -36,6 +37,7 @@ const DashboardSidebar = () => {
     { href: "/dashboard/tax", label: "Personal Tax", icon: Calculator },
     { href: "/dashboard/business-tax", label: "Business Tax", icon: Briefcase },
     { href: "/dashboard/wht", label: "WHT Management", icon: Wallet },
+    { href: "/dashboard/vat", label: "VAT Returns", icon: Receipt },
     { href: "/dashboard/filing", label: "Tax Filing", icon: Send },
   ];
 
