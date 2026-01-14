@@ -1,15 +1,16 @@
 import { useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
+import { useCapitalAssets } from "@/hooks/useCapitalAssets";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { Progress } from "@/components/ui/progress";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Plus,
   Trash2,
@@ -54,9 +55,9 @@ const formatCurrency = (amount: number) => {
 
 const CapitalAssetsPage = () => {
   const { profile } = useAuth();
+  const { assets, isLoading, createAsset, updateAsset, deleteAsset } = useCapitalAssets();
   const currentYear = new Date().getFullYear();
   const [selectedYear, setSelectedYear] = useState(currentYear);
-  const [assets, setAssets] = useState<CapitalAsset[]>([]);
   const [editingAsset, setEditingAsset] = useState<CapitalAsset | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [assessableProfit, setAssessableProfit] = useState(0);
@@ -104,48 +105,32 @@ const CapitalAssetsPage = () => {
   };
 
   const handleSaveAsset = () => {
-    const rates = getCategoryRates(formData.category as CapitalAssetCategory);
-    
     if (editingAsset) {
       // Update existing
-      setAssets((prev) =>
-        prev.map((a) =>
-          a.id === editingAsset.id
-            ? {
-                ...a,
-                description: formData.description || "",
-                category: formData.category as CapitalAssetCategory,
-                cost: formData.cost || 0,
-                acquisitionDate: formData.acquisitionDate || "",
-                yearAcquired: formData.yearAcquired || currentYear,
-                initialAllowanceRate: rates?.initialRate || 0.25,
-                annualAllowanceRate: rates?.annualRate || 0.20,
-              }
-            : a
-        )
-      );
-    } else {
-      // Add new
-      const newAsset: CapitalAsset = {
-        id: crypto.randomUUID(),
+      updateAsset.mutate({
+        id: editingAsset.id,
         description: formData.description || "",
         category: formData.category as CapitalAssetCategory,
         cost: formData.cost || 0,
         acquisitionDate: formData.acquisitionDate || "",
         yearAcquired: formData.yearAcquired || currentYear,
-        initialAllowanceRate: rates?.initialRate || 0.25,
-        annualAllowanceRate: rates?.annualRate || 0.20,
-        writtenDownValue: formData.cost || 0,
-        totalAllowanceClaimed: 0,
-      };
-      setAssets((prev) => [...prev, newAsset]);
+      });
+    } else {
+      // Add new
+      createAsset.mutate({
+        description: formData.description || "",
+        category: formData.category as CapitalAssetCategory,
+        cost: formData.cost || 0,
+        acquisitionDate: formData.acquisitionDate || "",
+        yearAcquired: formData.yearAcquired || currentYear,
+      });
     }
     
     setIsDialogOpen(false);
   };
 
   const handleDeleteAsset = (id: string) => {
-    setAssets((prev) => prev.filter((a) => a.id !== id));
+    deleteAsset.mutate(id);
   };
 
   const totalAssetValue = assets.reduce((sum, a) => sum + a.cost, 0);
@@ -154,6 +139,20 @@ const CapitalAssetsPage = () => {
     (sum, a) => sum + a.writtenDownValue,
     0
   );
+
+  if (isLoading) {
+    return (
+      <div className="space-y-6">
+        <Skeleton className="h-10 w-64" />
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          {[...Array(4)].map((_, i) => (
+            <Skeleton key={i} className="h-32" />
+          ))}
+        </div>
+        <Skeleton className="h-96" />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-8">

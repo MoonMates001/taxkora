@@ -14,6 +14,42 @@ export type Database = {
   }
   public: {
     Tables: {
+      capital_assets: {
+        Row: {
+          acquisition_date: string
+          category: Database["public"]["Enums"]["capital_asset_category"]
+          cost: number
+          created_at: string
+          description: string
+          id: string
+          updated_at: string
+          user_id: string
+          year_acquired: number
+        }
+        Insert: {
+          acquisition_date?: string
+          category: Database["public"]["Enums"]["capital_asset_category"]
+          cost: number
+          created_at?: string
+          description: string
+          id?: string
+          updated_at?: string
+          user_id: string
+          year_acquired: number
+        }
+        Update: {
+          acquisition_date?: string
+          category?: Database["public"]["Enums"]["capital_asset_category"]
+          cost?: number
+          created_at?: string
+          description?: string
+          id?: string
+          updated_at?: string
+          user_id?: string
+          year_acquired?: number
+        }
+        Relationships: []
+      }
       clients: {
         Row: {
           address: string | null
@@ -423,6 +459,54 @@ export type Database = {
         }
         Relationships: []
       }
+      vat_transactions: {
+        Row: {
+          amount: number
+          category: string | null
+          created_at: string
+          description: string
+          id: string
+          is_exempt: boolean
+          month: number
+          transaction_date: string
+          transaction_type: Database["public"]["Enums"]["vat_transaction_type"]
+          updated_at: string
+          user_id: string
+          vat_amount: number
+          year: number
+        }
+        Insert: {
+          amount: number
+          category?: string | null
+          created_at?: string
+          description: string
+          id?: string
+          is_exempt?: boolean
+          month: number
+          transaction_date?: string
+          transaction_type: Database["public"]["Enums"]["vat_transaction_type"]
+          updated_at?: string
+          user_id: string
+          vat_amount: number
+          year: number
+        }
+        Update: {
+          amount?: number
+          category?: string | null
+          created_at?: string
+          description?: string
+          id?: string
+          is_exempt?: boolean
+          month?: number
+          transaction_date?: string
+          transaction_type?: Database["public"]["Enums"]["vat_transaction_type"]
+          updated_at?: string
+          user_id?: string
+          vat_amount?: number
+          year?: number
+        }
+        Relationships: []
+      }
       wht_transactions: {
         Row: {
           created_at: string
@@ -483,6 +567,14 @@ export type Database = {
     }
     Enums: {
       account_type: "business" | "personal"
+      capital_asset_category:
+        | "plant_machinery"
+        | "motor_vehicles"
+        | "furniture_fittings"
+        | "buildings"
+        | "computers_equipment"
+        | "agricultural_equipment"
+        | "other"
       expense_category:
         | "office_supplies"
         | "utilities"
@@ -524,6 +616,7 @@ export type Database = {
         | "gifts"
         | "freelance"
       invoice_status: "draft" | "sent" | "paid" | "overdue" | "cancelled"
+      vat_transaction_type: "output" | "input"
       wht_payment_type:
         | "dividends"
         | "interest"
@@ -666,6 +759,15 @@ export const Constants = {
   public: {
     Enums: {
       account_type: ["business", "personal"],
+      capital_asset_category: [
+        "plant_machinery",
+        "motor_vehicles",
+        "furniture_fittings",
+        "buildings",
+        "computers_equipment",
+        "agricultural_equipment",
+        "other",
+      ],
       expense_category: [
         "office_supplies",
         "utilities",
@@ -709,6 +811,7 @@ export const Constants = {
         "freelance",
       ],
       invoice_status: ["draft", "sent", "paid", "overdue", "cancelled"],
+      vat_transaction_type: ["output", "input"],
       wht_payment_type: [
         "dividends",
         "interest",
