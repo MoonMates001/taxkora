@@ -16,6 +16,32 @@ interface NotificationRequest {
   eventType: "signed_up" | "subscribed";
 }
 
+// HTML escape to prevent XSS in emails
+const escapeHtml = (text: string): string => {
+  const htmlEscapes: Record<string, string> = {
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#39;',
+  };
+  return text.replace(/[&<>"']/g, (char) => htmlEscapes[char] || char);
+};
+
+// Verify this is an internal service call (from other edge functions or cron)
+const verifyServiceCall = (req: Request): boolean => {
+  const authHeader = req.headers.get("authorization");
+  if (!authHeader?.startsWith("Bearer ")) {
+    return false;
+  }
+  
+  const token = authHeader.replace("Bearer ", "");
+  const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+  
+  // Only allow calls with the service role key (internal calls)
+  return token === serviceRoleKey;
+};
+
 const handler = async (req: Request): Promise<Response> => {
   // Handle CORS preflight requests
   if (req.method === "OPTIONS") {
@@ -23,11 +49,37 @@ const handler = async (req: Request): Promise<Response> => {
   }
 
   try {
+    // Verify this is an internal service call
+    if (!verifyServiceCall(req)) {
+      console.error("Unauthorized: This function is internal-only");
+      return new Response(
+        JSON.stringify({ error: "Unauthorized" }),
+        { status: 401, headers: { "Content-Type": "application/json", ...corsHeaders } }
+      );
+    }
+
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-    const { referrerId, referredEmail, eventType }: NotificationRequest = await req.json();
+    const body = await req.json();
+    const { referrerId, referredEmail, eventType }: NotificationRequest = body;
+
+    // Validate required fields
+    if (!referrerId || !referredEmail || !eventType) {
+      return new Response(
+        JSON.stringify({ error: "Missing required fields" }),
+        { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } }
+      );
+    }
+
+    // Validate eventType
+    if (!["signed_up", "subscribed"].includes(eventType)) {
+      return new Response(
+        JSON.stringify({ error: "Invalid event type" }),
+        { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } }
+      );
+    }
 
     console.log(`Processing referral notification: ${eventType} for referrer ${referrerId}`);
 
@@ -58,6 +110,10 @@ const handler = async (req: Request): Promise<Response> => {
     const pitReward = completedCount >= 10;
     const citReward = completedCount >= 20;
 
+    // Escape user-provided content
+    const safeName = escapeHtml(referrerProfile.full_name || "there");
+    const safeEmail = escapeHtml(referredEmail);
+
     let subject = "";
     let htmlContent = "";
 
@@ -75,9 +131,9 @@ const handler = async (req: Request): Promise<Response> => {
             <h1 style="color: #10b981; margin: 0;">Great News! 🎉</h1>
           </div>
           
-          <p>Hi ${referrerProfile.full_name || "there"},</p>
+          <p>Hi ${safeName},</p>
           
-          <p>Exciting news! <strong>${referredEmail}</strong> just signed up using your referral link!</p>
+          <p>Exciting news! <strong>${safeEmail}</strong> just signed up using your referral link!</p>
           
           <div style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; padding: 20px; border-radius: 12px; margin: 20px 0; text-align: center;">
             <p style="margin: 0; font-size: 18px;">Your friend is one step away from completing the referral.</p>
@@ -118,9 +174,9 @@ const handler = async (req: Request): Promise<Response> => {
             <h1 style="color: #10b981; margin: 0;">${justEarnedPit || justEarnedCit ? "🏆 Reward Unlocked!" : "Referral Completed! 🎉"}</h1>
           </div>
           
-          <p>Hi ${referrerProfile.full_name || "there"},</p>
+          <p>Hi ${safeName},</p>
           
-          <p><strong>${referredEmail}</strong> just subscribed to TAXKORA!</p>
+          <p><strong>${safeEmail}</strong> just subscribed to TAXKORA!</p>
           
           ${justEarnedPit ? `
           <div style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: white; padding: 25px; border-radius: 12px; margin: 20px 0; text-align: center;">

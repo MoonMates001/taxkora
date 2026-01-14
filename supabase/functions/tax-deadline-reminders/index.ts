@@ -24,6 +24,21 @@ const MONTHS = [
   "July", "August", "September", "October", "November", "December"
 ];
 
+// Verify this is a cron/service call (from pg_cron or service role)
+const verifyServiceCall = (req: Request): boolean => {
+  const authHeader = req.headers.get("authorization");
+  if (!authHeader?.startsWith("Bearer ")) {
+    return false;
+  }
+  
+  const token = authHeader.replace("Bearer ", "");
+  const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+  const anonKey = Deno.env.get("SUPABASE_ANON_KEY");
+  
+  // Allow calls with either service role key or anon key (for cron jobs)
+  return token === serviceRoleKey || token === anonKey;
+};
+
 const handler = async (req: Request): Promise<Response> => {
   console.log("Tax deadline reminder function called");
 
@@ -33,6 +48,15 @@ const handler = async (req: Request): Promise<Response> => {
   }
 
   try {
+    // Verify this is a cron/service call
+    if (!verifyServiceCall(req)) {
+      console.error("Unauthorized: This function is for scheduled execution only");
+      return new Response(
+        JSON.stringify({ error: "Unauthorized" }),
+        { status: 401, headers: { "Content-Type": "application/json", ...corsHeaders } }
+      );
+    }
+
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const supabase = createClient(supabaseUrl, supabaseKey);
