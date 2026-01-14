@@ -26,12 +26,21 @@ serve(async (req) => {
   }
 
   try {
-    // Sanitize the key to prevent common misconfigurations like leading/trailing spaces
-    // or users pasting "Bearer <key>" into the secret value.
+    // Sanitize the key to prevent common misconfigurations like leading/trailing spaces,
+    // users pasting "Bearer <key>", quotes, or the whole env line.
     const rawFlutterwaveKey = Deno.env.get("FLUTTERWAVE_SECRET_KEY");
-    const FLUTTERWAVE_SECRET_KEY = rawFlutterwaveKey
+
+    let FLUTTERWAVE_SECRET_KEY = rawFlutterwaveKey
       ?.trim()
-      .replace(/^Bearer\s+/i, "");
+      .replace(/^Bearer\s+/i, "")
+      .replace(/^FLUTTERWAVE_SECRET_KEY\s*=\s*/i, "")
+      .trim()
+      .replace(/^["'`]/, "")
+      .replace(/["'`]$/, "")
+      .trim();
+
+    const extracted = FLUTTERWAVE_SECRET_KEY?.match(/FLWSECK(?:_TEST)?-[A-Za-z0-9_-]+/);
+    if (extracted?.[0]) FLUTTERWAVE_SECRET_KEY = extracted[0];
 
     const keyLooksLikeSecret =
       (FLUTTERWAVE_SECRET_KEY?.startsWith("FLWSECK-") ?? false) ||
