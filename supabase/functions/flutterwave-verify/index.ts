@@ -1,10 +1,14 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
+// Webhook function - needs wildcard CORS for Flutterwave callbacks and user redirect
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
+
+// Validate transaction_id format (Flutterwave uses numeric IDs)
+const TRANSACTION_ID_REGEX = /^\d{1,20}$/;
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -29,6 +33,16 @@ serve(async (req) => {
     if (!transaction_id) {
       return new Response(
         JSON.stringify({ error: "Transaction ID is required" }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    // Validate transaction_id format to prevent enumeration attacks
+    const transactionIdStr = String(transaction_id);
+    if (!TRANSACTION_ID_REGEX.test(transactionIdStr)) {
+      console.error("Invalid transaction_id format:", transaction_id);
+      return new Response(
+        JSON.stringify({ error: "Invalid transaction ID format" }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
