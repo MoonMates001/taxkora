@@ -14,6 +14,45 @@ export type Database = {
   }
   public: {
     Tables: {
+      audit_logs: {
+        Row: {
+          action: string
+          created_at: string
+          id: string
+          ip_address: string | null
+          new_data: Json | null
+          old_data: Json | null
+          record_id: string | null
+          table_name: string
+          user_agent: string | null
+          user_id: string | null
+        }
+        Insert: {
+          action: string
+          created_at?: string
+          id?: string
+          ip_address?: string | null
+          new_data?: Json | null
+          old_data?: Json | null
+          record_id?: string | null
+          table_name: string
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          action?: string
+          created_at?: string
+          id?: string
+          ip_address?: string | null
+          new_data?: Json | null
+          old_data?: Json | null
+          record_id?: string | null
+          table_name?: string
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       capital_assets: {
         Row: {
           acquisition_date: string
@@ -128,6 +167,39 @@ export type Database = {
         }
         Relationships: []
       }
+      encrypted_user_data: {
+        Row: {
+          created_at: string
+          data_type: string
+          encrypted_value: string
+          id: string
+          iv: string
+          masked_value: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          data_type: string
+          encrypted_value: string
+          id?: string
+          iv: string
+          masked_value?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          data_type?: string
+          encrypted_value?: string
+          id?: string
+          iv?: string
+          masked_value?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       expenses: {
         Row: {
           amount: number
@@ -216,6 +288,13 @@ export type Database = {
             columns: ["client_id"]
             isOneToOne: false
             referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "income_records_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients_masked"
             referencedColumns: ["id"]
           },
           {
@@ -320,6 +399,13 @@ export type Database = {
             columns: ["client_id"]
             isOneToOne: false
             referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "invoices_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients_masked"
             referencedColumns: ["id"]
           },
         ]
@@ -725,11 +811,118 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      clients_masked: {
+        Row: {
+          city: string | null
+          created_at: string | null
+          email_masked: string | null
+          id: string | null
+          name: string | null
+          phone_masked: string | null
+          state: string | null
+          tax_id_masked: string | null
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          city?: string | null
+          created_at?: string | null
+          email_masked?: never
+          id?: string | null
+          name?: string | null
+          phone_masked?: never
+          state?: string | null
+          tax_id_masked?: never
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          city?: string | null
+          created_at?: string | null
+          email_masked?: never
+          id?: string | null
+          name?: string | null
+          phone_masked?: never
+          state?: string | null
+          tax_id_masked?: never
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      profiles_masked: {
+        Row: {
+          account_type: Database["public"]["Enums"]["account_type"] | null
+          business_city: string | null
+          business_name: string | null
+          business_state: string | null
+          created_at: string | null
+          email_masked: string | null
+          full_name: string | null
+          id: string | null
+          invoice_primary_color: string | null
+          phone_masked: string | null
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          account_type?: Database["public"]["Enums"]["account_type"] | null
+          business_city?: string | null
+          business_name?: string | null
+          business_state?: string | null
+          created_at?: string | null
+          email_masked?: never
+          full_name?: string | null
+          id?: string | null
+          invoice_primary_color?: string | null
+          phone_masked?: never
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          account_type?: Database["public"]["Enums"]["account_type"] | null
+          business_city?: string | null
+          business_name?: string | null
+          business_state?: string | null
+          created_at?: string | null
+          email_masked?: never
+          full_name?: string | null
+          id?: string | null
+          invoice_primary_color?: string | null
+          phone_masked?: never
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       generate_invoice_number: { Args: { p_user_id: string }; Returns: string }
       generate_referral_code: { Args: never; Returns: string }
+      get_referral_by_code: {
+        Args: { p_code: string }
+        Returns: {
+          referral_code: string
+          referrer_id: string
+        }[]
+      }
+      log_audit_event: {
+        Args: {
+          p_action: string
+          p_ip_address?: string
+          p_new_data?: Json
+          p_old_data?: Json
+          p_record_id?: string
+          p_table_name: string
+          p_user_agent?: string
+          p_user_id: string
+        }
+        Returns: string
+      }
+      mask_email: { Args: { email: string }; Returns: string }
+      mask_payment_ref: { Args: { ref: string }; Returns: string }
+      mask_phone: { Args: { phone: string }; Returns: string }
+      mask_tin: { Args: { tin: string }; Returns: string }
     }
     Enums: {
       account_type: "business" | "personal"
