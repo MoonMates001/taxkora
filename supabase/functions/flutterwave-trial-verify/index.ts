@@ -30,8 +30,32 @@ serve(async (req) => {
   }
 
   try {
-    const FLUTTERWAVE_SECRET_KEY = Deno.env.get("FLUTTERWAVE_SECRET_KEY");
-    if (!FLUTTERWAVE_SECRET_KEY) {
+    const rawFlutterwaveKey = Deno.env.get("FLUTTERWAVE_SECRET_KEY");
+
+    let FLUTTERWAVE_SECRET_KEY = rawFlutterwaveKey
+      ?.trim()
+      .replace(/^Bearer\s+/i, "")
+      .replace(/^FLUTTERWAVE_SECRET_KEY\s*=\s*/i, "")
+      .trim()
+      .replace(/^["'`]/, "")
+      .replace(/["'`]$/, "")
+      .trim();
+
+    const extracted = FLUTTERWAVE_SECRET_KEY?.match(/FLWSECK(?:_TEST)?-[A-Za-z0-9_-]+/);
+    if (extracted?.[0]) FLUTTERWAVE_SECRET_KEY = extracted[0];
+
+    const keyLooksLikeSecret =
+      (FLUTTERWAVE_SECRET_KEY?.startsWith("FLWSECK-") ?? false) ||
+      (FLUTTERWAVE_SECRET_KEY?.startsWith("FLWSECK_TEST-") ?? false);
+
+    const keyLooksLikePublic = FLUTTERWAVE_SECRET_KEY?.startsWith("FLWPUBK-") ?? false;
+
+    if (!FLUTTERWAVE_SECRET_KEY || !keyLooksLikeSecret || keyLooksLikePublic) {
+      console.error("FLUTTERWAVE_SECRET_KEY invalid or misconfigured", {
+        present: !!rawFlutterwaveKey,
+        looksLikeSecret: keyLooksLikeSecret,
+        looksLikePublic: keyLooksLikePublic,
+      });
       return new Response(
         JSON.stringify({ error: "Payment gateway not configured" }),
         { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
