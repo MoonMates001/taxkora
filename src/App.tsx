@@ -20,6 +20,7 @@ import CapitalAssetsPage from "./pages/dashboard/CapitalAssetsPage";
 import WHTManagementPage from "./pages/dashboard/WHTManagementPage";
 import VATReturnsPage from "./pages/dashboard/VATReturnsPage";
 import TaxPaymentsPage from "./pages/dashboard/TaxPaymentsPage";
+import PaymentCallbackPage from "./pages/dashboard/PaymentCallbackPage";
 
 const queryClient = new QueryClient();
 
@@ -44,6 +45,7 @@ const App = () => (
               <Route path="wht" element={<WHTManagementPage />} />
               <Route path="vat" element={<VATReturnsPage />} />
               <Route path="payments" element={<TaxPaymentsPage />} />
+              <Route path="payment-callback" element={<PaymentCallbackPage />} />
               <Route path="filing" element={<TaxFilingPage />} />
               <Route path="settings" element={<SettingsPage />} />
             </Route>

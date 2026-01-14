@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { useTaxPayments, TaxPaymentInsert, PAYMENT_TYPES, PAYMENT_METHODS, PAYMENT_STATUSES } from "@/hooks/useTaxPayments";
+import { useFlutterwavePayment } from "@/hooks/useFlutterwavePayment";
 import TaxPaymentReconciliation from "@/components/tax/TaxPaymentReconciliation";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -27,6 +28,8 @@ import {
   CreditCard,
   Calendar,
   FileDown,
+  Wallet,
+  Loader2,
 } from "lucide-react";
 import { format } from "date-fns";
 import jsPDF from "jspdf";
@@ -42,11 +45,13 @@ const formatCurrency = (amount: number) => {
 };
 
 const TaxPaymentsPage = () => {
-  const { profile } = useAuth();
+  const { profile, user } = useAuth();
   const currentYear = new Date().getFullYear();
   const [selectedYear, setSelectedYear] = useState(currentYear);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isPayOnlineDialogOpen, setIsPayOnlineDialogOpen] = useState(false);
   const [editingPayment, setEditingPayment] = useState<string | null>(null);
+  const { openPaymentPage, isLoading: isPaymentLoading } = useFlutterwavePayment();
 
   const { payments, isLoading, createPayment, updatePayment, deletePayment, totalPaid, confirmedTotal } = useTaxPayments(selectedYear);
 
@@ -59,6 +64,12 @@ const TaxPaymentsPage = () => {
     payment_method: "bank_transfer",
     status: "pending",
     notes: "",
+  });
+
+  const [onlinePaymentData, setOnlinePaymentData] = useState({
+    amount: 0,
+    payment_type: "pit",
+    description: "",
   });
 
   const years = Array.from({ length: 5 }, (_, i) => currentYear - i);
@@ -106,6 +117,23 @@ const TaxPaymentsPage = () => {
     if (confirm("Are you sure you want to delete this payment record?")) {
       deletePayment.mutate(id);
     }
+  };
+
+  const handlePayOnline = async () => {
+    if (!user?.email || !profile?.full_name) {
+      return;
+    }
+    
+    const paymentType = PAYMENT_TYPES.find(t => t.value === onlinePaymentData.payment_type);
+    
+    await openPaymentPage({
+      amount: onlinePaymentData.amount,
+      email: user.email,
+      name: profile.full_name || profile.business_name || "Customer",
+      phone: profile.phone || undefined,
+      payment_type: "tax_payment",
+      description: onlinePaymentData.description || `${paymentType?.label || "Tax"} Payment for ${selectedYear}`,
+    });
   };
 
   const exportToPDF = () => {
@@ -196,6 +224,10 @@ const TaxPaymentsPage = () => {
           <Button variant="outline" onClick={exportToPDF}>
             <FileDown className="w-4 h-4 mr-2" />
             Export
+          </Button>
+          <Button variant="outline" onClick={() => setIsPayOnlineDialogOpen(true)}>
+            <Wallet className="w-4 h-4 mr-2" />
+            Pay Online
           </Button>
           <Button onClick={handleAddPayment}>
             <Plus className="w-4 h-4 mr-2" />
@@ -493,6 +525,84 @@ const TaxPaymentsPage = () => {
             </Button>
             <Button onClick={handleSave} disabled={createPayment.isPending || updatePayment.isPending}>
               {createPayment.isPending || updatePayment.isPending ? "Saving..." : "Save Payment"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Pay Online Dialog */}
+      <Dialog open={isPayOnlineDialogOpen} onOpenChange={setIsPayOnlineDialogOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Wallet className="w-5 h-5 text-primary" />
+              Pay Tax Online
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="p-4 bg-primary/5 rounded-lg border border-primary/20">
+              <p className="text-sm text-muted-foreground">
+                Make secure tax payments via Flutterwave. Your payment will be automatically recorded upon successful completion.
+              </p>
+            </div>
+
+            <div className="space-y-2">
+              <Label>Payment Type</Label>
+              <Select
+                value={onlinePaymentData.payment_type}
+                onValueChange={(v) => setOnlinePaymentData({ ...onlinePaymentData, payment_type: v })}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {PAYMENT_TYPES.map((type) => (
+                    <SelectItem key={type.value} value={type.value}>
+                      {type.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2">
+              <Label>Amount (₦)</Label>
+              <Input
+                type="number"
+                value={onlinePaymentData.amount || ""}
+                onChange={(e) => setOnlinePaymentData({ ...onlinePaymentData, amount: parseFloat(e.target.value) || 0 })}
+                placeholder="Enter amount to pay"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label>Description (Optional)</Label>
+              <Input
+                value={onlinePaymentData.description}
+                onChange={(e) => setOnlinePaymentData({ ...onlinePaymentData, description: e.target.value })}
+                placeholder="e.g., Annual PIT Payment"
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsPayOnlineDialogOpen(false)}>
+              Cancel
+            </Button>
+            <Button 
+              onClick={handlePayOnline} 
+              disabled={isPaymentLoading || !onlinePaymentData.amount || onlinePaymentData.amount <= 0}
+            >
+              {isPaymentLoading ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Processing...
+                </>
+              ) : (
+                <>
+                  <CreditCard className="w-4 h-4 mr-2" />
+                  Proceed to Payment
+                </>
+              )}
             </Button>
           </DialogFooter>
         </DialogContent>
