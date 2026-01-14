@@ -136,16 +136,42 @@ const Auth = () => {
             });
           }
         } else {
-          // If signed up with referral code, update the referral record
-          if (referralCode && user) {
-            await supabase
+          // If signed up with referral code, update the referral record and send notification
+          if (referralCode) {
+            // Get the referrer info first
+            const { data: referralData } = await supabase
               .from("referrals")
-              .update({
-                referred_user_id: user.id,
-                status: "signed_up",
-              })
+              .select("referrer_id")
               .eq("referral_code", referralCode)
-              .eq("status", "pending");
+              .eq("status", "pending")
+              .maybeSingle();
+
+            if (referralData) {
+              // Get the newly created user session
+              const { data: { session } } = await supabase.auth.getSession();
+              
+              if (session?.user) {
+                // Update the referral record
+                await supabase
+                  .from("referrals")
+                  .update({
+                    referred_user_id: session.user.id,
+                    referred_email: email,
+                    status: "signed_up",
+                  })
+                  .eq("referral_code", referralCode)
+                  .eq("status", "pending");
+
+                // Send notification to referrer
+                await supabase.functions.invoke("referral-notification", {
+                  body: {
+                    referrerId: referralData.referrer_id,
+                    referredEmail: email,
+                    eventType: "signed_up",
+                  },
+                });
+              }
+            }
           }
           
           toast({

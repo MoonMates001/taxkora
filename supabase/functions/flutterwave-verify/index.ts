@@ -104,6 +104,63 @@ serve(async (req) => {
           console.error("Failed to activate subscription:", updateError);
         } else {
           console.log("Subscription activated successfully:", pendingSubscription.id);
+
+          // Check if this user was referred by someone and update referral status
+          const { data: referralData, error: referralError } = await supabase
+            .from("referrals")
+            .select("id, referrer_id, referred_email")
+            .eq("referred_user_id", user_id)
+            .eq("status", "signed_up")
+            .maybeSingle();
+
+          if (!referralError && referralData) {
+            // Update referral status to subscribed
+            const { error: referralUpdateError } = await supabase
+              .from("referrals")
+              .update({
+                status: "subscribed",
+                completed_at: new Date().toISOString(),
+              })
+              .eq("id", referralData.id);
+
+            if (!referralUpdateError) {
+              console.log("Referral marked as subscribed:", referralData.id);
+
+              // Get user email for notification
+              const { data: userProfile } = await supabase
+                .from("profiles")
+                .select("email")
+                .eq("user_id", user_id)
+                .single();
+
+              // Send notification to referrer using fetch to call the edge function
+              try {
+                const notifyResponse = await fetch(
+                  `${Deno.env.get("SUPABASE_URL")}/functions/v1/referral-notification`,
+                  {
+                    method: "POST",
+                    headers: {
+                      "Content-Type": "application/json",
+                      "Authorization": `Bearer ${Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")}`,
+                    },
+                    body: JSON.stringify({
+                      referrerId: referralData.referrer_id,
+                      referredEmail: referralData.referred_email || userProfile?.email || "A friend",
+                      eventType: "subscribed",
+                    }),
+                  }
+                );
+                
+                if (notifyResponse.ok) {
+                  console.log("Referral notification sent to referrer");
+                } else {
+                  console.error("Failed to send referral notification:", await notifyResponse.text());
+                }
+              } catch (notifyError) {
+                console.error("Error sending referral notification:", notifyError);
+              }
+            }
+          }
         }
       }
     }
