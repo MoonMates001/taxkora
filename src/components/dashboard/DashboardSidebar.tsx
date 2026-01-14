@@ -19,6 +19,7 @@ import {
   Briefcase,
   Package,
   Receipt,
+  CreditCard,
 } from "lucide-react";
 
 const DashboardSidebar = () => {
@@ -38,6 +39,7 @@ const DashboardSidebar = () => {
     { href: "/dashboard/business-tax", label: "Business Tax", icon: Briefcase },
     { href: "/dashboard/wht", label: "WHT Management", icon: Wallet },
     { href: "/dashboard/vat", label: "VAT Returns", icon: Receipt },
+    { href: "/dashboard/payments", label: "Tax Payments", icon: CreditCard },
     { href: "/dashboard/filing", label: "Tax Filing", icon: Send },
   ];
 
