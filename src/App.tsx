@@ -22,6 +22,7 @@ import VATReturnsPage from "./pages/dashboard/VATReturnsPage";
 import TaxPaymentsPage from "./pages/dashboard/TaxPaymentsPage";
 import SubscriptionPage from "./pages/dashboard/SubscriptionPage";
 import TrialCallbackPage from "./pages/dashboard/TrialCallbackPage";
+import PaymentCallbackPage from "./pages/dashboard/PaymentCallbackPage";
 import ReferralsPage from "./pages/dashboard/ReferralsPage";
 
 const queryClient = new QueryClient();
@@ -40,6 +41,7 @@ const App = () => (
               <Route index element={<DashboardOverview />} />
               <Route path="subscription" element={<SubscriptionPage />} />
               <Route path="trial-callback" element={<TrialCallbackPage />} />
+              <Route path="payment-callback" element={<PaymentCallbackPage />} />
               <Route path="invoices" element={<InvoicesPage />} />
               <Route path="income" element={<IncomePage />} />
               <Route path="expenses" element={<ExpensesPage />} />
