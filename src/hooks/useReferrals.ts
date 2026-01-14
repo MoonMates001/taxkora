@@ -207,7 +207,7 @@ export const useReferrals = () => {
 
   // Claim referral reward - grants 1 year free subscription
   const claimReward = useMutation({
-    mutationFn: async () => {
+    mutationFn: async (plan: "pit_individual" | "pit_business") => {
       if (!user?.id) throw new Error("User not authenticated");
 
       // Calculate the new end date (1 year from now)
@@ -219,7 +219,7 @@ export const useReferrals = () => {
         .from("subscriptions")
         .insert({
           user_id: user.id,
-          plan: "pit_business", // Best plan as reward
+          plan: plan,
           status: "active",
           amount: 0,
           start_date: format(startDate, "yyyy-MM-dd"),
