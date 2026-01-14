@@ -327,33 +327,48 @@ export type Database = {
       profiles: {
         Row: {
           account_type: Database["public"]["Enums"]["account_type"]
+          business_address: string | null
+          business_city: string | null
           business_name: string | null
+          business_state: string | null
           created_at: string
           email: string | null
           full_name: string | null
           id: string
+          invoice_logo_url: string | null
+          invoice_primary_color: string | null
           phone: string | null
           updated_at: string
           user_id: string
         }
         Insert: {
           account_type?: Database["public"]["Enums"]["account_type"]
+          business_address?: string | null
+          business_city?: string | null
           business_name?: string | null
+          business_state?: string | null
           created_at?: string
           email?: string | null
           full_name?: string | null
           id?: string
+          invoice_logo_url?: string | null
+          invoice_primary_color?: string | null
           phone?: string | null
           updated_at?: string
           user_id: string
         }
         Update: {
           account_type?: Database["public"]["Enums"]["account_type"]
+          business_address?: string | null
+          business_city?: string | null
           business_name?: string | null
+          business_state?: string | null
           created_at?: string
           email?: string | null
           full_name?: string | null
           id?: string
+          invoice_logo_url?: string | null
+          invoice_primary_color?: string | null
           phone?: string | null
           updated_at?: string
           user_id?: string

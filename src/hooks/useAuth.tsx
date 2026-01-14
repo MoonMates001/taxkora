@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 
 type AccountType = "business" | "personal";
 
-interface Profile {
+export interface Profile {
   id: string;
   user_id: string;
   full_name: string | null;
@@ -12,6 +12,11 @@ interface Profile {
   account_type: AccountType;
   business_name: string | null;
   phone: string | null;
+  business_address: string | null;
+  business_city: string | null;
+  business_state: string | null;
+  invoice_primary_color: string | null;
+  invoice_logo_url: string | null;
 }
 
 interface AuthContextType {

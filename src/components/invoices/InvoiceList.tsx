@@ -30,15 +30,26 @@ const statusColors: Record<InvoiceStatus, string> = {
 interface InvoiceListProps {
   invoices: Invoice[];
   onViewInvoice?: (invoice: Invoice) => void;
+  onPreviewInvoice?: (invoice: Invoice) => void;
 }
 
-export const InvoiceList = ({ invoices, onViewInvoice }: InvoiceListProps) => {
+export const InvoiceList = ({ invoices, onViewInvoice, onPreviewInvoice }: InvoiceListProps) => {
   const { deleteInvoice, getInvoiceWithItems } = useInvoices();
   const { profile } = useAuth();
 
   const handleDelete = async (id: string) => {
     if (confirm("Are you sure you want to delete this invoice?")) {
       await deleteInvoice.mutateAsync(id);
+    }
+  };
+
+  const handlePreview = async (invoice: Invoice) => {
+    if (onPreviewInvoice) {
+      // Fetch full invoice with items before previewing
+      const fullInvoice = await getInvoiceWithItems(invoice.id);
+      if (fullInvoice) {
+        onPreviewInvoice(fullInvoice);
+      }
     }
   };
 
@@ -374,8 +385,8 @@ export const InvoiceList = ({ invoices, onViewInvoice }: InvoiceListProps) => {
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
-                  <DropdownMenuItem onClick={() => onViewInvoice?.(invoice)}>
-                    <Eye className="w-4 h-4 mr-2" /> View
+                  <DropdownMenuItem onClick={() => handlePreview(invoice)}>
+                    <Eye className="w-4 h-4 mr-2" /> Preview
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={() => generatePDF(invoice)}>
                     <Download className="w-4 h-4 mr-2" /> Download PDF
