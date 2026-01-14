@@ -57,6 +57,7 @@ import {
   computeWHT,
   getWHTRate,
 } from "@/lib/tax/wht";
+import { maskTIN } from "@/lib/dataMasking";
 
 const WHTManagementPage = () => {
   const { profile } = useAuth();
@@ -523,7 +524,7 @@ const WHTManagementPage = () => {
                             <div>
                               <p className="font-medium">{tx.recipientName}</p>
                               {tx.recipientTIN && (
-                                <p className="text-xs text-muted-foreground">TIN: {tx.recipientTIN}</p>
+                                <p className="text-xs text-muted-foreground">TIN: {maskTIN(tx.recipientTIN)}</p>
                               )}
                             </div>
                           </div>
