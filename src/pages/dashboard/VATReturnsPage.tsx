@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { useVATTransactions, VATTransaction } from "@/hooks/useVATTransactions";
+import VATFilingStatusTracker from "@/components/vat/VATFilingStatusTracker";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -319,22 +320,34 @@ const VATReturnsPage = () => {
         </Card>
       </div>
 
-      {/* VAT Rate Info */}
-      <Card className="shadow-card">
-        <CardContent className="py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <Badge variant="outline" className="text-lg px-4 py-1">
+      {/* Filing Status Tracker & VAT Rate Info */}
+      <div className="grid lg:grid-cols-3 gap-6">
+        <div className="lg:col-span-2">
+          <VATFilingStatusTracker
+            selectedYear={selectedYear}
+            selectedMonth={selectedMonth}
+            netVATPayable={Math.abs(netVATPayable)}
+          />
+        </div>
+        <Card className="shadow-card h-fit">
+          <CardHeader>
+            <CardTitle className="text-lg">VAT Rate</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex items-center justify-center">
+              <Badge variant="outline" className="text-3xl px-6 py-3 font-bold">
                 {(VAT_RATE * 100).toFixed(1)}%
               </Badge>
-              <span className="text-muted-foreground">Current VAT Rate (Nigeria Tax Act 2025/2026)</span>
             </div>
-            <p className="text-sm text-muted-foreground">
-              VAT = Net Amount × {(VAT_RATE * 100).toFixed(1)}%
+            <p className="text-sm text-muted-foreground text-center">
+              Nigeria Tax Act 2025/2026
             </p>
-          </div>
-        </CardContent>
-      </Card>
+            <div className="text-xs text-center text-muted-foreground">
+              VAT = Net Amount × {(VAT_RATE * 100).toFixed(1)}%
+            </div>
+          </CardContent>
+        </Card>
+      </div>
 
       {/* Transactions Table */}
       <Card className="shadow-card">
