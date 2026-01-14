@@ -26,6 +26,7 @@ interface PaymentRequest {
   reference_id?: string;
   description?: string;
   redirect_url?: string;
+  plan?: string;
 }
 
 serve(async (req) => {
@@ -107,11 +108,12 @@ serve(async (req) => {
         description: description || `Payment for ${payment_type.replace("_", " ")}`,
         logo: "https://taxkora.lovable.app/favicon.ico",
       },
-      meta: {
-        user_id: user.id,
-        payment_type,
-        reference_id: reference_id || null,
-      },
+  meta: {
+    user_id: user.id,
+    payment_type,
+    reference_id: reference_id || null,
+    plan: body.plan || null,
+  },
     };
 
     // Initialize payment with Flutterwave

@@ -67,6 +67,7 @@ export default function SubscriptionPage() {
         phone: profile?.phone || undefined,
         payment_type: "subscription",
         description: `${planDetails.name} Annual Subscription`,
+        plan,
       });
 
       if (result?.tx_ref) {

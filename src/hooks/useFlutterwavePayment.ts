@@ -10,6 +10,7 @@ interface PaymentParams {
   payment_type: "invoice" | "subscription";
   reference_id?: string;
   description?: string;
+  plan?: string;
 }
 
 interface PaymentResult {
