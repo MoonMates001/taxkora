@@ -21,6 +21,7 @@ import WHTManagementPage from "./pages/dashboard/WHTManagementPage";
 import VATReturnsPage from "./pages/dashboard/VATReturnsPage";
 import TaxPaymentsPage from "./pages/dashboard/TaxPaymentsPage";
 import SubscriptionPage from "./pages/dashboard/SubscriptionPage";
+import TrialCallbackPage from "./pages/dashboard/TrialCallbackPage";
 import ReferralsPage from "./pages/dashboard/ReferralsPage";
 
 const queryClient = new QueryClient();
@@ -38,6 +39,7 @@ const App = () => (
             <Route path="/dashboard" element={<DashboardLayout />}>
               <Route index element={<DashboardOverview />} />
               <Route path="subscription" element={<SubscriptionPage />} />
+              <Route path="trial-callback" element={<TrialCallbackPage />} />
               <Route path="invoices" element={<InvoicesPage />} />
               <Route path="income" element={<IncomePage />} />
               <Route path="expenses" element={<ExpensesPage />} />

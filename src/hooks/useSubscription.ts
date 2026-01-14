@@ -16,6 +16,10 @@ export interface Subscription {
   end_date: string | null;
   payment_reference: string | null;
   flutterwave_tx_ref: string | null;
+  card_token: string | null;
+  card_last_four: string | null;
+  card_expiry: string | null;
+  auto_renew: boolean;
   created_at: string;
   updated_at: string;
 }
@@ -138,6 +142,26 @@ export const useSubscription = () => {
     },
   });
 
+  // New: Initiate trial with card tokenization
+  const initiateTrialWithCard = useMutation({
+    mutationFn: async ({ plan, email, name, phone }: { plan: SubscriptionPlan; email: string; name: string; phone?: string }) => {
+      if (!user?.id) throw new Error("User not authenticated");
+
+      const { data, error } = await supabase.functions.invoke("flutterwave-tokenize", {
+        body: { plan, email, name, phone },
+      });
+
+      if (error) throw new Error(error.message);
+      if (data.error) throw new Error(data.error);
+
+      return data as { status: string; payment_link: string; tx_ref: string };
+    },
+    onError: (error) => {
+      toast.error("Failed to initiate trial: " + error.message);
+    },
+  });
+
+  // Legacy: Start trial without card (kept for backward compatibility but not used in new flow)
   const startTrialSubscription = useMutation({
     mutationFn: async ({ plan, email, name }: { plan: SubscriptionPlan; email: string; name: string }) => {
       if (!user?.id) throw new Error("User not authenticated");
@@ -234,8 +258,10 @@ export const useSubscription = () => {
     activePlan: getActiveplan(),
     createPendingSubscription,
     startTrialSubscription,
+    initiateTrialWithCard,
     hasHadSubscription,
     isTrialSubscription,
     daysRemaining: getDaysRemaining(),
+    hasCardOnFile: !!subscription?.card_token,
   };
 };
