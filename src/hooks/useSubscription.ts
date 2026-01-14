@@ -139,7 +139,7 @@ export const useSubscription = () => {
   });
 
   const startTrialSubscription = useMutation({
-    mutationFn: async (plan: SubscriptionPlan) => {
+    mutationFn: async ({ plan, email, name }: { plan: SubscriptionPlan; email: string; name: string }) => {
       if (!user?.id) throw new Error("User not authenticated");
 
       const planDetails = SUBSCRIPTION_PLANS[plan];
@@ -162,12 +162,36 @@ export const useSubscription = () => {
         .single();
 
       if (error) throw error;
+
+      // Send trial welcome email
+      try {
+        const trialEndDate = endDate.toLocaleDateString("en-NG", {
+          weekday: "long",
+          year: "numeric",
+          month: "long",
+          day: "numeric",
+        });
+
+        await supabase.functions.invoke("trial-welcome-email", {
+          body: {
+            email,
+            name: name || email.split("@")[0],
+            planName: planDetails.name,
+            trialEndDate,
+            features: planDetails.features,
+          },
+        });
+      } catch (emailError) {
+        console.error("Failed to send trial welcome email:", emailError);
+        // Don't fail the trial start if email fails
+      }
+
       return data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["subscription"] });
       queryClient.invalidateQueries({ queryKey: ["all-subscriptions"] });
-      toast.success("Your 3-month free trial has started!");
+      toast.success("Your 3-month free trial has started! Check your email for details.");
     },
     onError: (error) => {
       toast.error("Failed to start trial: " + error.message);

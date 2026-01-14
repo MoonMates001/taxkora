@@ -1,7 +1,9 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
+import { useSubscription, SUBSCRIPTION_PLANS } from "@/hooks/useSubscription";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import {
   LayoutDashboard,
   FileText,
@@ -21,12 +23,21 @@ import {
   Receipt,
   CreditCard,
   Crown,
+  Clock,
+  Gift,
 } from "lucide-react";
 
 const DashboardSidebar = () => {
   const { profile, signOut } = useAuth();
   const location = useLocation();
   const [isOpen, setIsOpen] = useState(false);
+  const { 
+    isSubscriptionActive, 
+    activePlan, 
+    isTrialSubscription, 
+    daysRemaining,
+    isLoading: isSubscriptionLoading 
+  } = useSubscription();
 
   const isBusinessAccount = profile?.account_type === "business";
 
@@ -113,6 +124,66 @@ const DashboardSidebar = () => {
                 {isBusinessAccount ? "Business" : "Personal"} Account
               </span>
             </div>
+          </div>
+
+          {/* Subscription Status */}
+          <div className="px-6 py-4 border-b border-border">
+            <Link 
+              to="/dashboard/subscription" 
+              className="block"
+              onClick={() => setIsOpen(false)}
+            >
+              {isSubscriptionLoading ? (
+                <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-muted animate-pulse">
+                  <div className="w-4 h-4 bg-muted-foreground/20 rounded" />
+                  <div className="h-4 w-20 bg-muted-foreground/20 rounded" />
+                </div>
+              ) : isSubscriptionActive && activePlan ? (
+                <div className={`px-3 py-2 rounded-lg ${
+                  isTrialSubscription 
+                    ? "bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-800" 
+                    : "bg-primary/5 border border-primary/20"
+                }`}>
+                  <div className="flex items-center gap-2 mb-1">
+                    {isTrialSubscription ? (
+                      <Gift className="w-4 h-4 text-green-600" />
+                    ) : (
+                      <Crown className="w-4 h-4 text-primary" />
+                    )}
+                    <span className="text-sm font-medium">
+                      {SUBSCRIPTION_PLANS[activePlan].name}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <Badge 
+                      variant="secondary" 
+                      className={`text-xs ${
+                        isTrialSubscription 
+                          ? "bg-green-100 text-green-700 dark:bg-green-900/50 dark:text-green-400" 
+                          : ""
+                      }`}
+                    >
+                      {isTrialSubscription ? "Trial" : "Active"}
+                    </Badge>
+                    {daysRemaining !== null && (
+                      <div className={`flex items-center gap-1 text-xs ${
+                        daysRemaining <= 7 ? "text-red-600" : "text-muted-foreground"
+                      }`}>
+                        <Clock className="w-3 h-3" />
+                        {daysRemaining}d left
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ) : (
+                <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800 hover:bg-amber-100 dark:hover:bg-amber-950/30 transition-colors">
+                  <Crown className="w-4 h-4 text-amber-600" />
+                  <span className="text-sm font-medium text-amber-700 dark:text-amber-400">
+                    Subscribe Now
+                  </span>
+                </div>
+              )}
+            </Link>
           </div>
 
           {/* Navigation Links */}

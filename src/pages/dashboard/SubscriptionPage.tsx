@@ -82,7 +82,11 @@ export default function SubscriptionPage() {
     setSelectedPlan(plan);
 
     try {
-      await startTrialSubscription.mutateAsync(plan);
+      await startTrialSubscription.mutateAsync({
+        plan,
+        email: user.email,
+        name: profile?.full_name || user.email,
+      });
     } catch (error) {
       console.error("Trial error:", error);
     } finally {
