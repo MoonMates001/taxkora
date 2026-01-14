@@ -51,6 +51,18 @@ export const useFlutterwavePayment = () => {
       });
 
       if (functionError) {
+        const ctx = (functionError as any).context;
+        const body = ctx?.body;
+
+        if (typeof body === "string") {
+          try {
+            const parsed = JSON.parse(body);
+            if (parsed?.error) throw new Error(parsed.error);
+          } catch {
+            // ignore JSON parse errors
+          }
+        }
+
         throw new Error(functionError.message);
       }
 
@@ -79,6 +91,18 @@ export const useFlutterwavePayment = () => {
       });
 
       if (functionError) {
+        const ctx = (functionError as any).context;
+        const body = ctx?.body;
+
+        if (typeof body === "string") {
+          try {
+            const parsed = JSON.parse(body);
+            if (parsed?.error) throw new Error(parsed.error);
+          } catch {
+            // ignore JSON parse errors
+          }
+        }
+
         throw new Error(functionError.message);
       }
 
