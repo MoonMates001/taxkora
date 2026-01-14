@@ -4,10 +4,20 @@ import { Resend } from "https://esm.sh/resend@2.0.0";
 
 const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type",
+// Allowed origins for CORS
+const ALLOWED_ORIGINS = [
+  "https://taxkora.lovable.app",
+  "https://wpczgwxsriezaubncuom.lovableproject.com",
+];
+
+const getCorsHeaders = (origin: string | null) => {
+  const allowedOrigin = origin && ALLOWED_ORIGINS.includes(origin) ? origin : ALLOWED_ORIGINS[0];
+  return {
+    "Access-Control-Allow-Origin": allowedOrigin,
+    "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+    "Access-Control-Allow-Credentials": "true",
+    "Access-Control-Max-Age": "86400",
+  };
 };
 
 interface ReferralInviteRequest {
@@ -35,6 +45,9 @@ const escapeHtml = (text: string): string => {
 };
 
 const handler = async (req: Request): Promise<Response> => {
+  const origin = req.headers.get("origin");
+  const corsHeaders = getCorsHeaders(origin);
+
   // Handle CORS preflight requests
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -132,7 +145,7 @@ const handler = async (req: Request): Promise<Response> => {
 
     console.log(`Sending referral invite to ${email} from ${safeReferrerName}`);
 
-    const signupUrl = `${req.headers.get("origin") || "https://taxkora.lovable.app"}/auth?ref=${referralCode}`;
+    const signupUrl = `${origin || "https://taxkora.lovable.app"}/auth?ref=${referralCode}`;
 
     const emailResponse = await resend.emails.send({
       from: "TAXKORA <onboarding@resend.dev>",
@@ -221,6 +234,7 @@ const handler = async (req: Request): Promise<Response> => {
     });
   } catch (error: any) {
     console.error("Error sending referral invite:", error);
+    const corsHeaders = getCorsHeaders(req.headers.get("origin"));
     return new Response(
       JSON.stringify({ error: error.message }),
       {
