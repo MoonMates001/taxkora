@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { Resend } from "https://esm.sh/resend@2.0.0";
 
 const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
@@ -17,22 +18,98 @@ interface TrialWelcomeRequest {
   features: string[];
 }
 
+// Email validation regex
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+// HTML escape to prevent XSS in emails
+const escapeHtml = (text: string): string => {
+  const htmlEscapes: Record<string, string> = {
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#39;',
+  };
+  return text.replace(/[&<>"']/g, (char) => htmlEscapes[char] || char);
+};
+
 const handler = async (req: Request): Promise<Response> => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    const { email, name, planName, trialEndDate, features }: TrialWelcomeRequest = await req.json();
+    // Verify authentication
+    const authHeader = req.headers.get("authorization");
+    if (!authHeader?.startsWith("Bearer ")) {
+      console.error("Missing or invalid authorization header");
+      return new Response(
+        JSON.stringify({ error: "Unauthorized" }),
+        { status: 401, headers: { "Content-Type": "application/json", ...corsHeaders } }
+      );
+    }
+
+    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+    const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
+    const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+      global: { headers: { Authorization: authHeader } }
+    });
+
+    const token = authHeader.replace("Bearer ", "");
+    const { data: claimsData, error: claimsError } = await supabase.auth.getClaims(token);
+    
+    if (claimsError || !claimsData?.claims) {
+      console.error("Invalid token:", claimsError);
+      return new Response(
+        JSON.stringify({ error: "Unauthorized" }),
+        { status: 401, headers: { "Content-Type": "application/json", ...corsHeaders } }
+      );
+    }
+
+    const userId = claimsData.claims.sub;
+    console.log("Authenticated user:", userId);
+
+    const body = await req.json();
+    const { email, name, planName, trialEndDate, features }: TrialWelcomeRequest = body;
+
+    // Validate required fields
+    if (!email || !name || !planName || !trialEndDate || !features) {
+      return new Response(
+        JSON.stringify({ error: "Missing required fields" }),
+        { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } }
+      );
+    }
+
+    // Validate email format
+    if (!EMAIL_REGEX.test(email)) {
+      return new Response(
+        JSON.stringify({ error: "Invalid email format" }),
+        { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } }
+      );
+    }
+
+    // Validate features array
+    if (!Array.isArray(features) || features.length === 0 || features.length > 20) {
+      return new Response(
+        JSON.stringify({ error: "Invalid features array" }),
+        { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } }
+      );
+    }
+
+    // Escape HTML in user-provided content
+    const safeName = escapeHtml(name);
+    const safePlanName = escapeHtml(planName);
+    const safeTrialEndDate = escapeHtml(trialEndDate);
 
     const featuresList = features
-      .map((feature) => `<li style="margin-bottom: 8px;">✓ ${feature}</li>`)
+      .slice(0, 20) // Limit features
+      .map((feature) => `<li style="margin-bottom: 8px;">✓ ${escapeHtml(feature)}</li>`)
       .join("");
 
     const emailResponse = await resend.emails.send({
       from: "TaxKora <onboarding@resend.dev>",
       to: [email],
-      subject: `🎉 Welcome to TaxKora! Your ${planName} Trial Has Started`,
+      subject: `🎉 Welcome to TaxKora! Your ${safePlanName} Trial Has Started`,
       html: `
         <!DOCTYPE html>
         <html>
@@ -46,17 +123,17 @@ const handler = async (req: Request): Promise<Response> => {
           </div>
           
           <div style="background: #f8fafc; padding: 30px; border: 1px solid #e2e8f0; border-top: none;">
-            <p style="font-size: 18px; margin-bottom: 20px;">Hi ${name},</p>
+            <p style="font-size: 18px; margin-bottom: 20px;">Hi ${safeName},</p>
             
             <p style="margin-bottom: 20px;">
-              Thank you for starting your <strong>3-month free trial</strong> of the <strong>${planName}</strong> plan! 
+              Thank you for starting your <strong>3-month free trial</strong> of the <strong>${safePlanName}</strong> plan! 
               We're excited to help you simplify your tax management.
             </p>
             
             <div style="background: white; padding: 20px; border-radius: 8px; border-left: 4px solid #0d9488; margin-bottom: 24px;">
               <p style="margin: 0 0 8px 0; font-weight: 600; color: #0d9488;">Trial Details</p>
               <p style="margin: 0; color: #64748b;">
-                Your trial is active until <strong>${trialEndDate}</strong>
+                Your trial is active until <strong>${safeTrialEndDate}</strong>
               </p>
             </div>
             

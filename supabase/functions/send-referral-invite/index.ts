@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { Resend } from "https://esm.sh/resend@2.0.0";
 
 const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
@@ -15,6 +16,24 @@ interface ReferralInviteRequest {
   referrerName: string;
 }
 
+// Email validation regex
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+// Referral code validation (matches generate_referral_code format: TAX + 8 alphanumeric)
+const REFERRAL_CODE_REGEX = /^TAX[A-Z0-9]{8}$/;
+
+// HTML escape to prevent XSS in emails
+const escapeHtml = (text: string): string => {
+  const htmlEscapes: Record<string, string> = {
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#39;',
+  };
+  return text.replace(/[&<>"']/g, (char) => htmlEscapes[char] || char);
+};
+
 const handler = async (req: Request): Promise<Response> => {
   // Handle CORS preflight requests
   if (req.method === "OPTIONS") {
@@ -22,16 +41,103 @@ const handler = async (req: Request): Promise<Response> => {
   }
 
   try {
-    const { email, referralCode, referrerName }: ReferralInviteRequest = await req.json();
+    // Verify authentication
+    const authHeader = req.headers.get("authorization");
+    if (!authHeader?.startsWith("Bearer ")) {
+      console.error("Missing or invalid authorization header");
+      return new Response(
+        JSON.stringify({ error: "Unauthorized" }),
+        { status: 401, headers: { "Content-Type": "application/json", ...corsHeaders } }
+      );
+    }
 
-    console.log(`Sending referral invite to ${email} from ${referrerName}`);
+    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+    const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
+    const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+      global: { headers: { Authorization: authHeader } }
+    });
+
+    const token = authHeader.replace("Bearer ", "");
+    const { data: claimsData, error: claimsError } = await supabase.auth.getClaims(token);
+    
+    if (claimsError || !claimsData?.claims) {
+      console.error("Invalid token:", claimsError);
+      return new Response(
+        JSON.stringify({ error: "Unauthorized" }),
+        { status: 401, headers: { "Content-Type": "application/json", ...corsHeaders } }
+      );
+    }
+
+    const userId = claimsData.claims.sub;
+    console.log("Authenticated user:", userId);
+
+    const body = await req.json();
+    const { email, referralCode, referrerName }: ReferralInviteRequest = body;
+
+    // Validate required fields
+    if (!email || !referralCode || !referrerName) {
+      return new Response(
+        JSON.stringify({ error: "Missing required fields" }),
+        { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } }
+      );
+    }
+
+    // Validate email format
+    if (!EMAIL_REGEX.test(email)) {
+      return new Response(
+        JSON.stringify({ error: "Invalid email format" }),
+        { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } }
+      );
+    }
+
+    // Validate referral code format
+    if (!REFERRAL_CODE_REGEX.test(referralCode)) {
+      return new Response(
+        JSON.stringify({ error: "Invalid referral code format" }),
+        { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } }
+      );
+    }
+
+    // Verify the referral code exists and belongs to the authenticated user
+    const supabaseService = createClient(
+      supabaseUrl,
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
+    );
+
+    const { data: referralData, error: referralError } = await supabaseService
+      .from("referrals")
+      .select("referrer_id, referral_code")
+      .eq("referral_code", referralCode)
+      .eq("referrer_id", userId)
+      .maybeSingle();
+
+    if (referralError || !referralData) {
+      console.error("Invalid referral code or not owned by user:", referralError);
+      return new Response(
+        JSON.stringify({ error: "Invalid referral code" }),
+        { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } }
+      );
+    }
+
+    // Validate referrer name length
+    if (referrerName.length > 100) {
+      return new Response(
+        JSON.stringify({ error: "Referrer name too long" }),
+        { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } }
+      );
+    }
+
+    // Escape user input for email
+    const safeReferrerName = escapeHtml(referrerName);
+
+    console.log(`Sending referral invite to ${email} from ${safeReferrerName}`);
 
     const signupUrl = `${req.headers.get("origin") || "https://taxkora.lovable.app"}/auth?ref=${referralCode}`;
 
     const emailResponse = await resend.emails.send({
       from: "TAXKORA <onboarding@resend.dev>",
       to: [email],
-      subject: `${referrerName} invited you to try TAXKORA!`,
+      subject: `${safeReferrerName} invited you to try TAXKORA!`,
       html: `
         <!DOCTYPE html>
         <html>
@@ -55,7 +161,7 @@ const handler = async (req: Request): Promise<Response> => {
               </h1>
 
               <p style="font-size: 16px; color: #52525b; text-align: center; margin: 0 0 32px;">
-                <strong>${referrerName}</strong> thinks you'd love TAXKORA - the simple way to manage your taxes in Nigeria.
+                <strong>${safeReferrerName}</strong> thinks you'd love TAXKORA - the simple way to manage your taxes in Nigeria.
               </p>
 
               <!-- Benefits -->
@@ -91,7 +197,7 @@ const handler = async (req: Request): Promise<Response> => {
               </div>
 
               <p style="font-size: 14px; color: #71717a; text-align: center; margin: 0;">
-                When you sign up and subscribe, ${referrerName} gets credit toward a free year subscription!
+                When you sign up and subscribe, ${safeReferrerName} gets credit toward a free year subscription!
               </p>
             </div>
 
