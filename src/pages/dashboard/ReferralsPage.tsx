@@ -15,7 +15,10 @@ import {
   Share2,
   Mail,
   Trophy,
-  Loader2
+  Loader2,
+  MessageCircle,
+  Twitter,
+  Facebook
 } from "lucide-react";
 import { toast } from "sonner";
 import { format } from "date-fns";
@@ -29,10 +32,12 @@ const ReferralsPage = () => {
     referrals,
     isLoading,
     sendInvite,
+    claimReward,
     completedReferrals,
     pendingReferrals,
     progress,
     hasEarnedReward,
+    rewardClaimed,
     remainingToEarn,
     referralsRequired,
     getShareUrl,
@@ -133,20 +138,41 @@ const ReferralsPage = () => {
                 </div>
                 <div>
                   <h2 className="text-xl font-semibold text-foreground">
-                    {hasEarnedReward ? "🎉 Congratulations!" : "Earn 1 Year Free!"}
+                    {hasEarnedReward 
+                      ? rewardClaimed 
+                        ? "🎉 Reward Activated!" 
+                        : "🎉 Congratulations!" 
+                      : "Earn 1 Year Free!"}
                   </h2>
                   <p className="text-muted-foreground">
                     {hasEarnedReward 
-                      ? "You've earned a free year subscription!" 
+                      ? rewardClaimed
+                        ? "Your 1-year free subscription is now active!"
+                        : "Click the button to claim your free year subscription!" 
                       : `Refer ${referralsRequired} friends who subscribe to get 1 year free`}
                   </p>
                 </div>
               </div>
               {hasEarnedReward && (
-                <Badge className="bg-green-500 text-white text-lg px-4 py-2">
-                  <Trophy className="w-4 h-4 mr-2" />
-                  Reward Earned!
-                </Badge>
+                rewardClaimed ? (
+                  <Badge className="bg-green-500 text-white text-lg px-4 py-2">
+                    <Trophy className="w-4 h-4 mr-2" />
+                    Reward Activated!
+                  </Badge>
+                ) : (
+                  <Button 
+                    onClick={() => claimReward.mutate()}
+                    disabled={claimReward.isPending}
+                    className="bg-green-500 hover:bg-green-600 text-white"
+                  >
+                    {claimReward.isPending ? (
+                      <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                    ) : (
+                      <Trophy className="w-4 h-4 mr-2" />
+                    )}
+                    Claim 1 Year Free!
+                  </Button>
+                )
               )}
             </div>
 
@@ -262,10 +288,63 @@ const ReferralsPage = () => {
                 </div>
               </div>
 
-              <Button onClick={handleShare} className="w-full">
+              <Button onClick={handleShare} className="w-full mb-4">
                 <Share2 className="w-4 h-4 mr-2" />
                 Share Referral Link
               </Button>
+
+              {/* Social Sharing Buttons */}
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-muted-foreground">
+                  Share on Social Media
+                </label>
+                <div className="grid grid-cols-3 gap-2">
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      const shareUrl = getShareUrl();
+                      const text = encodeURIComponent("I'm using TAXKORA for easy tax management. Sign up with my referral link!");
+                      window.open(
+                        `https://wa.me/?text=${text}%20${encodeURIComponent(shareUrl)}`,
+                        "_blank"
+                      );
+                    }}
+                    className="bg-green-50 hover:bg-green-100 border-green-200 text-green-700"
+                  >
+                    <MessageCircle className="w-4 h-4 mr-2" />
+                    WhatsApp
+                  </Button>
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      const shareUrl = getShareUrl();
+                      const text = encodeURIComponent("I'm using TAXKORA for easy tax management. Sign up with my referral link and we both benefit!");
+                      window.open(
+                        `https://twitter.com/intent/tweet?text=${text}&url=${encodeURIComponent(shareUrl)}`,
+                        "_blank"
+                      );
+                    }}
+                    className="bg-sky-50 hover:bg-sky-100 border-sky-200 text-sky-700"
+                  >
+                    <Twitter className="w-4 h-4 mr-2" />
+                    Twitter
+                  </Button>
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      const shareUrl = getShareUrl();
+                      window.open(
+                        `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`,
+                        "_blank"
+                      );
+                    }}
+                    className="bg-blue-50 hover:bg-blue-100 border-blue-200 text-blue-700"
+                  >
+                    <Facebook className="w-4 h-4 mr-2" />
+                    Facebook
+                  </Button>
+                </div>
+              </div>
             </CardContent>
           </Card>
 

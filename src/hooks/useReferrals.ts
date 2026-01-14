@@ -2,6 +2,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "./useAuth";
 import { toast } from "sonner";
+import { addDays, format } from "date-fns";
 
 export interface Referral {
   id: string;
@@ -204,6 +205,53 @@ export const useReferrals = () => {
     },
   });
 
+  // Claim referral reward - grants 1 year free subscription
+  const claimReward = useMutation({
+    mutationFn: async () => {
+      if (!user?.id) throw new Error("User not authenticated");
+
+      // Calculate the new end date (1 year from now)
+      const startDate = new Date();
+      const endDate = addDays(startDate, REWARD_DAYS);
+
+      // Create a new subscription with the reward
+      const { data: subscription, error: subError } = await supabase
+        .from("subscriptions")
+        .insert({
+          user_id: user.id,
+          plan: "pit_business", // Best plan as reward
+          status: "active",
+          amount: 0,
+          start_date: format(startDate, "yyyy-MM-dd"),
+          end_date: format(endDate, "yyyy-MM-dd"),
+          payment_reference: "REFERRAL_REWARD",
+        })
+        .select()
+        .single();
+
+      if (subError) throw subError;
+
+      // Mark all referrals as reward claimed
+      const { error: updateError } = await supabase
+        .from("referrals")
+        .update({ reward_claimed: true })
+        .eq("referrer_id", user.id)
+        .eq("status", "subscribed");
+
+      if (updateError) throw updateError;
+
+      return subscription;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["referrals"] });
+      queryClient.invalidateQueries({ queryKey: ["subscription"] });
+      toast.success("🎉 Congratulations! Your 1-year free subscription has been activated!");
+    },
+    onError: (error) => {
+      toast.error(error.message || "Failed to claim reward");
+    },
+  });
+
   // Calculate stats
   const completedReferrals = referrals?.filter(
     (r) => r.status === "subscribed"
@@ -213,6 +261,7 @@ export const useReferrals = () => {
   ).length || 0;
   const progress = Math.min((completedReferrals / REFERRALS_REQUIRED) * 100, 100);
   const hasEarnedReward = completedReferrals >= REFERRALS_REQUIRED;
+  const rewardClaimed = referrals?.some((r) => r.reward_claimed) || false;
   const remainingToEarn = Math.max(REFERRALS_REQUIRED - completedReferrals, 0);
 
   // Generate share URL
@@ -229,10 +278,12 @@ export const useReferrals = () => {
     completeReferral,
     markReferralSubscribed,
     getReferralByCode,
+    claimReward,
     completedReferrals,
     pendingReferrals,
     progress,
     hasEarnedReward,
+    rewardClaimed,
     remainingToEarn,
     referralsRequired: REFERRALS_REQUIRED,
     rewardDays: REWARD_DAYS,
