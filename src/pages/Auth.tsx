@@ -1,12 +1,13 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/hooks/useAuth";
-import { Building2, User, ArrowLeft, Loader2 } from "lucide-react";
+import { Building2, User, ArrowLeft, Loader2, Gift } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { z } from "zod";
+import { supabase } from "@/integrations/supabase/client";
 
 const emailSchema = z.string().email("Please enter a valid email address");
 const passwordSchema = z.string().min(6, "Password must be at least 6 characters");
@@ -14,6 +15,9 @@ const passwordSchema = z.string().min(6, "Password must be at least 6 characters
 type AccountType = "business" | "personal";
 
 const Auth = () => {
+  const [searchParams] = useSearchParams();
+  const referralCode = searchParams.get("ref");
+  
   const [isLogin, setIsLogin] = useState(true);
   const [accountType, setAccountType] = useState<AccountType | null>(null);
   const [email, setEmail] = useState("");
@@ -22,6 +26,7 @@ const Auth = () => {
   const [businessName, setBusinessName] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
+  const [referrerName, setReferrerName] = useState<string | null>(null);
 
   const { signIn, signUp, user } = useAuth();
   const navigate = useNavigate();
@@ -32,6 +37,35 @@ const Auth = () => {
       navigate("/dashboard");
     }
   }, [user, navigate]);
+
+  // Check if referral code is valid and get referrer info
+  useEffect(() => {
+    if (referralCode) {
+      setIsLogin(false); // Switch to signup mode for referrals
+      
+      const fetchReferrer = async () => {
+        const { data } = await supabase
+          .from("referrals")
+          .select("referrer_id")
+          .eq("referral_code", referralCode)
+          .maybeSingle();
+        
+        if (data) {
+          const { data: profile } = await supabase
+            .from("profiles")
+            .select("full_name")
+            .eq("user_id", data.referrer_id)
+            .maybeSingle();
+          
+          if (profile?.full_name) {
+            setReferrerName(profile.full_name);
+          }
+        }
+      };
+      
+      fetchReferrer();
+    }
+  }, [referralCode]);
 
   const validateForm = () => {
     const newErrors: { email?: string; password?: string } = {};
@@ -102,6 +136,18 @@ const Auth = () => {
             });
           }
         } else {
+          // If signed up with referral code, update the referral record
+          if (referralCode && user) {
+            await supabase
+              .from("referrals")
+              .update({
+                referred_user_id: user.id,
+                status: "signed_up",
+              })
+              .eq("referral_code", referralCode)
+              .eq("status", "pending");
+          }
+          
           toast({
             title: "Account Created!",
             description: "Welcome to TAXKORA! Redirecting to your dashboard...",
@@ -127,6 +173,7 @@ const Auth = () => {
     setBusinessName("");
     setAccountType(null);
     setErrors({});
+    setReferrerName(null);
   };
 
   return (
@@ -147,6 +194,21 @@ const Auth = () => {
             <span className="font-display font-bold text-2xl text-primary-foreground">TAXKORA</span>
           </a>
         </div>
+
+        {/* Referral Banner */}
+        {referralCode && referrerName && (
+          <div className="bg-green-50 border border-green-200 rounded-xl p-4 mb-4 flex items-center gap-3">
+            <Gift className="w-6 h-6 text-green-600 shrink-0" />
+            <div>
+              <p className="text-sm font-medium text-green-800">
+                You've been referred by {referrerName}!
+              </p>
+              <p className="text-xs text-green-600">
+                Sign up to get started with your free trial
+              </p>
+            </div>
+          </div>
+        )}
 
         <div className="bg-card rounded-2xl shadow-xl p-8">
           <h1 className="font-display text-2xl font-bold text-foreground text-center mb-2">

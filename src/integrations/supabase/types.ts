@@ -399,6 +399,45 @@ export type Database = {
         }
         Relationships: []
       }
+      referrals: {
+        Row: {
+          completed_at: string | null
+          created_at: string
+          id: string
+          referral_code: string
+          referred_email: string | null
+          referred_user_id: string | null
+          referrer_id: string
+          reward_claimed: boolean
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          referral_code: string
+          referred_email?: string | null
+          referred_user_id?: string | null
+          referrer_id: string
+          reward_claimed?: boolean
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          referral_code?: string
+          referred_email?: string | null
+          referred_user_id?: string | null
+          referrer_id?: string
+          reward_claimed?: boolean
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       statutory_deductions: {
         Row: {
           annual_rent_paid: number
@@ -690,6 +729,7 @@ export type Database = {
     }
     Functions: {
       generate_invoice_number: { Args: { p_user_id: string }; Returns: string }
+      generate_referral_code: { Args: never; Returns: string }
     }
     Enums: {
       account_type: "business" | "personal"
