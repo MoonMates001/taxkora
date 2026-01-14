@@ -17,8 +17,11 @@ export interface Referral {
   updated_at: string;
 }
 
-const REFERRALS_REQUIRED = 10;
+const PIT_REFERRALS_REQUIRED = 10;
+const CIT_REFERRALS_REQUIRED = 20;
 const REWARD_DAYS = 365; // 1 year free
+
+export type RewardPlan = "pit_individual" | "pit_business" | "cit";
 
 export const useReferrals = () => {
   const { user } = useAuth();
@@ -117,7 +120,7 @@ export const useReferrals = () => {
       const completedReferrals = referrals?.filter(
         (r) => r.status === "subscribed"
       ).length || 0;
-      if (completedReferrals >= REFERRALS_REQUIRED) {
+      if (completedReferrals >= CIT_REFERRALS_REQUIRED) {
         throw new Error("You have already completed your referral goal!");
       }
 
@@ -207,7 +210,7 @@ export const useReferrals = () => {
 
   // Claim referral reward - grants 1 year free subscription
   const claimReward = useMutation({
-    mutationFn: async (plan: "pit_individual" | "pit_business") => {
+    mutationFn: async (plan: RewardPlan) => {
       if (!user?.id) throw new Error("User not authenticated");
 
       // Calculate the new end date (1 year from now)
@@ -259,10 +262,13 @@ export const useReferrals = () => {
   const pendingReferrals = referrals?.filter(
     (r) => r.status === "pending" || r.status === "signed_up"
   ).length || 0;
-  const progress = Math.min((completedReferrals / REFERRALS_REQUIRED) * 100, 100);
-  const hasEarnedReward = completedReferrals >= REFERRALS_REQUIRED;
+  const pitProgress = Math.min((completedReferrals / PIT_REFERRALS_REQUIRED) * 100, 100);
+  const citProgress = Math.min((completedReferrals / CIT_REFERRALS_REQUIRED) * 100, 100);
+  const hasEarnedPitReward = completedReferrals >= PIT_REFERRALS_REQUIRED;
+  const hasEarnedCitReward = completedReferrals >= CIT_REFERRALS_REQUIRED;
   const rewardClaimed = referrals?.some((r) => r.reward_claimed) || false;
-  const remainingToEarn = Math.max(REFERRALS_REQUIRED - completedReferrals, 0);
+  const remainingForPit = Math.max(PIT_REFERRALS_REQUIRED - completedReferrals, 0);
+  const remainingForCit = Math.max(CIT_REFERRALS_REQUIRED - completedReferrals, 0);
 
   // Generate share URL
   const getShareUrl = () => {
@@ -281,11 +287,15 @@ export const useReferrals = () => {
     claimReward,
     completedReferrals,
     pendingReferrals,
-    progress,
-    hasEarnedReward,
+    pitProgress,
+    citProgress,
+    hasEarnedPitReward,
+    hasEarnedCitReward,
     rewardClaimed,
-    remainingToEarn,
-    referralsRequired: REFERRALS_REQUIRED,
+    remainingForPit,
+    remainingForCit,
+    pitReferralsRequired: PIT_REFERRALS_REQUIRED,
+    citReferralsRequired: CIT_REFERRALS_REQUIRED,
     rewardDays: REWARD_DAYS,
     getShareUrl,
   };

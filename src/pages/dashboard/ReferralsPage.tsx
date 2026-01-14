@@ -26,7 +26,7 @@ import { format } from "date-fns";
 const ReferralsPage = () => {
   const [inviteEmail, setInviteEmail] = useState("");
   const [copied, setCopied] = useState(false);
-  const [selectedPlan, setSelectedPlan] = useState<"pit_individual" | "pit_business">("pit_individual");
+  const [selectedPlan, setSelectedPlan] = useState<"pit_individual" | "pit_business" | "cit">("pit_individual");
   
   const {
     userReferralCode,
@@ -36,11 +36,15 @@ const ReferralsPage = () => {
     claimReward,
     completedReferrals,
     pendingReferrals,
-    progress,
-    hasEarnedReward,
+    pitProgress,
+    citProgress,
+    hasEarnedPitReward,
+    hasEarnedCitReward,
     rewardClaimed,
-    remainingToEarn,
-    referralsRequired,
+    remainingForPit,
+    remainingForCit,
+    pitReferralsRequired,
+    citReferralsRequired,
     getShareUrl,
   } = useReferrals();
 
@@ -139,22 +143,30 @@ const ReferralsPage = () => {
                 </div>
                 <div>
                   <h2 className="text-xl font-semibold text-foreground">
-                    {hasEarnedReward 
+                    {hasEarnedCitReward 
                       ? rewardClaimed 
                         ? "🎉 Reward Activated!" 
-                        : "🎉 Congratulations!" 
-                      : "Earn 1 Year Free!"}
+                        : "🌟 Ultimate Achievement!" 
+                      : hasEarnedPitReward 
+                        ? rewardClaimed 
+                          ? "🎉 Reward Activated!" 
+                          : "🎉 Congratulations!" 
+                        : "Earn 1 Year Free!"}
                   </h2>
                   <p className="text-muted-foreground">
-                    {hasEarnedReward 
+                    {hasEarnedCitReward 
                       ? rewardClaimed
                         ? "Your 1-year free subscription is now active!"
-                        : "Click the button to claim your free year subscription!" 
-                      : `Refer ${referralsRequired} friends who subscribe to get 1 year free`}
+                        : "You've unlocked CIT reward! Claim your free year!" 
+                      : hasEarnedPitReward 
+                        ? rewardClaimed
+                          ? "Your 1-year free subscription is now active!"
+                          : "Claim your PIT reward, or get 10 more for CIT!" 
+                        : `Refer ${pitReferralsRequired} friends for PIT, ${citReferralsRequired} for CIT`}
                   </p>
                 </div>
               </div>
-              {hasEarnedReward && (
+              {(hasEarnedPitReward || hasEarnedCitReward) && (
                 rewardClaimed ? (
                   <Badge className="bg-green-500 text-white text-lg px-4 py-2">
                     <Trophy className="w-4 h-4 mr-2" />
@@ -166,11 +178,14 @@ const ReferralsPage = () => {
                       <label className="text-xs text-muted-foreground">Choose your plan:</label>
                       <select
                         value={selectedPlan}
-                        onChange={(e) => setSelectedPlan(e.target.value as "pit_individual" | "pit_business")}
+                        onChange={(e) => setSelectedPlan(e.target.value as "pit_individual" | "pit_business" | "cit")}
                         className="px-3 py-2 rounded-md border border-input bg-background text-sm"
                       >
                         <option value="pit_individual">Individual PIT (₦2,500 value)</option>
                         <option value="pit_business">Business PIT (₦7,500 value)</option>
+                        {hasEarnedCitReward && (
+                          <option value="cit">Corporate CIT (₦25,000 value)</option>
+                        )}
                       </select>
                     </div>
                     <Button 
@@ -190,17 +205,34 @@ const ReferralsPage = () => {
               )}
             </div>
 
+            {/* PIT Progress */}
             <div className="mt-6 space-y-2">
               <div className="flex justify-between text-sm">
-                <span className="text-muted-foreground">Progress</span>
+                <span className="text-muted-foreground">PIT Reward Progress</span>
                 <span className="font-medium text-foreground">
-                  {completedReferrals} / {referralsRequired} referrals
+                  {completedReferrals} / {pitReferralsRequired} referrals
                 </span>
               </div>
-              <Progress value={progress} className="h-3" />
-              {!hasEarnedReward && (
+              <Progress value={pitProgress} className="h-3" />
+              {!hasEarnedPitReward && (
                 <p className="text-sm text-muted-foreground">
-                  {remainingToEarn} more successful referral{remainingToEarn !== 1 ? "s" : ""} to go!
+                  {remainingForPit} more successful referral{remainingForPit !== 1 ? "s" : ""} for PIT reward!
+                </p>
+              )}
+            </div>
+
+            {/* CIT Progress */}
+            <div className="mt-4 space-y-2">
+              <div className="flex justify-between text-sm">
+                <span className="text-muted-foreground">CIT Reward Progress (Corporate)</span>
+                <span className="font-medium text-foreground">
+                  {completedReferrals} / {citReferralsRequired} referrals
+                </span>
+              </div>
+              <Progress value={citProgress} className="h-3 [&>div]:bg-purple-500" />
+              {!hasEarnedCitReward && (
+                <p className="text-sm text-muted-foreground">
+                  {remainingForCit} more successful referral{remainingForCit !== 1 ? "s" : ""} for CIT reward!
                 </p>
               )}
             </div>
