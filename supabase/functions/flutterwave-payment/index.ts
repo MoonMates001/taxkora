@@ -1,20 +1,10 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
-// Allowed origins for CORS
-const ALLOWED_ORIGINS = [
-  "https://taxkora.lovable.app",
-  "https://wpczgwxsriezaubncuom.lovableproject.com",
-];
-
-const getCorsHeaders = (origin: string | null) => {
-  const allowedOrigin = origin && ALLOWED_ORIGINS.includes(origin) ? origin : ALLOWED_ORIGINS[0];
-  return {
-    "Access-Control-Allow-Origin": allowedOrigin,
-    "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-    "Access-Control-Allow-Credentials": "true",
-    "Access-Control-Max-Age": "86400",
-  };
+// CORS headers - allow all origins for flexibility
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
 interface PaymentRequest {
@@ -30,9 +20,6 @@ interface PaymentRequest {
 }
 
 serve(async (req) => {
-  const origin = req.headers.get("origin");
-  const corsHeaders = getCorsHeaders(origin);
-
   // Handle CORS preflight
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -89,8 +76,12 @@ serve(async (req) => {
       );
     }
 
+    const origin = req.headers.get("origin");
+
     // Generate unique transaction reference
     const tx_ref = `TXK-${payment_type.toUpperCase()}-${Date.now()}-${Math.random().toString(36).substring(7)}`;
+
+    console.log("Initiating payment:", { tx_ref, amount, email, payment_type, plan: body.plan });
 
     // Prepare Flutterwave payment payload
     const paymentPayload = {
@@ -108,12 +99,12 @@ serve(async (req) => {
         description: description || `Payment for ${payment_type.replace("_", " ")}`,
         logo: "https://taxkora.lovable.app/favicon.ico",
       },
-  meta: {
-    user_id: user.id,
-    payment_type,
-    reference_id: reference_id || null,
-    plan: body.plan || null,
-  },
+      meta: {
+        user_id: user.id,
+        payment_type,
+        reference_id: reference_id || null,
+        plan: body.plan || null,
+      },
     };
 
     // Initialize payment with Flutterwave
@@ -127,6 +118,8 @@ serve(async (req) => {
     });
 
     const flutterwaveData = await flutterwaveResponse.json();
+
+    console.log("Flutterwave response:", flutterwaveData);
 
     if (flutterwaveData.status !== "success") {
       console.error("Flutterwave error:", flutterwaveData);
@@ -147,7 +140,6 @@ serve(async (req) => {
 
   } catch (error) {
     console.error("Payment error:", error);
-    const corsHeaders = getCorsHeaders(req.headers.get("origin"));
     return new Response(
       JSON.stringify({ error: error instanceof Error ? error.message : "Payment processing failed" }),
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
