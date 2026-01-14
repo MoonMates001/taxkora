@@ -578,6 +578,10 @@ export type Database = {
       subscriptions: {
         Row: {
           amount: number
+          auto_renew: boolean | null
+          card_expiry: string | null
+          card_last_four: string | null
+          card_token: string | null
           created_at: string
           end_date: string | null
           flutterwave_tx_ref: string | null
@@ -591,6 +595,10 @@ export type Database = {
         }
         Insert: {
           amount: number
+          auto_renew?: boolean | null
+          card_expiry?: string | null
+          card_last_four?: string | null
+          card_token?: string | null
           created_at?: string
           end_date?: string | null
           flutterwave_tx_ref?: string | null
@@ -604,6 +612,10 @@ export type Database = {
         }
         Update: {
           amount?: number
+          auto_renew?: boolean | null
+          card_expiry?: string | null
+          card_last_four?: string | null
+          card_token?: string | null
           created_at?: string
           end_date?: string | null
           flutterwave_tx_ref?: string | null

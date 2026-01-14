@@ -2,13 +2,21 @@ import { useState } from "react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Check, Crown, Loader2, Building2, User, Building, Clock, Gift } from "lucide-react";
+import { Check, Crown, Loader2, Building2, User, Building, Clock, Gift, CreditCard, Info } from "lucide-react";
 import { useSubscription, SUBSCRIPTION_PLANS, SubscriptionPlan } from "@/hooks/useSubscription";
 import { useFlutterwavePayment } from "@/hooks/useFlutterwavePayment";
 import { useAuth } from "@/hooks/useAuth";
 import { useProfile } from "@/hooks/useProfile";
 import { format } from "date-fns";
 import { toast } from "sonner";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 const planIcons: Record<SubscriptionPlan, React.ReactNode> = {
   pit_individual: <User className="h-8 w-8" />,
@@ -26,14 +34,17 @@ export default function SubscriptionPage() {
     isSubscriptionActive, 
     activePlan, 
     createPendingSubscription,
-    startTrialSubscription,
+    initiateTrialWithCard,
     hasHadSubscription,
     isTrialSubscription,
     daysRemaining,
+    hasCardOnFile,
   } = useSubscription();
   const { initiatePayment, isLoading: isPaymentLoading } = useFlutterwavePayment();
   const [selectedPlan, setSelectedPlan] = useState<SubscriptionPlan | null>(null);
   const [isStartingTrial, setIsStartingTrial] = useState(false);
+  const [showCardInfoDialog, setShowCardInfoDialog] = useState(false);
+  const [pendingTrialPlan, setPendingTrialPlan] = useState<SubscriptionPlan | null>(null);
 
   const handleSubscribe = async (plan: SubscriptionPlan) => {
     if (!user?.email) {
@@ -72,26 +83,38 @@ export default function SubscriptionPage() {
     }
   };
 
-  const handleStartTrial = async (plan: SubscriptionPlan) => {
-    if (!user?.email) {
+  const handleStartTrialClick = (plan: SubscriptionPlan) => {
+    setPendingTrialPlan(plan);
+    setShowCardInfoDialog(true);
+  };
+
+  const handleConfirmTrial = async () => {
+    if (!pendingTrialPlan || !user?.email) {
       toast.error("Please log in to start a trial");
       return;
     }
 
+    setShowCardInfoDialog(false);
     setIsStartingTrial(true);
-    setSelectedPlan(plan);
+    setSelectedPlan(pendingTrialPlan);
 
     try {
-      await startTrialSubscription.mutateAsync({
-        plan,
+      const result = await initiateTrialWithCard.mutateAsync({
+        plan: pendingTrialPlan,
         email: user.email,
         name: profile?.full_name || user.email,
+        phone: profile?.phone || undefined,
       });
+
+      if (result?.payment_link) {
+        window.location.href = result.payment_link;
+      }
     } catch (error) {
       console.error("Trial error:", error);
     } finally {
       setIsStartingTrial(false);
       setSelectedPlan(null);
+      setPendingTrialPlan(null);
     }
   };
 
@@ -126,7 +149,7 @@ export default function SubscriptionPage() {
                 </CardTitle>
               </div>
               <CardDescription className="text-green-600 dark:text-green-400">
-                New to TaxKora? Try any plan free for 3 months. No payment required.
+                New to TaxKora? Try any plan free for 3 months. A card is required for automatic billing after the trial.
               </CardDescription>
             </CardHeader>
           </Card>
@@ -254,7 +277,7 @@ export default function SubscriptionPage() {
                           className="w-full"
                           variant="default"
                           disabled={isProcessing || isLoading}
-                          onClick={() => handleStartTrial(planKey)}
+                          onClick={() => handleStartTrialClick(planKey)}
                         >
                           {isProcessing && isStartingTrial ? (
                             <>
@@ -365,6 +388,79 @@ export default function SubscriptionPage() {
           </Card>
         )}
       </div>
+
+      {/* Card Info Dialog */}
+      <Dialog open={showCardInfoDialog} onOpenChange={setShowCardInfoDialog}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <CreditCard className="h-5 w-5 text-primary" />
+              Card Required for Trial
+            </DialogTitle>
+            <DialogDescription>
+              To start your free trial, we need to verify your payment method.
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="space-y-4 py-4">
+            <div className="p-4 bg-green-50 dark:bg-green-950/20 rounded-lg border border-green-200 dark:border-green-800">
+              <div className="flex items-start gap-3">
+                <Gift className="h-5 w-5 text-green-600 mt-0.5" />
+                <div>
+                  <p className="font-medium text-green-700 dark:text-green-400">
+                    3 Months Free Access
+                  </p>
+                  <p className="text-sm text-green-600 dark:text-green-400">
+                    Enjoy full access to {pendingTrialPlan ? SUBSCRIPTION_PLANS[pendingTrialPlan].name : "your selected plan"} features.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="p-4 bg-muted/50 rounded-lg space-y-3">
+              <div className="flex items-start gap-3">
+                <Info className="h-5 w-5 text-muted-foreground mt-0.5" />
+                <div className="text-sm">
+                  <p className="font-medium">Why we need your card:</p>
+                  <ul className="mt-1 space-y-1 text-muted-foreground">
+                    <li>• A ₦50 verification charge will be made and <strong>immediately refunded</strong></li>
+                    <li>• Your card is saved for automatic billing when your trial ends</li>
+                    <li>• You can cancel anytime before trial ends to avoid charges</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            {pendingTrialPlan && (
+              <div className="flex justify-between items-center py-2 border-t">
+                <span className="text-muted-foreground">After trial ends</span>
+                <span className="font-semibold">
+                  {formatCurrency(SUBSCRIPTION_PLANS[pendingTrialPlan].amount)}/year
+                </span>
+              </div>
+            )}
+          </div>
+
+          <DialogFooter className="flex gap-2">
+            <Button variant="outline" onClick={() => setShowCardInfoDialog(false)}>
+              Cancel
+            </Button>
+            <Button onClick={handleConfirmTrial} disabled={initiateTrialWithCard.isPending}>
+              {initiateTrialWithCard.isPending ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Processing...
+                </>
+              ) : (
+                <>
+                  <CreditCard className="mr-2 h-4 w-4" />
+                  Continue to Card Verification
+                </>
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
