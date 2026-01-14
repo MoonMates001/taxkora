@@ -41,7 +41,11 @@ import {
   ChevronRight,
   Plus,
   Trash2,
+  Download,
 } from "lucide-react";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
+import { toast } from "sonner";
 
 type EntityOption = { value: BusinessEntityType; label: string; icon: typeof User; description: string };
 
@@ -368,7 +372,7 @@ const BusinessTaxPage = () => {
 
       {/* Main Content */}
       {showResults ? (
-        <TaxResultsView taxResult={taxResult} isPIT={isPIT} pitResult={pitResult} citResult={citResult} />
+        <TaxResultsView taxResult={taxResult} isPIT={isPIT} pitResult={pitResult} citResult={citResult} entityType={entityType} year={selectedYear} businessName={profile?.business_name} />
       ) : (
         <Tabs defaultValue="income" className="space-y-6">
           <TabsList className="grid w-full grid-cols-4">
@@ -775,18 +779,211 @@ const TaxResultsView = ({
   isPIT,
   pitResult,
   citResult,
+  entityType,
+  year,
+  businessName,
 }: {
   taxResult: ReturnType<typeof computeBusinessTax>;
   isPIT: boolean;
   pitResult: PITBusinessResult | null;
   citResult: CITResult | null;
+  entityType: BusinessEntityType;
+  year: number;
+  businessName?: string | null;
 }) => {
   const taxPayable = isPIT ? pitResult?.totalTax || 0 : citResult?.citPayable || 0;
   const effectiveRate = taxResult.effectiveRate;
   const isExempt = taxResult.isExempt;
 
+  const generatePDF = () => {
+    try {
+      const doc = new jsPDF();
+      const pageWidth = doc.internal.pageSize.getWidth();
+      let yPos = 20;
+
+      // Header
+      doc.setFontSize(18);
+      doc.setFont("helvetica", "bold");
+      doc.text(isPIT ? "Personal Income Tax Computation" : "Companies Income Tax Computation", pageWidth / 2, yPos, { align: "center" });
+      yPos += 10;
+
+      doc.setFontSize(12);
+      doc.setFont("helvetica", "normal");
+      doc.text(`Tax Year: ${year}`, pageWidth / 2, yPos, { align: "center" });
+      yPos += 8;
+
+      if (businessName) {
+        doc.text(`Business: ${businessName}`, pageWidth / 2, yPos, { align: "center" });
+        yPos += 8;
+      }
+
+      const entityLabels: Record<BusinessEntityType, string> = {
+        sole_proprietorship: "Sole Proprietorship",
+        partnership: "Partnership",
+        limited_company: "Limited Company",
+      };
+      doc.text(`Entity Type: ${entityLabels[entityType]}`, pageWidth / 2, yPos, { align: "center" });
+      yPos += 8;
+
+      doc.setFontSize(10);
+      doc.setTextColor(100);
+      doc.text(`Generated: ${new Date().toLocaleDateString()}`, pageWidth / 2, yPos, { align: "center" });
+      doc.setTextColor(0);
+      yPos += 15;
+
+      // Separator line
+      doc.setDrawColor(200);
+      doc.line(20, yPos, pageWidth - 20, yPos);
+      yPos += 10;
+
+      // Summary Section
+      doc.setFontSize(14);
+      doc.setFont("helvetica", "bold");
+      doc.text("Tax Summary", 20, yPos);
+      yPos += 8;
+
+      const summaryData = isPIT && pitResult ? [
+        ["Gross Business Income", formatCurrency(pitResult.grossBusinessIncome)],
+        ["Allowable Expenses", `(${formatCurrency(pitResult.allowableExpenses)})`],
+        ["Capital Allowances", `(${formatCurrency(pitResult.capitalAllowances)})`],
+        ["Adjusted Profit", formatCurrency(pitResult.adjustedProfit)],
+        ["Personal Reliefs", `(${formatCurrency(pitResult.personalReliefs)})`],
+        ["Taxable Income", formatCurrency(pitResult.taxableIncome)],
+        ["PIT Payable", formatCurrency(pitResult.totalTax)],
+        ["Effective Tax Rate", `${effectiveRate.toFixed(2)}%`],
+      ] : citResult ? [
+        ["Gross Revenue", formatCurrency(citResult.grossRevenue)],
+        ["Cost of Sales", `(${formatCurrency(citResult.costOfSales)})`],
+        ["Operating Expenses", `(${formatCurrency(citResult.operatingExpenses)})`],
+        ["Accounting Profit", formatCurrency(citResult.accountingProfit)],
+        ["Add: Depreciation", formatCurrency(citResult.addBackDepreciation)],
+        ["Assessable Profit", formatCurrency(citResult.assessableProfit)],
+        ["Capital Allowances", `(${formatCurrency(citResult.capitalAllowances)})`],
+        ["Taxable Profit", formatCurrency(citResult.taxableProfit)],
+        ["Turnover Category", citResult.turnoverCategory.toUpperCase()],
+        ["CIT Rate", `${citResult.citRate}%`],
+        ["CIT Payable", formatCurrency(citResult.citPayable)],
+        ["Effective Tax Rate", `${effectiveRate.toFixed(2)}%`],
+      ] : [];
+
+      autoTable(doc, {
+        startY: yPos,
+        head: [["Description", "Amount"]],
+        body: summaryData,
+        theme: "striped",
+        headStyles: { fillColor: [59, 130, 246], fontStyle: "bold" },
+        columnStyles: {
+          0: { cellWidth: 100 },
+          1: { cellWidth: 60, halign: "right" },
+        },
+        margin: { left: 20, right: 20 },
+      });
+
+      yPos = (doc as any).lastAutoTable.finalY + 15;
+
+      // Exemption Notice
+      if (isExempt) {
+        doc.setFillColor(220, 252, 231);
+        doc.rect(20, yPos, pageWidth - 40, 15, "F");
+        doc.setFontSize(11);
+        doc.setFont("helvetica", "bold");
+        doc.setTextColor(22, 101, 52);
+        doc.text("TAX EXEMPT", 25, yPos + 10);
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(10);
+        doc.text(taxResult.exemptionReason || "", 60, yPos + 10);
+        doc.setTextColor(0);
+        yPos += 20;
+      }
+
+      // PIT Bracket Breakdown
+      if (isPIT && pitResult?.taxByBracket) {
+        yPos += 5;
+        doc.setFontSize(14);
+        doc.setFont("helvetica", "bold");
+        doc.text("PIT Bracket Breakdown", 20, yPos);
+        yPos += 8;
+
+        const bracketData = pitResult.taxByBracket.map((b) => [
+          b.bracket,
+          `${b.rate}%`,
+          formatCurrency(b.income),
+          formatCurrency(b.tax),
+        ]);
+
+        autoTable(doc, {
+          startY: yPos,
+          head: [["Income Bracket", "Rate", "Income in Bracket", "Tax"]],
+          body: bracketData,
+          theme: "striped",
+          headStyles: { fillColor: [59, 130, 246], fontStyle: "bold" },
+          columnStyles: {
+            3: { halign: "right" },
+          },
+          margin: { left: 20, right: 20 },
+        });
+
+        yPos = (doc as any).lastAutoTable.finalY + 15;
+      }
+
+      // CIT Bands Reference
+      if (!isPIT) {
+        yPos += 5;
+        doc.setFontSize(14);
+        doc.setFont("helvetica", "bold");
+        doc.text("CIT Turnover Bands Reference", 20, yPos);
+        yPos += 8;
+
+        const bandData = CIT_BANDS.map((band) => [
+          band.label,
+          `${band.rate * 100}%`,
+          citResult?.turnoverCategory === band.category ? "Your Category" : "",
+        ]);
+
+        autoTable(doc, {
+          startY: yPos,
+          head: [["Turnover Category", "CIT Rate", "Status"]],
+          body: bandData,
+          theme: "striped",
+          headStyles: { fillColor: [59, 130, 246], fontStyle: "bold" },
+          margin: { left: 20, right: 20 },
+        });
+
+        yPos = (doc as any).lastAutoTable.finalY + 15;
+      }
+
+      // Footer
+      const pageCount = doc.getNumberOfPages();
+      for (let i = 1; i <= pageCount; i++) {
+        doc.setPage(i);
+        doc.setFontSize(9);
+        doc.setTextColor(128);
+        doc.text(
+          `Page ${i} of ${pageCount} | Nigeria Tax Act 2025/2026 Computation`,
+          pageWidth / 2,
+          doc.internal.pageSize.getHeight() - 10,
+          { align: "center" }
+        );
+      }
+
+      doc.save(`tax-computation-${year}.pdf`);
+      toast.success("Tax computation report downloaded!");
+    } catch (error) {
+      console.error("PDF generation error:", error);
+      toast.error("Failed to generate PDF");
+    }
+  };
+
   return (
     <div className="space-y-6">
+      {/* Export Button */}
+      <div className="flex justify-end">
+        <Button onClick={generatePDF} className="gap-2">
+          <Download className="w-4 h-4" />
+          Export PDF Report
+        </Button>
+      </div>
+
       {/* Summary Cards */}
       <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <Card className="shadow-card">
