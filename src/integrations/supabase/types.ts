@@ -459,6 +459,51 @@ export type Database = {
         }
         Relationships: []
       }
+      vat_filing_status: {
+        Row: {
+          created_at: string
+          filed_date: string | null
+          id: string
+          month: number
+          notes: string | null
+          payment_amount: number | null
+          payment_date: string | null
+          payment_reference: string | null
+          status: string
+          updated_at: string
+          user_id: string
+          year: number
+        }
+        Insert: {
+          created_at?: string
+          filed_date?: string | null
+          id?: string
+          month: number
+          notes?: string | null
+          payment_amount?: number | null
+          payment_date?: string | null
+          payment_reference?: string | null
+          status?: string
+          updated_at?: string
+          user_id: string
+          year: number
+        }
+        Update: {
+          created_at?: string
+          filed_date?: string | null
+          id?: string
+          month?: number
+          notes?: string | null
+          payment_amount?: number | null
+          payment_date?: string | null
+          payment_reference?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string
+          year?: number
+        }
+        Relationships: []
+      }
       vat_transactions: {
         Row: {
           amount: number

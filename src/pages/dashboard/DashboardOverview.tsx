@@ -8,6 +8,8 @@ import { Button } from "@/components/ui/button";
 import TaxSummaryWidget from "@/components/dashboard/TaxSummaryWidget";
 import TaxProjectionChart from "@/components/dashboard/TaxProjectionChart";
 import SmartDeductionsCard from "@/components/dashboard/SmartDeductionsCard";
+import TaxCalendarWidget from "@/components/dashboard/TaxCalendarWidget";
+import TaxLiabilitiesWidget from "@/components/dashboard/TaxLiabilitiesWidget";
 import {
   FileText,
   TrendingUp,
@@ -411,6 +413,12 @@ const DashboardOverview = () => {
           <TaxSummaryWidget />
           <SmartDeductionsCard />
         </div>
+      </div>
+
+      {/* Tax Calendar & Liabilities */}
+      <div className="grid lg:grid-cols-2 gap-6">
+        <TaxCalendarWidget />
+        <TaxLiabilitiesWidget />
       </div>
 
       {/* Quick Actions */}
