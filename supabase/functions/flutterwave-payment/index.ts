@@ -26,11 +26,30 @@ serve(async (req) => {
   }
 
   try {
-    const FLUTTERWAVE_SECRET_KEY = Deno.env.get("FLUTTERWAVE_SECRET_KEY");
-    if (!FLUTTERWAVE_SECRET_KEY) {
-      console.error("FLUTTERWAVE_SECRET_KEY not configured");
+    // Sanitize the key to prevent common misconfigurations like leading/trailing spaces
+    // or users pasting "Bearer <key>" into the secret value.
+    const rawFlutterwaveKey = Deno.env.get("FLUTTERWAVE_SECRET_KEY");
+    const FLUTTERWAVE_SECRET_KEY = rawFlutterwaveKey
+      ?.trim()
+      .replace(/^Bearer\s+/i, "");
+
+    const keyLooksLikeSecret =
+      (FLUTTERWAVE_SECRET_KEY?.startsWith("FLWSECK-") ?? false) ||
+      (FLUTTERWAVE_SECRET_KEY?.startsWith("FLWSECK_TEST-") ?? false);
+
+    const keyLooksLikePublic = FLUTTERWAVE_SECRET_KEY?.startsWith("FLWPUBK-") ?? false;
+
+    if (!FLUTTERWAVE_SECRET_KEY || !keyLooksLikeSecret || keyLooksLikePublic) {
+      console.error("FLUTTERWAVE_SECRET_KEY invalid or misconfigured", {
+        present: !!rawFlutterwaveKey,
+        looksLikeSecret: keyLooksLikeSecret,
+        looksLikePublic: keyLooksLikePublic,
+      });
       return new Response(
-        JSON.stringify({ error: "Payment gateway not configured" }),
+        JSON.stringify({
+          error:
+            "Payment gateway not configured (invalid Flutterwave secret key). Please update your FLUTTERWAVE_SECRET_KEY.",
+        }),
         { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
@@ -42,20 +61,23 @@ serve(async (req) => {
     // Get user from auth header
     const authHeader = req.headers.get("authorization");
     if (!authHeader) {
-      return new Response(
-        JSON.stringify({ error: "Authorization required" }),
-        { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
+      return new Response(JSON.stringify({ error: "Authorization required" }), {
+        status: 401,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
     }
 
     const token = authHeader.replace("Bearer ", "");
-    const { data: { user }, error: authError } = await supabase.auth.getUser(token);
-    
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser(token);
+
     if (authError || !user) {
-      return new Response(
-        JSON.stringify({ error: "Invalid authorization" }),
-        { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
+      return new Response(JSON.stringify({ error: "Invalid authorization" }), {
+        status: 401,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
     }
 
     const body: PaymentRequest = await req.json();
@@ -63,17 +85,17 @@ serve(async (req) => {
 
     // Validate required fields
     if (!amount || amount <= 0) {
-      return new Response(
-        JSON.stringify({ error: "Invalid payment amount" }),
-        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
+      return new Response(JSON.stringify({ error: "Invalid payment amount" }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
     }
 
     if (!email || !name) {
-      return new Response(
-        JSON.stringify({ error: "Email and name are required" }),
-        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
+      return new Response(JSON.stringify({ error: "Email and name are required" }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
     }
 
     const origin = req.headers.get("origin");
@@ -137,7 +159,6 @@ serve(async (req) => {
       }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
-
   } catch (error) {
     console.error("Payment error:", error);
     return new Response(
