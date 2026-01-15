@@ -33,10 +33,10 @@ const Hero = () => {
 
             {/* Headline */}
             <h1 className="font-display text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold text-primary-foreground leading-[1.1] mb-6 animate-fade-up" style={{ animationDelay: "0.1s" }}>
-              Tax Compliance,{" "}
+              Nigeria's #1 Tax Compliance Platform,{" "}
               <span className="relative">
                 <span className="text-coral-400">Simplified</span>
-                <svg className="absolute -bottom-2 left-0 w-full" viewBox="0 0 200 12" fill="none">
+                <svg className="absolute -bottom-2 left-0 w-full" viewBox="0 0 200 12" fill="none" aria-hidden="true">
                   <path d="M2 8C50 2 150 2 198 8" stroke="hsl(var(--coral-400))" strokeWidth="3" strokeLinecap="round" opacity="0.5" />
                 </svg>
               </span>
