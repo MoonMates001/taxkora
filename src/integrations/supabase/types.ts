@@ -979,6 +979,45 @@ export type Database = {
         }
         Relationships: []
       }
+      referrals_safe: {
+        Row: {
+          completed_at: string | null
+          created_at: string | null
+          id: string | null
+          referral_code: string | null
+          referred_email: string | null
+          referred_user_id: string | null
+          referrer_id: string | null
+          reward_claimed: boolean | null
+          status: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string | null
+          id?: string | null
+          referral_code?: string | null
+          referred_email?: never
+          referred_user_id?: string | null
+          referrer_id?: string | null
+          reward_claimed?: boolean | null
+          status?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string | null
+          id?: string | null
+          referral_code?: string | null
+          referred_email?: never
+          referred_user_id?: string | null
+          referrer_id?: string | null
+          reward_claimed?: boolean | null
+          status?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       subscriptions_safe: {
         Row: {
           amount: number | null
