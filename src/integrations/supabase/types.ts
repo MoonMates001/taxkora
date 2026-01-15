@@ -1074,7 +1074,9 @@ export type Database = {
       }
     }
     Functions: {
-      generate_invoice_number: { Args: { p_user_id: string }; Returns: string }
+      generate_invoice_number:
+        | { Args: never; Returns: string }
+        | { Args: { p_user_id: string }; Returns: string }
       generate_referral_code: { Args: never; Returns: string }
       get_referral_by_code: {
         Args: { p_code: string }

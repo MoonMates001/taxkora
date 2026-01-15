@@ -75,9 +75,7 @@ export const useInvoices = () => {
   });
 
   const generateInvoiceNumber = async (): Promise<string> => {
-    const { data, error } = await supabase.rpc("generate_invoice_number", {
-      p_user_id: user!.id,
-    });
+    const { data, error } = await supabase.rpc("generate_invoice_number");
     if (error) throw error;
     return data;
   };
