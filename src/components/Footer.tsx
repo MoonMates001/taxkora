@@ -1,4 +1,5 @@
 import { Mail, Phone, MapPin } from "lucide-react";
+import logo from "@/assets/logo.png";
 
 const Footer = () => {
   const footerLinks = {
@@ -34,9 +35,7 @@ const Footer = () => {
           {/* Brand Column */}
           <div className="lg:col-span-2">
             <div className="flex items-center gap-2 mb-4">
-              <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-                <span className="text-primary-foreground font-bold text-lg">T</span>
-              </div>
+              <img src={logo} alt="TAXKORA" className="w-8 h-8 rounded-lg object-contain" />
               <span className="font-display font-bold text-xl text-gray-100">TAXKORA</span>
             </div>
             <p className="text-gray-400 mb-6 max-w-sm">

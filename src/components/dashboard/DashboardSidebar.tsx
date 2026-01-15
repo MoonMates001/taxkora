@@ -26,6 +26,7 @@ import {
   Clock,
   Gift,
 } from "lucide-react";
+import logo from "@/assets/logo.png";
 
 const DashboardSidebar = () => {
   const { profile, signOut } = useAuth();
@@ -103,9 +104,7 @@ const DashboardSidebar = () => {
           {/* Logo */}
           <div className="p-6 border-b border-border">
             <Link to="/" className="flex items-center gap-2">
-              <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-                <span className="text-primary-foreground font-bold text-lg">T</span>
-              </div>
+              <img src={logo} alt="TAXKORA" className="w-8 h-8 rounded-lg object-contain" />
               <span className="font-display font-bold text-xl text-foreground">TAXKORA</span>
             </Link>
           </div>

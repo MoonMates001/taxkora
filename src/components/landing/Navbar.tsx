@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Menu, X, ChevronDown } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
+import logo from "@/assets/logo.png";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -34,11 +35,7 @@ const Navbar = () => {
         <div className="flex items-center justify-between h-16 lg:h-20">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2.5">
-            <div className={`w-9 h-9 rounded-xl flex items-center justify-center transition-all ${
-              isScrolled ? "bg-primary" : "bg-primary-foreground/10 backdrop-blur-sm"
-            }`}>
-              <span className={`font-bold text-lg ${isScrolled ? "text-primary-foreground" : "text-primary-foreground"}`}>T</span>
-            </div>
+            <img src={logo} alt="TAXKORA" className="w-9 h-9 rounded-xl object-contain" />
             <span className={`font-display font-bold text-xl transition-colors ${
               isScrolled ? "text-foreground" : "text-primary-foreground"
             }`}>
