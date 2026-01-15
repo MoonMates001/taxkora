@@ -6,7 +6,6 @@ import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { useReferrals } from "@/hooks/useReferrals";
 import { 
-  Gift, 
   Users, 
   Copy, 
   Send, 
@@ -22,6 +21,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { format } from "date-fns";
+import logo from "@/assets/logo.png";
 
 const ReferralsPage = () => {
   const [inviteEmail, setInviteEmail] = useState("");
@@ -138,8 +138,8 @@ const ReferralsPage = () => {
           <CardContent className="pt-6">
             <div className="flex items-start justify-between flex-wrap gap-4">
               <div className="flex items-center gap-4">
-                <div className="w-16 h-16 rounded-2xl bg-primary/20 flex items-center justify-center">
-                  <Gift className="w-8 h-8 text-primary" />
+                <div className="w-16 h-16 rounded-2xl bg-primary/20 flex items-center justify-center overflow-hidden">
+                  <img src={logo} alt="TAXKORA" className="w-12 h-12 object-contain" />
                 </div>
                 <div>
                   <h2 className="text-xl font-semibold text-foreground">

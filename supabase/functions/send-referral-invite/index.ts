@@ -163,9 +163,8 @@ const handler = async (req: Request): Promise<Response> => {
             <div style="background-color: white; border-radius: 16px; padding: 40px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
               <!-- Logo -->
               <div style="text-align: center; margin-bottom: 32px;">
-                <div style="display: inline-block; background-color: #0D9488; padding: 12px 16px; border-radius: 12px;">
-                  <span style="color: white; font-weight: bold; font-size: 24px;">TAXKORA</span>
-                </div>
+                <img src="https://taxkora.lovable.app/favicon.png" alt="TAXKORA" style="width: 60px; height: 60px; border-radius: 12px;" />
+                <p style="margin-top: 12px; font-weight: bold; font-size: 24px; color: #0D9488;">TAXKORA</p>
               </div>
 
               <!-- Header -->

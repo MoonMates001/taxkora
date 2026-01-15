@@ -8,6 +8,7 @@ import { Building2, User, ArrowLeft, Loader2, Gift } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
+import logoImage from "@/assets/logo.png";
 
 const emailSchema = z.string().email("Please enter a valid email address");
 const passwordSchema = z.string().min(6, "Password must be at least 6 characters");
@@ -213,9 +214,7 @@ const Auth = () => {
         {/* Logo */}
         <div className="text-center mb-8">
           <a href="/" className="inline-flex items-center gap-2">
-            <div className="w-10 h-10 bg-primary-foreground rounded-lg flex items-center justify-center">
-              <span className="text-primary font-bold text-xl">T</span>
-            </div>
+            <img src={logoImage} alt="TAXKORA" className="w-10 h-10 rounded-lg object-contain" />
             <span className="font-display font-bold text-2xl text-primary-foreground">TAXKORA</span>
           </a>
         </div>

@@ -129,7 +129,7 @@ serve(async (req) => {
       customizations: {
         title: "TaxKora - Verify Card for Trial",
         description: "A ₦50 verification charge will be made and refunded immediately. Your card will be saved for automatic billing when your trial ends.",
-        logo: "https://taxkora.lovable.app/favicon.ico",
+        logo: "https://taxkora.lovable.app/favicon.png",
       },
       meta: {
         user_id: user.id,

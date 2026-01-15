@@ -128,7 +128,7 @@ serve(async (req) => {
       customizations: {
         title: "TaxKora Payment",
         description: description || `Payment for ${payment_type.replace("_", " ")}`,
-        logo: "https://taxkora.lovable.app/favicon.ico",
+        logo: "https://taxkora.lovable.app/favicon.png",
       },
       meta: {
         user_id: user.id,
