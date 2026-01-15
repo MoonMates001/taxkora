@@ -230,14 +230,14 @@ const handler = async (req: Request): Promise<Response> => {
 
     console.log(`Checking for subscriptions expiring on ${todayStr} with auto_renew enabled...`);
 
-    // Fetch subscriptions that expire today with auto_renew enabled and have a card token
-    const { data: subscriptions, error: subError } = await supabase
+    // Fetch subscriptions that expire today with auto_renew enabled
+    // First get subscriptions, then join with payment methods to get card tokens
+    const { data: subscriptionsBase, error: subError } = await supabase
       .from("subscriptions")
       .select("*")
       .eq("status", "active")
       .eq("end_date", todayStr)
-      .eq("auto_renew", true)
-      .not("card_token", "is", null);
+      .eq("auto_renew", true);
 
     if (subError) {
       console.error("Error fetching subscriptions:", subError);
@@ -245,6 +245,20 @@ const handler = async (req: Request): Promise<Response> => {
         JSON.stringify({ error: "Failed to fetch subscriptions" }),
         { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } }
       );
+    }
+
+    // Filter to only those with card tokens by checking payment_methods table
+    const subscriptions = [];
+    for (const sub of subscriptionsBase || []) {
+      const { data: paymentMethod } = await supabase
+        .from("subscription_payment_methods")
+        .select("card_token")
+        .eq("subscription_id", sub.id)
+        .single();
+      
+      if (paymentMethod?.card_token) {
+        subscriptions.push({ ...sub, card_token: paymentMethod.card_token });
+      }
     }
 
     console.log(`Found ${subscriptions?.length || 0} subscriptions to auto-renew`);

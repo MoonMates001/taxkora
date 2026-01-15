@@ -575,13 +575,60 @@ export type Database = {
         }
         Relationships: []
       }
+      subscription_payment_methods: {
+        Row: {
+          card_expiry: string | null
+          card_last_four: string | null
+          card_token: string | null
+          created_at: string
+          id: string
+          subscription_id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          card_expiry?: string | null
+          card_last_four?: string | null
+          card_token?: string | null
+          created_at?: string
+          id?: string
+          subscription_id: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          card_expiry?: string | null
+          card_last_four?: string | null
+          card_token?: string | null
+          created_at?: string
+          id?: string
+          subscription_id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "subscription_payment_methods_subscription_id_fkey"
+            columns: ["subscription_id"]
+            isOneToOne: true
+            referencedRelation: "subscriptions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "subscription_payment_methods_subscription_id_fkey"
+            columns: ["subscription_id"]
+            isOneToOne: true
+            referencedRelation: "subscriptions_safe"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       subscriptions: {
         Row: {
           amount: number
           auto_renew: boolean | null
           card_expiry: string | null
           card_last_four: string | null
-          card_token: string | null
           created_at: string
           end_date: string | null
           flutterwave_tx_ref: string | null
@@ -598,7 +645,6 @@ export type Database = {
           auto_renew?: boolean | null
           card_expiry?: string | null
           card_last_four?: string | null
-          card_token?: string | null
           created_at?: string
           end_date?: string | null
           flutterwave_tx_ref?: string | null
@@ -615,7 +661,6 @@ export type Database = {
           auto_renew?: boolean | null
           card_expiry?: string | null
           card_last_four?: string | null
-          card_token?: string | null
           created_at?: string
           end_date?: string | null
           flutterwave_tx_ref?: string | null
@@ -935,6 +980,60 @@ export type Database = {
           id?: string | null
           invoice_primary_color?: string | null
           phone_masked?: never
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      subscriptions_safe: {
+        Row: {
+          amount: number | null
+          auto_renew: boolean | null
+          card_expiry: string | null
+          card_last_four: string | null
+          created_at: string | null
+          end_date: string | null
+          flutterwave_tx_ref: string | null
+          has_card_on_file: boolean | null
+          id: string | null
+          payment_reference: string | null
+          plan: Database["public"]["Enums"]["subscription_plan"] | null
+          start_date: string | null
+          status: Database["public"]["Enums"]["subscription_status"] | null
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          amount?: number | null
+          auto_renew?: boolean | null
+          card_expiry?: never
+          card_last_four?: never
+          created_at?: string | null
+          end_date?: string | null
+          flutterwave_tx_ref?: string | null
+          has_card_on_file?: never
+          id?: string | null
+          payment_reference?: string | null
+          plan?: Database["public"]["Enums"]["subscription_plan"] | null
+          start_date?: string | null
+          status?: Database["public"]["Enums"]["subscription_status"] | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          amount?: number | null
+          auto_renew?: boolean | null
+          card_expiry?: never
+          card_last_four?: never
+          created_at?: string | null
+          end_date?: string | null
+          flutterwave_tx_ref?: string | null
+          has_card_on_file?: never
+          id?: string | null
+          payment_reference?: string | null
+          plan?: Database["public"]["Enums"]["subscription_plan"] | null
+          start_date?: string | null
+          status?: Database["public"]["Enums"]["subscription_status"] | null
           updated_at?: string | null
           user_id?: string | null
         }
