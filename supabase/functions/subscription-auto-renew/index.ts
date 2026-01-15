@@ -21,7 +21,7 @@ const PLAN_NAMES: Record<string, string> = {
   cit: "Companies Income Tax",
 };
 
-// Verify this is a cron/service call (from pg_cron or service role)
+// Verify this is a cron/service call (from pg_cron with service role key only)
 const verifyServiceCall = (req: Request): boolean => {
   const authHeader = req.headers.get("authorization");
   if (!authHeader?.startsWith("Bearer ")) {
@@ -30,9 +30,9 @@ const verifyServiceCall = (req: Request): boolean => {
   
   const token = authHeader.replace("Bearer ", "");
   const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
-  const anonKey = Deno.env.get("SUPABASE_ANON_KEY");
   
-  return token === serviceRoleKey || token === anonKey;
+  // Only accept service role key - reject anonymous/public keys
+  return token === serviceRoleKey;
 };
 
 interface ChargeResult {
