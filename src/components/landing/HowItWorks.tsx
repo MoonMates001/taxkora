@@ -22,14 +22,14 @@ const HowItWorks = () => {
       number: "03",
       icon: Calculator,
       title: "Auto Tax Computation",
-      description: "TAXKORA calculates your PIT, CIT, VAT, and WHT in real-time based on current FIRS regulations.",
+      description: "TAXKORA calculates your PIT, CIT, VAT, and WHT in real-time based on current NRS regulations.",
       color: "teal"
     },
     {
       number: "04",
       icon: Send,
       title: "File with Confidence",
-      description: "Review your tax summary and file directly to FIRS. Get instant confirmation and keep records organized.",
+      description: "Review your tax summary and file directly to NRS. Get instant confirmation and keep records organized.",
       color: "coral"
     }
   ];

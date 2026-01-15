@@ -89,7 +89,7 @@ const TaxFilingPage = () => {
     return categories;
   }, [incomeRecords, selectedYear]);
 
-  // Compute tax using 2026 rules
+  // Compute tax using 2025 rules
   const taxComputation = useMemo(() => {
     return computeTax2026(yearlyIncome, {
       pension_contribution: deductions.pension_contribution,
@@ -133,7 +133,7 @@ const TaxFilingPage = () => {
     doc.text("TAX RETURN REPORT", pageWidth / 2, 18, { align: "center" });
 
     doc.setFontSize(14);
-    doc.text("Nigeria Tax Act 2026", pageWidth / 2, 28, { align: "center" });
+    doc.text("Nigeria Tax Act 2025", pageWidth / 2, 28, { align: "center" });
 
     doc.setFontSize(12);
     doc.setFont("helvetica", "normal");
@@ -189,7 +189,7 @@ const TaxFilingPage = () => {
     yPos = (doc as any).lastAutoTable.finalY + 15;
     doc.setFontSize(14);
     doc.setFont("helvetica", "bold");
-    doc.text("STATUTORY DEDUCTIONS (Nigeria Tax Act 2026)", 14, yPos);
+    doc.text("STATUTORY DEDUCTIONS (Nigeria Tax Act 2025)", 14, yPos);
 
     const deductionData = [
       ["Pension Contribution (PFA)", formatCurrencyPlain(taxComputation.deductionBreakdown.pension)],
@@ -370,12 +370,12 @@ const TaxFilingPage = () => {
       doc.setFont("helvetica", "italic");
       doc.setTextColor(100, 100, 100);
       doc.text(
-        "This report is generated based on Nigeria Tax Act 2026 provisions.",
+        "This report is generated based on Nigeria Tax Act 2025 provisions.",
         14,
         finalY
       );
       doc.text(
-        "For official filing, submit to the Federal Inland Revenue Service (FIRS) or relevant State Revenue Service (NRS).",
+        "For official filing, submit to the Nigeria Revenue Service (NRS) or relevant State Revenue Service.",
         14,
         finalY + 5
       );
@@ -457,7 +457,7 @@ const TaxFilingPage = () => {
         <div>
           <h1 className="font-display text-3xl font-bold text-foreground">Tax Filing</h1>
           <p className="text-muted-foreground mt-1">
-            Nigeria Tax Act 2026 - Generate reports and track payments
+            Nigeria Tax Act 2025 - Generate reports and track payments
           </p>
         </div>
         <div className="flex items-center gap-3">
@@ -888,7 +888,7 @@ const TaxFilingPage = () => {
                 <Send className="w-4 h-4 mt-1" />
                 <p>
                   Submit your tax return to the{" "}
-                  <strong>Federal Inland Revenue Service (FIRS)</strong> or your{" "}
+                  <strong>Nigeria Revenue Service (NRS)</strong> or your{" "}
                   <strong>State Internal Revenue Service (SIRS)</strong>
                 </p>
               </div>

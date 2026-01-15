@@ -284,7 +284,7 @@ const CapitalAssetsPage = () => {
         <CardHeader>
           <CardTitle>Capital Allowance Rates</CardTitle>
           <CardDescription>
-            Nigeria Tax Act 2025/2026 - Initial and Annual Rates by Asset Category
+            Nigeria Tax Act 2025 - Initial and Annual Rates by Asset Category
           </CardDescription>
         </CardHeader>
         <CardContent>

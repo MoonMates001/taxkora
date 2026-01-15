@@ -1,10 +1,10 @@
 /**
- * Nigeria Tax Act 2025/2026 - Tax Types and Interfaces
+ * Nigeria Tax Act 2025 - Tax Types and Interfaces
  */
 
 // Business entity types
 export type BusinessEntityType = "sole_proprietorship" | "partnership" | "limited_company";
-export type TaxAuthority = "SIRS" | "FIRS"; // State IRS vs Federal IRS
+export type TaxAuthority = "SIRS" | "NRS"; // State IRS vs Nigeria Revenue Service
 
 // Tax computation type
 export type TaxationType = "PIT" | "CIT"; // Personal Income Tax vs Companies Income Tax
@@ -128,7 +128,7 @@ export interface PITBusinessResult {
 export interface CITResult {
   // Entity info
   entityType: "limited_company";
-  taxAuthority: "FIRS";
+  taxAuthority: "NRS";
   taxationType: "CIT";
   
   // Turnover classification

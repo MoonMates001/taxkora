@@ -1,6 +1,6 @@
 /**
  * Companies Income Tax (CIT) Engine for Incorporated Companies
- * Taxed under Federal Inland Revenue Service (FIRS)
+ * Taxed under Nigeria Revenue Service (NRS)
  */
 
 import { BusinessTaxInput, CITResult, CITBand } from "./types";
@@ -116,7 +116,7 @@ export function computeCIT(input: BusinessTaxInput): CITResult {
   
   return {
     entityType: "limited_company",
-    taxAuthority: "FIRS",
+    taxAuthority: "NRS",
     taxationType: "CIT",
     annualTurnover,
     turnoverCategory: citBand.category,

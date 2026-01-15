@@ -67,7 +67,7 @@ const ENTITY_OPTIONS: EntityOption[] = [
     value: "limited_company",
     label: "Limited Company (Ltd)",
     icon: Building2,
-    description: "Incorporated company, taxed under CIT (FIRS)",
+    description: "Incorporated company, taxed under CIT (NRS)",
   },
 ];
 
@@ -288,7 +288,7 @@ const BusinessTaxPage = () => {
         <div>
           <h1 className="font-display text-3xl font-bold text-foreground">Business Tax Computation</h1>
           <p className="text-muted-foreground mt-1">
-            Nigeria Tax Act 2025/2026 - PIT & CIT Calculator
+            Nigeria Tax Act 2025 - PIT & CIT Calculator
           </p>
         </div>
         <div className="flex items-center gap-3">
@@ -363,11 +363,11 @@ const BusinessTaxPage = () => {
             <Landmark className="w-5 h-5 text-muted-foreground mt-0.5" />
             <div>
               <p className="font-medium">
-                Tax Authority: {entityType === "limited_company" ? "FIRS" : "SIRS"}
+                Tax Authority: {entityType === "limited_company" ? "NRS" : "SIRS"}
               </p>
               <p className="text-sm text-muted-foreground">
                 {entityType === "limited_company"
-                  ? "Federal Inland Revenue Service - Companies Income Tax"
+                  ? "Nigeria Revenue Service - Companies Income Tax"
                   : "State Internal Revenue Service - Personal Income Tax"}
               </p>
             </div>
@@ -965,7 +965,7 @@ const TaxResultsView = ({
         doc.setFontSize(9);
         doc.setTextColor(128);
         doc.text(
-          `Page ${i} of ${pageCount} | Nigeria Tax Act 2025/2026 Computation`,
+          `Page ${i} of ${pageCount} | Nigeria Tax Act 2025 Computation`,
           pageWidth / 2,
           doc.internal.pageSize.getHeight() - 10,
           { align: "center" }

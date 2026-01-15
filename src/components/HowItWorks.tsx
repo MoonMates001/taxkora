@@ -24,7 +24,7 @@ const HowItWorks = () => {
       number: "04",
       icon: CheckCircle,
       title: "File with Confidence",
-      description: "Review computed taxes and file directly to FIRS with one click. Get instant confirmation."
+      description: "Review computed taxes and file directly to NRS with one click. Get instant confirmation."
     }
   ];
 

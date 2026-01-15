@@ -220,9 +220,9 @@ export function TaxPaymentDialog({
               name="payment_reference"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>FIRS/NRS Reference Number</FormLabel>
+                  <FormLabel>NRS Reference Number</FormLabel>
                   <FormControl>
-                    <Input placeholder="e.g., TRN-2026-XXXXX" {...field} />
+                    <Input placeholder="e.g., TRN-2025-XXXXX" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

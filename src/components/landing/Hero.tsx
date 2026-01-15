@@ -45,7 +45,7 @@ const Hero = () => {
             {/* Subheadline */}
             <p className="text-lg sm:text-xl text-primary-foreground/75 max-w-xl mx-auto lg:mx-0 mb-8 animate-fade-up" style={{ animationDelay: "0.2s" }}>
               The all-in-one platform for Nigerian SMEs and individuals. 
-              E-invoicing, expense tracking, automated tax computation, and FIRS filing—all in one place.
+              E-invoicing, expense tracking, automated tax computation, and NRS filing—all in one place.
             </p>
 
             {/* Feature pills */}
@@ -53,7 +53,7 @@ const Hero = () => {
               {[
                 { icon: FileCheck, text: "E-Invoicing" },
                 { icon: Zap, text: "Auto Tax Computation" },
-                { icon: Shield, text: "Direct FIRS Filing" },
+                { icon: Shield, text: "Direct NRS Filing" },
               ].map((item, i) => (
                 <div key={i} className="flex items-center gap-2 px-3 py-1.5 bg-primary-foreground/10 backdrop-blur-sm rounded-lg text-primary-foreground/90 text-sm">
                   <item.icon className="w-4 h-4 text-coral-400" />
