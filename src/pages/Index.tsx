@@ -9,16 +9,18 @@ import Footer from "@/components/landing/Footer";
 
 const Index = () => {
   return (
-    <div className="min-h-screen">
+    <main className="min-h-screen">
       <Navbar />
-      <Hero />
-      <Features />
-      <HowItWorks />
-      <Pricing />
-      <Testimonials />
-      <CTA />
+      <article>
+        <Hero />
+        <Features />
+        <HowItWorks />
+        <Pricing />
+        <Testimonials />
+        <CTA />
+      </article>
       <Footer />
-    </div>
+    </main>
   );
 };
 
