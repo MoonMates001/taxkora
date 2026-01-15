@@ -16,12 +16,13 @@ export interface Subscription {
   end_date: string | null;
   payment_reference: string | null;
   flutterwave_tx_ref: string | null;
-  card_token: string | null;
-  card_last_four: string | null;
-  card_expiry: string | null;
   auto_renew: boolean;
   created_at: string;
   updated_at: string;
+  // From secure view - card token is never exposed to client
+  has_card_on_file?: boolean;
+  card_last_four?: string | null;
+  card_expiry?: string | null;
 }
 
 export const SUBSCRIPTION_PLANS = {
@@ -69,13 +70,14 @@ export const useSubscription = () => {
   const { user } = useAuth();
   const queryClient = useQueryClient();
 
+  // Use secure view that hides card_token from client
   const { data: subscription, isLoading } = useQuery({
     queryKey: ["subscription", user?.id],
     queryFn: async () => {
       if (!user?.id) return null;
 
       const { data, error } = await supabase
-        .from("subscriptions")
+        .from("subscriptions_safe")
         .select("*")
         .eq("user_id", user.id)
         .eq("status", "active")
@@ -89,13 +91,14 @@ export const useSubscription = () => {
     enabled: !!user?.id,
   });
 
+  // Use secure view for all subscriptions list as well
   const { data: allSubscriptions } = useQuery({
     queryKey: ["all-subscriptions", user?.id],
     queryFn: async () => {
       if (!user?.id) return [];
 
       const { data, error } = await supabase
-        .from("subscriptions")
+        .from("subscriptions_safe")
         .select("*")
         .eq("user_id", user.id)
         .order("created_at", { ascending: false });
@@ -248,26 +251,29 @@ export const useSubscription = () => {
     },
   });
 
-  // Remove saved card
+  // Remove saved card - now calls an edge function since client can't access payment_methods table
   const removeSavedCard = useMutation({
     mutationFn: async (subscriptionId: string) => {
       if (!user?.id) throw new Error("User not authenticated");
 
-      const { data, error } = await supabase
+      // First update subscription to disable auto-renew
+      const { error: subError } = await supabase
         .from("subscriptions")
-        .update({ 
-          card_token: null, 
-          card_last_four: null, 
-          card_expiry: null,
-          auto_renew: false 
-        })
+        .update({ auto_renew: false })
         .eq("id", subscriptionId)
-        .eq("user_id", user.id)
-        .select()
-        .single();
+        .eq("user_id", user.id);
 
-      if (error) throw error;
-      return data;
+      if (subError) throw subError;
+
+      // The card removal from payment_methods table must be done via edge function
+      // since the table is not accessible from client-side
+      const { error: funcError } = await supabase.functions.invoke("remove-payment-method", {
+        body: { subscription_id: subscriptionId },
+      });
+
+      if (funcError) throw new Error(funcError.message);
+      
+      return { success: true };
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["subscription"] });
@@ -321,6 +327,6 @@ export const useSubscription = () => {
     hasHadSubscription,
     isTrialSubscription,
     daysRemaining: getDaysRemaining(),
-    hasCardOnFile: !!subscription?.card_token,
+    hasCardOnFile: subscription?.has_card_on_file ?? false,
   };
 };

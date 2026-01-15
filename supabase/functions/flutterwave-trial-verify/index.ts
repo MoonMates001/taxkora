@@ -154,7 +154,7 @@ serve(async (req) => {
     const endDate = new Date();
     endDate.setDate(endDate.getDate() + 90);
 
-    // Create trial subscription with card token
+    // Create trial subscription (without card token - that goes in separate secure table)
     const { data: subscriptionData, error: insertError } = await supabase
       .from("subscriptions")
       .insert({
@@ -166,9 +166,6 @@ serve(async (req) => {
         end_date: endDate.toISOString().split("T")[0],
         payment_reference: "TRIAL",
         flutterwave_tx_ref: tx_ref,
-        card_token: cardToken,
-        card_last_four: cardLastFour,
-        card_expiry: cardExpiry,
         auto_renew: true,
       })
       .select()
@@ -180,6 +177,26 @@ serve(async (req) => {
         JSON.stringify({ error: "Failed to activate trial subscription" }),
         { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
+    }
+
+    // Store card token in secure payment_methods table (only accessible by service role)
+    if (cardToken) {
+      const { error: paymentMethodError } = await supabase
+        .from("subscription_payment_methods")
+        .insert({
+          subscription_id: subscriptionData.id,
+          user_id,
+          card_token: cardToken,
+          card_last_four: cardLastFour,
+          card_expiry: cardExpiry,
+        });
+
+      if (paymentMethodError) {
+        console.error("Failed to store payment method:", paymentMethodError);
+        // Don't fail the subscription, but log the issue
+      } else {
+        console.log("Payment method stored securely");
+      }
     }
 
     console.log("Trial subscription created:", subscriptionData.id);
