@@ -26,3 +26,6 @@ verify_jwt = false
 
 [functions.flutterwave-trial-verify]
 verify_jwt = false
+
+[functions.flutterwave-webhook]
+verify_jwt = false
