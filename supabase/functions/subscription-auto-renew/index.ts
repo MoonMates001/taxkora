@@ -415,8 +415,9 @@ const handler = async (req: Request): Promise<Response> => {
     });
   } catch (error: any) {
     console.error("Error in subscription-auto-renew function:", error);
+    // Return generic error - don't expose internal details (this is a service function)
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ error: "Auto-renewal processing failed" }),
       {
         status: 500,
         headers: { "Content-Type": "application/json", ...corsHeaders },

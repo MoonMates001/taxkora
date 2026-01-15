@@ -154,8 +154,9 @@ serve(async (req) => {
 
     if (flutterwaveData.status !== "success") {
       console.error("Flutterwave error:", flutterwaveData);
+      // Return generic error message - don't expose gateway internals
       return new Response(
-        JSON.stringify({ error: flutterwaveData.message || "Payment initialization failed" }),
+        JSON.stringify({ error: "Payment initialization failed. Please try again or contact support." }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
@@ -170,8 +171,9 @@ serve(async (req) => {
     );
   } catch (error) {
     console.error("Payment error:", error);
+    // Return generic error - don't expose internal details
     return new Response(
-      JSON.stringify({ error: error instanceof Error ? error.message : "Payment processing failed" }),
+      JSON.stringify({ error: "Payment processing failed. Please try again or contact support." }),
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   }

@@ -101,8 +101,9 @@ serve(async (req) => {
 
     if (verifyData.status !== "success") {
       console.error("Flutterwave verification failed:", verifyData);
+      // Return generic error - don't expose gateway response details
       return new Response(
-        JSON.stringify({ error: "Transaction verification failed", details: verifyData }),
+        JSON.stringify({ error: "Transaction verification failed. Please contact support if the issue persists." }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
@@ -284,8 +285,9 @@ serve(async (req) => {
 
   } catch (error) {
     console.error("Trial verification error:", error);
+    // Return generic error - don't expose internal details
     return new Response(
-      JSON.stringify({ error: error instanceof Error ? error.message : "Verification failed" }),
+      JSON.stringify({ error: "Trial activation failed. Please try again or contact support." }),
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   }
