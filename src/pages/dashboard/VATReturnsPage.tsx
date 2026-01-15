@@ -342,7 +342,7 @@ const VATReturnsPage = () => {
               </Badge>
             </div>
             <p className="text-sm text-muted-foreground text-center">
-              Nigeria Tax Act 2025/2026
+              Nigeria Tax Act 2025
             </p>
             <div className="text-xs text-center text-muted-foreground">
               VAT = Net Amount × {(VAT_RATE * 100).toFixed(1)}%

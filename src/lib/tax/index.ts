@@ -1,5 +1,5 @@
 /**
- * Nigeria Tax Act 2025/2026 - Unified Tax Engine
+ * Nigeria Tax Act 2025 - Unified Tax Engine
  * Exports all tax computation functions and types
  */
 
@@ -45,8 +45,8 @@ export function computeBusinessTax(input: BusinessTaxInput): BusinessTaxResult {
 /**
  * Determine which tax authority handles this entity
  */
-export function getTaxAuthority(entityType: BusinessTaxInput["entityType"]): "SIRS" | "FIRS" {
-  return entityType === "limited_company" ? "FIRS" : "SIRS";
+export function getTaxAuthority(entityType: BusinessTaxInput["entityType"]): "SIRS" | "NRS" {
+  return entityType === "limited_company" ? "NRS" : "SIRS";
 }
 
 /**

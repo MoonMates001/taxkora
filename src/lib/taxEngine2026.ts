@@ -1,6 +1,6 @@
 /**
- * Nigeria Tax Act 2026 - Personal Income Tax Engine
- * Implements the new PIT rules effective from 2026
+ * Nigeria Tax Act 2025 - Personal Income Tax Engine
+ * Implements the new PIT rules effective from 2025
  */
 
 // Tax-exempt threshold
@@ -13,7 +13,7 @@ export const RENT_RELIEF_CAP = 500000; // Maximum ₦500,000
 // Employment compensation exemption cap
 export const EMPLOYMENT_COMPENSATION_EXEMPT_CAP = 50000000; // ₦50 million
 
-// Progressive Tax Brackets (Nigeria Tax Act 2026)
+// Progressive Tax Brackets (Nigeria Tax Act 2025)
 export const PIT_BRACKETS_2026 = [
   { min: 0, max: 800000, rate: 0, label: "First ₦800,000" },
   { min: 800000, max: 3000000, rate: 0.15, label: "₦800,001 — ₦3,000,000" },

@@ -1,5 +1,5 @@
 /**
- * Nigeria Tax Act 2025/2026 - WHT Computation Module
+ * Nigeria Tax Act 2025 - WHT Computation Module
  * Withholding Tax (WHT) - Advance payment of income tax
  */
 

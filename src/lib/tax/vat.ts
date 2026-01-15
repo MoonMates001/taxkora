@@ -1,5 +1,5 @@
 /**
- * Nigeria Tax Act 2025/2026 - VAT Computation Module
+ * Nigeria Tax Act 2025 - VAT Computation Module
  * Value Added Tax (VAT) at 7.5%
  */
 

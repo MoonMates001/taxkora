@@ -31,7 +31,7 @@ const Features = () => {
       icon: Calculator,
       title: "VAT & WHT Management",
       description: "Track VAT input/output, manage withholding tax transactions, and generate returns.",
-      highlight: "FIRS compliant"
+      highlight: "NRS compliant"
     },
     {
       icon: TrendingUp,
@@ -42,13 +42,13 @@ const Features = () => {
     {
       icon: PieChart,
       title: "Tax Computation Engine",
-      description: "Accurate PIT and CIT calculations based on current Nigerian tax laws (FIRS 2025).",
+      description: "Accurate PIT and CIT calculations based on current Nigerian tax laws (NRS 2025).",
       highlight: "Real-time updates"
     },
     {
       icon: Send,
       title: "Assisted Tax Filing",
-      description: "Review computed taxes and file directly to FIRS with professional support when needed.",
+      description: "Review computed taxes and file directly to NRS with professional support when needed.",
       highlight: "One-click filing"
     }
   ];

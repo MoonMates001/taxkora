@@ -1,5 +1,5 @@
 /**
- * Nigeria Tax Act 2025/2026 - Tax Constants
+ * Nigeria Tax Act 2025 - Tax Constants
  */
 
 import { CITBand, CapitalAllowanceRates } from "./types";
@@ -18,7 +18,7 @@ export const RENT_RELIEF_CAP = 500000;
 // Employment compensation exemption cap: ₦50 million
 export const EMPLOYMENT_COMPENSATION_EXEMPT_CAP = 50000000;
 
-// Progressive PIT brackets (Nigeria Tax Act 2026)
+// Progressive PIT brackets (Nigeria Tax Act 2025)
 export const PIT_BRACKETS = [
   { min: 0, max: 800000, rate: 0, label: "First ₦800,000" },
   { min: 800000, max: 3000000, rate: 0.15, label: "₦800,001 — ₦3,000,000" },

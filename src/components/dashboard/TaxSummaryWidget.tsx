@@ -35,7 +35,7 @@ const TaxSummaryWidget = () => {
       .reduce((sum, record) => sum + Number(record.amount), 0);
   }, [incomeRecords, currentYear]);
 
-  // Compute tax using 2026 rules
+  // Compute tax using 2025 rules
   const taxComputation = useMemo(() => {
     return computeTax2026(yearlyIncome, {
       pension_contribution: deductions.pension_contribution,
@@ -61,7 +61,7 @@ const TaxSummaryWidget = () => {
       {
         name: "Annual Tax Return",
         date: new Date(currentYear + 1, 2, 31), // March 31
-        description: "File annual PIT returns with FIRS/NRS",
+        description: "File annual PIT returns with NRS",
       },
       {
         name: "Q1 Provisional Tax",

@@ -70,7 +70,7 @@ const TaxComputationPage = () => {
       .reduce((sum, record) => sum + Number(record.amount), 0);
   }, [incomeRecords, selectedYear]);
 
-  // Compute tax using 2026 rules
+  // Compute tax using 2025 rules
   const taxComputation = useMemo(() => {
     return computeTax2026(yearlyIncome, {
       ...deductionForm,
@@ -116,7 +116,7 @@ const TaxComputationPage = () => {
         <div>
           <h1 className="font-display text-3xl font-bold text-foreground">Tax Computation</h1>
           <p className="text-muted-foreground mt-1">
-            Nigeria Tax Act 2026 - Personal Income Tax Calculator
+            Nigeria Tax Act 2025 - Personal Income Tax Calculator
           </p>
         </div>
         <div className="flex items-center gap-3">
@@ -213,7 +213,7 @@ const TaxComputationPage = () => {
                 <h3 className="font-semibold text-green-800">Tax Exempt Status</h3>
                 <p className="text-green-700 mt-1">{taxComputation.exemptionReason}</p>
                 <p className="text-sm text-green-600 mt-2">
-                  Under the Nigeria Tax Act 2026, individuals with annual taxable income at or below ₦800,000 are fully exempt from personal income tax.
+                  Under the Nigeria Tax Act 2025, individuals with annual taxable income at or below ₦800,000 are fully exempt from personal income tax.
                 </p>
               </div>
             </div>
@@ -536,10 +536,10 @@ const TaxComputationPage = () => {
             <CardHeader>
               <CardTitle className="font-display flex items-center gap-2">
                 <Info className="w-5 h-5 text-primary" />
-                Nigeria Tax Act 2026 - Progressive Tax Rates
+                Nigeria Tax Act 2025 - Progressive Tax Rates
               </CardTitle>
               <CardDescription>
-                These are the new personal income tax rates effective from January 2026
+                These are the new personal income tax rates effective from January 2025
               </CardDescription>
             </CardHeader>
             <CardContent>

@@ -1,6 +1,6 @@
 /**
  * Smart Automatic Tax Exemptions and Deductions
- * Based on Nigeria Tax Act 2026 rules
+ * Based on Nigeria Tax Act 2025 rules
  */
 
 import { Expense } from "@/hooks/useExpenses";

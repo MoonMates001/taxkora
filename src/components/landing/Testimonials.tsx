@@ -20,7 +20,7 @@ const Testimonials = () => {
       name: "Ibrahim Musa",
       role: "MD, Musa & Sons Ltd",
       image: null,
-      content: "The CIT computation feature is incredibly accurate. We've never had issues with FIRS since we started using TAXKORA for our company filings.",
+      content: "The CIT computation feature is incredibly accurate. We've never had issues with NRS since we started using TAXKORA for our company filings.",
       rating: 5
     },
     {

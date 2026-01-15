@@ -29,7 +29,7 @@ const Features = () => {
     {
       icon: Send,
       title: "Tax Filing Services",
-      description: "Assisted and done-for-you tax filing with direct submission to FIRS."
+      description: "Assisted and done-for-you tax filing with direct submission to NRS."
     }
   ];
 
