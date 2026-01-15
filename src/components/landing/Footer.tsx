@@ -51,13 +51,13 @@ const Footer = () => {
             
             {/* Contact info */}
             <div className="space-y-3">
-              <a href="mailto:hello@taxkora.com" className="flex items-center gap-3 text-sm hover:text-primary transition-colors">
+              <a href="mailto:alphalinkprime@gmail.com" className="flex items-center gap-3 text-sm hover:text-primary transition-colors">
                 <Mail className="w-4 h-4 text-teal-500" />
-                <span>hello@taxkora.com</span>
+                <span>alphalinkprime@gmail.com</span>
               </a>
-              <a href="tel:+2348001234567" className="flex items-center gap-3 text-sm hover:text-primary transition-colors">
+              <a href="tel:+2347077706706" className="flex items-center gap-3 text-sm hover:text-primary transition-colors">
                 <Phone className="w-4 h-4 text-teal-500" />
-                <span>+234 800 123 4567</span>
+                <span>+234 707 770 6706</span>
               </a>
               <div className="flex items-center gap-3 text-sm">
                 <MapPin className="w-4 h-4 text-teal-500" />
