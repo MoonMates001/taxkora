@@ -1,5 +1,12 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import {
+  generateBrandedEmail,
+  generateDetailsTable,
+  generateInfoBox,
+  generateFeatureList,
+  BRAND_COLORS,
+} from "../_shared/email-template.ts";
 
 const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
 
@@ -126,82 +133,72 @@ const handler = async (req: Request): Promise<Response> => {
         ? `Your TaxKora Trial Expires in ${reminder.daysRemaining} Day${reminder.daysRemaining > 1 ? "s" : ""}`
         : `Your TaxKora Subscription Expires in ${reminder.daysRemaining} Day${reminder.daysRemaining > 1 ? "s" : ""}`;
 
+      const urgencyType = reminder.daysRemaining === 1
+        ? "danger"
+        : reminder.daysRemaining === 7
+          ? "warning"
+          : "info";
+
       const urgencyText = reminder.daysRemaining === 1
         ? "⚠️ This is your final reminder!"
         : reminder.daysRemaining === 7
-        ? "🔔 One week left!"
-        : "📅 30 days remaining";
+          ? "🔔 One week left!"
+          : "📅 30 days remaining";
 
       const actionText = reminder.isTrial
         ? "Subscribe now to continue enjoying all premium features and keep your tax data safe."
         : "Renew now to maintain uninterrupted access to all your tax records and features.";
 
-      const emailHtml = `
-        <!DOCTYPE html>
-        <html>
-        <head>
-          <style>
-            body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; color: #333; }
-            .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-            .header { background: linear-gradient(135deg, #0d9488 0%, #14b8a6 100%); color: white; padding: 30px; text-align: center; border-radius: 8px 8px 0 0; }
-            .content { background: #f9fafb; padding: 30px; border: 1px solid #e5e7eb; }
-            .urgency { background: ${reminder.daysRemaining === 1 ? '#fef2f2' : reminder.daysRemaining === 7 ? '#fffbeb' : '#f0fdf4'}; 
-                       border-left: 4px solid ${reminder.daysRemaining === 1 ? '#ef4444' : reminder.daysRemaining === 7 ? '#f59e0b' : '#22c55e'}; 
-                       padding: 15px; margin: 20px 0; border-radius: 4px; }
-            .cta { text-align: center; margin: 30px 0; }
-            .cta a { background: #0d9488; color: white; padding: 14px 28px; text-decoration: none; border-radius: 6px; font-weight: bold; display: inline-block; }
-            .footer { text-align: center; padding: 20px; color: #6b7280; font-size: 12px; }
-            .details { background: white; padding: 15px; border-radius: 6px; margin: 15px 0; }
-          </style>
-        </head>
-        <body>
-          <div class="container">
-            <div class="header">
-              <h1 style="margin: 0;">TaxKora</h1>
-              <p style="margin: 10px 0 0 0; opacity: 0.9;">Your Nigerian Tax Companion</p>
-            </div>
-            <div class="content">
-              <h2>Hello ${reminder.fullName},</h2>
-              
-              <div class="urgency">
-                <strong>${urgencyText}</strong><br>
-                Your ${reminder.isTrial ? 'free trial' : 'subscription'} for <strong>${reminder.planName}</strong> will expire on 
-                <strong>${new Date(reminder.expiryDate).toLocaleDateString('en-NG', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</strong>.
-              </div>
-              
-              <p>${actionText}</p>
-              
-              <div class="details">
-                <p style="margin: 0;"><strong>Plan:</strong> ${reminder.planName}</p>
-                <p style="margin: 5px 0 0 0;"><strong>Expires:</strong> ${new Date(reminder.expiryDate).toLocaleDateString('en-NG')}</p>
-                <p style="margin: 5px 0 0 0;"><strong>Days Remaining:</strong> ${reminder.daysRemaining}</p>
-              </div>
-              
-              <p><strong>What you'll lose access to:</strong></p>
-              <ul>
-                <li>Tax computation and filing tools</li>
-                <li>Income and expense tracking</li>
-                <li>Invoice management</li>
-                <li>VAT and WHT calculations</li>
-                <li>Tax payment tracking</li>
-              </ul>
-              
-              <div class="cta">
-                <a href="https://taxkora.lovable.app/dashboard/subscription">${reminder.isTrial ? 'Subscribe Now' : 'Renew Now'}</a>
-              </div>
-              
-              <p style="color: #6b7280; font-size: 14px;">
-                If you have any questions about your subscription, please don't hesitate to reach out to our support team.
-              </p>
-            </div>
-            <div class="footer">
-              <p>© ${new Date().getFullYear()} TaxKora. All rights reserved.</p>
-              <p>This is an automated reminder from TaxKora.</p>
-            </div>
-          </div>
-        </body>
-        </html>
+      const formattedDate = new Date(reminder.expiryDate).toLocaleDateString('en-NG', { 
+        weekday: 'long', 
+        year: 'numeric', 
+        month: 'long', 
+        day: 'numeric' 
+      });
+
+      const features = [
+        "Tax computation and filing tools",
+        "Income and expense tracking",
+        "Invoice management",
+        "VAT and WHT calculations",
+        "Tax payment tracking",
+      ];
+
+      const emailContent = `
+        ${generateInfoBox(
+          `<strong>${urgencyText}</strong><br>
+          Your ${reminder.isTrial ? 'free trial' : 'subscription'} for <strong>${reminder.planName}</strong> will expire on 
+          <strong>${formattedDate}</strong>.`,
+          urgencyType as "info" | "warning" | "danger"
+        )}
+
+        <p style="margin: 20px 0; font-size: 16px; color: #374151; line-height: 1.6;">
+          ${actionText}
+        </p>
+
+        ${generateDetailsTable([
+          { label: "Plan", value: reminder.planName },
+          { label: "Expires", value: new Date(reminder.expiryDate).toLocaleDateString('en-NG') },
+          { label: "Days Remaining", value: String(reminder.daysRemaining) },
+        ])}
+
+        <h3 style="margin: 24px 0 16px 0; font-size: 16px; font-weight: 600; color: #18181b;">
+          What you'll lose access to:
+        </h3>
+
+        ${generateFeatureList(features)}
       `;
+
+      const emailHtml = generateBrandedEmail({
+        preheader: `${urgencyText} - ${reminder.planName} expires soon`,
+        title: reminder.isTrial ? "Trial Expiring Soon" : "Subscription Expiring Soon",
+        subtitle: "Subscription Reminder",
+        recipientName: reminder.fullName,
+        content: emailContent,
+        ctaText: reminder.isTrial ? "Subscribe Now" : "Renew Now",
+        ctaUrl: "https://taxkora.lovable.app/dashboard/subscription",
+        footerNote: "If you have any questions about your subscription, please don't hesitate to reach out to our support team.",
+      });
 
       try {
         const emailResponse = await fetch("https://api.resend.com/emails", {

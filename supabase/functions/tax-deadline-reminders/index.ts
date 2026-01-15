@@ -1,5 +1,11 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.1";
+import {
+  generateBrandedEmail,
+  generateDetailsTable,
+  generateInfoBox,
+  BRAND_COLORS,
+} from "../_shared/email-template.ts";
 
 const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
 
@@ -154,64 +160,45 @@ const handler = async (req: Request): Promise<Response> => {
       const monthName = MONTHS[reminder.month - 1];
       const deadlineTypeLabel = reminder.deadlineType === "vat" ? "VAT Return" : "WHT Remittance";
       const urgencyText = reminder.daysUntilDue <= 3 ? "⚠️ URGENT: " : "";
+      const urgencyType = reminder.daysUntilDue <= 3 ? "danger" : "warning";
+
+      const formattedDate = new Date(reminder.dueDate).toLocaleDateString('en-NG', { 
+        weekday: 'long', 
+        year: 'numeric', 
+        month: 'long', 
+        day: 'numeric' 
+      });
+
+      const emailContent = `
+        ${generateInfoBox(
+          `<strong>${urgencyText}${deadlineTypeLabel} deadline is approaching!</strong><br>
+          <strong>${reminder.daysUntilDue} day${reminder.daysUntilDue > 1 ? 's' : ''}</strong> remaining until the deadline.`,
+          urgencyType as "warning" | "danger"
+        )}
+
+        ${generateDetailsTable([
+          { label: "Deadline Type", value: deadlineTypeLabel },
+          { label: "Period", value: `${monthName} ${reminder.year}` },
+          { label: "Due Date", value: formattedDate },
+        ])}
+
+        <p style="margin: 20px 0; font-size: 16px; color: #374151; line-height: 1.6;">
+          Please log in to TaxKora to review your ${reminder.deadlineType === 'vat' ? 'VAT transactions and file your return' : 'WHT deductions and complete the remittance'} before the deadline.
+        </p>
+      `;
+
+      const emailHtml = generateBrandedEmail({
+        preheader: `${urgencyText}${deadlineTypeLabel} deadline: ${reminder.daysUntilDue} days remaining`,
+        title: "Tax Deadline Reminder",
+        subtitle: `${deadlineTypeLabel} - ${monthName} ${reminder.year}`,
+        recipientName: reminder.fullName,
+        content: emailContent,
+        ctaText: `Go to ${deadlineTypeLabel}`,
+        ctaUrl: `https://taxkora.lovable.app/dashboard/${reminder.deadlineType}`,
+        footerNote: "This is an automated reminder from TaxKora. Please do not reply to this email.",
+      });
 
       try {
-        const emailHtml = `
-          <!DOCTYPE html>
-          <html>
-          <head>
-            <meta charset="utf-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-          </head>
-          <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
-            <div style="background: linear-gradient(135deg, #0d9488 0%, #14b8a6 100%); padding: 30px; border-radius: 12px 12px 0 0;">
-              <h1 style="color: white; margin: 0; font-size: 24px;">TaxKora</h1>
-              <p style="color: rgba(255,255,255,0.9); margin: 5px 0 0 0;">Tax Deadline Reminder</p>
-            </div>
-            
-            <div style="background: #fff; padding: 30px; border: 1px solid #e5e7eb; border-top: none; border-radius: 0 0 12px 12px;">
-              <p style="font-size: 16px;">Dear ${reminder.fullName},</p>
-              
-              <div style="background: ${reminder.daysUntilDue <= 3 ? '#fef2f2' : '#fffbeb'}; border-left: 4px solid ${reminder.daysUntilDue <= 3 ? '#ef4444' : '#f59e0b'}; padding: 15px; margin: 20px 0; border-radius: 0 8px 8px 0;">
-                <p style="margin: 0; font-weight: 600; color: ${reminder.daysUntilDue <= 3 ? '#991b1b' : '#92400e'};">
-                  ${urgencyText}${deadlineTypeLabel} deadline is approaching!
-                </p>
-                <p style="margin: 10px 0 0 0; color: ${reminder.daysUntilDue <= 3 ? '#991b1b' : '#92400e'};">
-                  <strong>${reminder.daysUntilDue} day${reminder.daysUntilDue > 1 ? 's' : ''}</strong> remaining until the deadline.
-                </p>
-              </div>
-              
-              <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
-                <tr>
-                  <td style="padding: 10px; border-bottom: 1px solid #e5e7eb; color: #6b7280;">Deadline Type:</td>
-                  <td style="padding: 10px; border-bottom: 1px solid #e5e7eb; font-weight: 600;">${deadlineTypeLabel}</td>
-                </tr>
-                <tr>
-                  <td style="padding: 10px; border-bottom: 1px solid #e5e7eb; color: #6b7280;">Period:</td>
-                  <td style="padding: 10px; border-bottom: 1px solid #e5e7eb; font-weight: 600;">${monthName} ${reminder.year}</td>
-                </tr>
-                <tr>
-                  <td style="padding: 10px; border-bottom: 1px solid #e5e7eb; color: #6b7280;">Due Date:</td>
-                  <td style="padding: 10px; border-bottom: 1px solid #e5e7eb; font-weight: 600;">${new Date(reminder.dueDate).toLocaleDateString('en-NG', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</td>
-                </tr>
-              </table>
-              
-              <p style="margin: 20px 0;">
-                Please log in to TaxKora to review your ${reminder.deadlineType === 'vat' ? 'VAT transactions and file your return' : 'WHT deductions and complete the remittance'} before the deadline.
-              </p>
-              
-              <a href="https://taxkora.lovable.app/dashboard/${reminder.deadlineType}" style="display: inline-block; background: linear-gradient(135deg, #0d9488 0%, #14b8a6 100%); color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; font-weight: 600; margin: 10px 0;">
-                Go to ${deadlineTypeLabel}
-              </a>
-              
-              <p style="color: #6b7280; font-size: 14px; margin-top: 30px; padding-top: 20px; border-top: 1px solid #e5e7eb;">
-                This is an automated reminder from TaxKora. Please do not reply to this email.
-              </p>
-            </div>
-          </body>
-          </html>
-        `;
-
         const emailResponse = await fetch("https://api.resend.com/emails", {
           method: "POST",
           headers: {
