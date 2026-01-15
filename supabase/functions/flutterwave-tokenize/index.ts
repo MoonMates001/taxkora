@@ -156,8 +156,9 @@ serve(async (req) => {
 
     if (flutterwaveData.status !== "success") {
       console.error("Flutterwave tokenization error:", flutterwaveData);
+      // Return generic error - don't expose gateway internals
       return new Response(
-        JSON.stringify({ error: flutterwaveData.message || "Card verification initialization failed" }),
+        JSON.stringify({ error: "Card verification initialization failed. Please try again or contact support." }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
@@ -176,8 +177,9 @@ serve(async (req) => {
   } catch (error) {
     console.error("Tokenization error:", error);
     const corsHeaders = getCorsHeaders(req.headers.get("origin"));
+    // Return generic error - don't expose internal details
     return new Response(
-      JSON.stringify({ error: error instanceof Error ? error.message : "Card verification failed" }),
+      JSON.stringify({ error: "Card verification failed. Please try again or contact support." }),
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   }
