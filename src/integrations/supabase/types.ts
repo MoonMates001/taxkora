@@ -770,6 +770,39 @@ export type Database = {
         }
         Relationships: []
       }
+      webhook_events: {
+        Row: {
+          created_at: string
+          error_message: string | null
+          event_type: string
+          id: string
+          payload: Json
+          processed_at: string | null
+          status: string
+          tx_ref: string | null
+        }
+        Insert: {
+          created_at?: string
+          error_message?: string | null
+          event_type: string
+          id?: string
+          payload: Json
+          processed_at?: string | null
+          status?: string
+          tx_ref?: string | null
+        }
+        Update: {
+          created_at?: string
+          error_message?: string | null
+          event_type?: string
+          id?: string
+          payload?: Json
+          processed_at?: string | null
+          status?: string
+          tx_ref?: string | null
+        }
+        Relationships: []
+      }
       wht_transactions: {
         Row: {
           created_at: string
