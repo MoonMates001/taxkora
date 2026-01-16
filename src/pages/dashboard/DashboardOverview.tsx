@@ -4,6 +4,7 @@ import FinancialChartsSection from "@/components/dashboard/FinancialChartsSectio
 import TaxSummaryWidget from "@/components/dashboard/TaxSummaryWidget";
 import TaxProjectionChart from "@/components/dashboard/TaxProjectionChart";
 import SmartDeductionsCard from "@/components/dashboard/SmartDeductionsCard";
+import TaxAdvisorChat from "@/components/dashboard/TaxAdvisorChat";
 import TaxCalendarWidget from "@/components/dashboard/TaxCalendarWidget";
 import TaxLiabilitiesWidget from "@/components/dashboard/TaxLiabilitiesWidget";
 import RecentActivityFeed from "@/components/dashboard/RecentActivityFeed";
@@ -34,8 +35,9 @@ const DashboardOverview = () => {
 
       {/* Tax Intelligence Section */}
       <div className="grid lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2">
+        <div className="lg:col-span-2 space-y-6">
           <TaxProjectionChart />
+          <TaxAdvisorChat />
         </div>
         <div className="space-y-6">
           <TaxSummaryWidget />
