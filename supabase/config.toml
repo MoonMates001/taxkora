@@ -1,5 +1,8 @@
 project_id = "xvrmtsgagzcbdgxrwdly"
 
+[functions.tax-advisor]
+verify_jwt = false
+
 [functions.tax-deadline-reminders]
 verify_jwt = false
 
