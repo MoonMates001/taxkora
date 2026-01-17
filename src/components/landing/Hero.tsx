@@ -1,14 +1,40 @@
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { ArrowRight, Shield, Zap, FileCheck } from "lucide-react";
+import { useCountAnimation } from "@/hooks/useCountAnimation";
+
+const AnimatedStat = ({ endValue, suffix, label }: { endValue: number; suffix: string; label: string }) => {
+  const { count, ref } = useCountAnimation({ end: endValue, duration: 2500 });
+  
+  const formatValue = () => {
+    if (endValue >= 1000000000) {
+      return `₦${(count / 1000000000).toFixed(count >= endValue ? 0 : 1)}B${suffix}`;
+    }
+    if (endValue >= 1000) {
+      return `${(count / 1000).toFixed(0)}K${suffix}`;
+    }
+    if (suffix === "%") {
+      return `${(count / 10).toFixed(1)}${suffix}`;
+    }
+    return `${count}${suffix}`;
+  };
+
+  return (
+    <div ref={ref} className="text-center lg:text-left">
+      <div className="font-display font-bold text-2xl sm:text-3xl text-primary-foreground">
+        {formatValue()}
+      </div>
+      <div className="text-primary-foreground/60 text-sm">{label}</div>
+    </div>
+  );
+};
 
 const Hero = () => {
   const stats = [
-    { value: "10K+", label: "Businesses trust us" },
-    { value: "₦2B+", label: "Taxes processed" },
-    { value: "99.9%", label: "Filing accuracy" },
+    { endValue: 10000, suffix: "+", label: "Businesses trust us" },
+    { endValue: 2000000000, suffix: "+", label: "Taxes processed" },
+    { endValue: 999, suffix: "%", label: "Filing accuracy" },
   ];
-
   return (
     <section className="relative min-h-[90vh] bg-hero overflow-hidden flex items-center">
       {/* Gradient mesh background */}
@@ -170,10 +196,12 @@ const Hero = () => {
         <div className="mt-16 pt-8 border-t border-primary-foreground/10 animate-fade-up" style={{ animationDelay: "0.6s" }}>
           <div className="grid grid-cols-3 gap-8 max-w-2xl mx-auto lg:mx-0">
             {stats.map((stat, i) => (
-              <div key={i} className="text-center lg:text-left">
-                <div className="font-display font-bold text-2xl sm:text-3xl text-primary-foreground">{stat.value}</div>
-                <div className="text-primary-foreground/60 text-sm">{stat.label}</div>
-              </div>
+              <AnimatedStat 
+                key={i}
+                endValue={stat.endValue}
+                suffix={stat.suffix}
+                label={stat.label}
+              />
             ))}
           </div>
         </div>
