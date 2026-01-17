@@ -1,8 +1,11 @@
-import { UserPlus, FileSpreadsheet, Calculator, Send, ArrowRight } from "lucide-react";
+import { UserPlus, FileSpreadsheet, Calculator, Send, ArrowRight, Play, Monitor } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
+import { useState } from "react";
 
 const HowItWorks = () => {
+  const [isPlaying, setIsPlaying] = useState(false);
+
   const steps = [
     {
       number: "01",
@@ -42,7 +45,7 @@ const HowItWorks = () => {
 
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
-        <div className="text-center max-w-3xl mx-auto mb-20">
+        <div className="text-center max-w-3xl mx-auto mb-16">
           <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/5 rounded-full text-primary text-sm font-medium mb-4">
             <span className="w-2 h-2 bg-coral-500 rounded-full" />
             Simple Process
@@ -54,6 +57,131 @@ const HowItWorks = () => {
           <p className="text-muted-foreground text-lg">
             Get started in minutes. TAXKORA handles the complexity so you can focus on what matters—your business.
           </p>
+        </div>
+
+        {/* Video Walkthrough Section */}
+        <div className="max-w-4xl mx-auto mb-20">
+          <div className="relative rounded-2xl overflow-hidden shadow-2xl border border-border bg-card">
+            {/* Video/GIF Container */}
+            <div className="relative aspect-video bg-gradient-to-br from-gray-900 to-gray-800">
+              {/* Animated Dashboard Preview */}
+              <div className="absolute inset-0 p-4 sm:p-8">
+                {/* Browser chrome */}
+                <div className="bg-gray-800/80 backdrop-blur rounded-t-xl border border-gray-700/50 p-3">
+                  <div className="flex items-center gap-2">
+                    <div className="w-3 h-3 rounded-full bg-coral-500" />
+                    <div className="w-3 h-3 rounded-full bg-yellow-400" />
+                    <div className="w-3 h-3 rounded-full bg-green-400" />
+                    <div className="flex-1 ml-4 h-5 bg-gray-700/50 rounded flex items-center px-3">
+                      <span className="text-xs text-gray-400">app.taxkora.com/dashboard</span>
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Animated Dashboard Content */}
+                <div className="bg-gray-900/90 backdrop-blur border-x border-b border-gray-700/50 rounded-b-xl p-4 h-[calc(100%-44px)] overflow-hidden">
+                  <div className="space-y-3 animate-fade-in">
+                    {/* Stat cards animation */}
+                    <div className="grid grid-cols-3 gap-3">
+                      <div className={`bg-gray-800/60 rounded-lg p-3 border border-gray-700/30 transition-all duration-700 ${isPlaying ? 'translate-y-0 opacity-100' : 'translate-y-2 opacity-70'}`} style={{ transitionDelay: '0ms' }}>
+                        <div className="text-[10px] text-gray-400">Income</div>
+                        <div className={`text-sm font-bold text-white transition-all duration-1000 ${isPlaying ? 'scale-100' : 'scale-95'}`}>₦4.2M</div>
+                        <div className="text-[10px] text-green-400">↑ 12.5%</div>
+                      </div>
+                      <div className={`bg-gray-800/60 rounded-lg p-3 border border-gray-700/30 transition-all duration-700 ${isPlaying ? 'translate-y-0 opacity-100' : 'translate-y-2 opacity-70'}`} style={{ transitionDelay: '100ms' }}>
+                        <div className="text-[10px] text-gray-400">Expenses</div>
+                        <div className={`text-sm font-bold text-white transition-all duration-1000 ${isPlaying ? 'scale-100' : 'scale-95'}`}>₦1.8M</div>
+                        <div className="text-[10px] text-coral-400">↓ 3.2%</div>
+                      </div>
+                      <div className={`bg-teal-600/20 rounded-lg p-3 border border-teal-500/30 transition-all duration-700 ${isPlaying ? 'translate-y-0 opacity-100' : 'translate-y-2 opacity-70'}`} style={{ transitionDelay: '200ms' }}>
+                        <div className="text-[10px] text-teal-300">Tax Due</div>
+                        <div className={`text-sm font-bold text-white transition-all duration-1000 ${isPlaying ? 'scale-100' : 'scale-95'}`}>₦245K</div>
+                        <div className="text-[10px] text-teal-400">Auto-computed</div>
+                      </div>
+                    </div>
+
+                    {/* Chart animation */}
+                    <div className={`bg-gray-800/40 rounded-lg p-3 h-20 transition-all duration-700 ${isPlaying ? 'opacity-100' : 'opacity-70'}`} style={{ transitionDelay: '300ms' }}>
+                      <div className="flex items-end justify-between h-full gap-1">
+                        {[35, 55, 40, 70, 50, 85, 65, 80, 55, 90, 70, 82].map((h, i) => (
+                          <div 
+                            key={i} 
+                            className={`flex-1 bg-gradient-to-t from-teal-600 to-teal-400 rounded-t transition-all duration-1000 ${isPlaying ? '' : 'scale-y-75'}`}
+                            style={{ 
+                              height: `${isPlaying ? h : h * 0.5}%`,
+                              transitionDelay: `${400 + i * 50}ms`
+                            }} 
+                          />
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Invoice row animation */}
+                    <div className={`bg-gray-800/40 rounded-lg p-3 flex items-center justify-between transition-all duration-700 ${isPlaying ? 'translate-x-0 opacity-100' : 'translate-x-4 opacity-70'}`} style={{ transitionDelay: '800ms' }}>
+                      <div className="flex items-center gap-2">
+                        <div className="w-8 h-8 bg-coral-500/20 rounded-lg flex items-center justify-center">
+                          <FileSpreadsheet className="w-4 h-4 text-coral-400" />
+                        </div>
+                        <div>
+                          <div className="text-xs font-medium text-white">INV-2025-0142</div>
+                          <div className="text-[10px] text-gray-400">Acme Corp</div>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <div className="text-xs font-bold text-white">₦850,000</div>
+                        <span className="text-[10px] px-1.5 py-0.5 bg-green-500/20 text-green-400 rounded">Paid</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Play overlay */}
+              {!isPlaying && (
+                <button 
+                  onClick={() => setIsPlaying(true)}
+                  className="absolute inset-0 flex items-center justify-center bg-black/40 backdrop-blur-sm transition-all hover:bg-black/30 group cursor-pointer"
+                >
+                  <div className="flex flex-col items-center gap-3">
+                    <div className="w-20 h-20 rounded-full bg-white/10 backdrop-blur border border-white/20 flex items-center justify-center group-hover:scale-110 group-hover:bg-white/20 transition-all duration-300">
+                      <Play className="w-8 h-8 text-white ml-1" />
+                    </div>
+                    <span className="text-white font-medium text-sm">Watch Platform Demo</span>
+                  </div>
+                </button>
+              )}
+
+              {/* Replay button */}
+              {isPlaying && (
+                <button 
+                  onClick={() => {
+                    setIsPlaying(false);
+                    setTimeout(() => setIsPlaying(true), 100);
+                  }}
+                  className="absolute bottom-4 right-4 px-3 py-1.5 bg-white/10 backdrop-blur border border-white/20 rounded-lg text-white text-xs font-medium hover:bg-white/20 transition-all flex items-center gap-2"
+                >
+                  <Monitor className="w-3.5 h-3.5" />
+                  Replay Demo
+                </button>
+              )}
+            </div>
+
+            {/* Caption bar */}
+            <div className="bg-card px-6 py-4 border-t border-border">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h4 className="font-semibold text-foreground text-sm">See TAXKORA in Action</h4>
+                  <p className="text-muted-foreground text-xs">Watch how easy it is to manage your taxes</p>
+                </div>
+                <Link to="/auth">
+                  <Button size="sm" variant="outline" className="text-xs">
+                    Try It Yourself
+                    <ArrowRight className="w-3.5 h-3.5 ml-1" />
+                  </Button>
+                </Link>
+              </div>
+            </div>
+          </div>
         </div>
 
         {/* Steps - Desktop */}
