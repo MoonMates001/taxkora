@@ -13,11 +13,9 @@ import {
   Bot,
   Send,
   User,
-  Sparkles,
   Loader2,
   RefreshCw,
   Lightbulb,
-  X,
   Maximize2,
   Minimize2,
 } from "lucide-react";
@@ -210,11 +208,10 @@ const TaxAdvisorChat = () => {
         <div className="flex items-center justify-between">
           <CardTitle className="font-display flex items-center gap-2">
             <Bot className="w-5 h-5 text-primary" />
-            Tax Advisor AI
+            Tax Advisor
           </CardTitle>
           <div className="flex items-center gap-2">
             <Badge variant="outline" className="bg-primary/10 text-primary">
-              <Sparkles className="w-3 h-3 mr-1" />
               NTA 2025
             </Badge>
             <Button
