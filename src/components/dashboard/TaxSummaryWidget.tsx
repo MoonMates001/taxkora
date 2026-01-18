@@ -20,10 +20,14 @@ import {
 } from "lucide-react";
 import { format, differenceInDays, isBefore } from "date-fns";
 
-const TaxSummaryWidget = () => {
+interface TaxSummaryWidgetProps {
+  selectedYear?: number;
+}
+
+const TaxSummaryWidget = ({ selectedYear }: TaxSummaryWidgetProps) => {
   const { profile } = useAuth();
   const { incomeRecords } = useIncome();
-  const currentYear = new Date().getFullYear();
+  const currentYear = selectedYear || new Date().getFullYear();
   const { deductions } = useStatutoryDeductions(currentYear);
   const { confirmedTotal } = useTaxPayments(currentYear);
   const isBusinessAccount = profile?.account_type === "business";

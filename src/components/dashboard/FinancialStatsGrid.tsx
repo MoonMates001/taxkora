@@ -34,13 +34,17 @@ const formatCurrency = (amount: number) => {
   }).format(amount);
 };
 
-const FinancialStatsGrid = () => {
+interface FinancialStatsGridProps {
+  selectedYear?: number;
+}
+
+const FinancialStatsGrid = ({ selectedYear }: FinancialStatsGridProps) => {
   const { profile } = useAuth();
   const { incomeRecords, totalIncome } = useIncome();
   const { expenses, totalExpenses } = useExpenses();
   const { invoices } = useInvoices();
   const { clients } = useClients();
-  const currentYear = new Date().getFullYear();
+  const currentYear = selectedYear || new Date().getFullYear();
   const { payments: taxPayments, confirmedTotal: totalTaxPaid } = useTaxPayments(currentYear);
   const { assets: capitalAssets } = useCapitalAssets();
   const { transactions: vatTransactions } = useVATTransactions();
@@ -49,10 +53,10 @@ const FinancialStatsGrid = () => {
 
   const isBusinessAccount = profile?.account_type === "business";
 
-  // Calculate yearly totals (for tax calculation consistency)
+  // Calculate yearly totals based on selected year
   const yearlyTotals = useMemo(() => {
-    const yearStart = startOfYear(new Date());
-    const yearEnd = endOfYear(new Date());
+    const yearStart = new Date(currentYear, 0, 1);
+    const yearEnd = new Date(currentYear, 11, 31, 23, 59, 59);
 
     const yearIncome = incomeRecords
       .filter((r) => {
@@ -69,7 +73,7 @@ const FinancialStatsGrid = () => {
       .reduce((sum, e) => sum + Number(e.amount), 0);
 
     return { yearIncome, yearExpenses };
-  }, [incomeRecords, expenses]);
+  }, [incomeRecords, expenses, currentYear]);
 
   // Calculate current month stats
   const currentMonthStats = useMemo(() => {
