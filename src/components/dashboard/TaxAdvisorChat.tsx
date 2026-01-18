@@ -3,12 +3,20 @@ import { useAuth } from "@/hooks/useAuth";
 import { useIncome } from "@/hooks/useIncome";
 import { useExpenses } from "@/hooks/useExpenses";
 import { useStatutoryDeductions } from "@/hooks/useStatutoryDeductions";
+import { useTaxPayments } from "@/hooks/useTaxPayments";
+import { useCapitalAssets } from "@/hooks/useCapitalAssets";
+import { useVATTransactions } from "@/hooks/useVATTransactions";
+import { useWHTTransactions } from "@/hooks/useWHTTransactions";
+import { useInvoices } from "@/hooks/useInvoices";
+import { useClients } from "@/hooks/useClients";
 import { analyzeSmartDeductions } from "@/lib/autoDeductions";
+import { computeTax2026 } from "@/lib/taxEngine2026";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
+import { toast } from "sonner";
 import {
   Bot,
   Send,
@@ -31,14 +39,26 @@ const SUGGESTED_PROMPTS = [
   "How can I reduce my tax liability?",
   "Explain rent relief calculation",
   "What's my estimated tax for this year?",
+  "Analyze my VAT position",
+  "Review my WHT obligations",
 ];
 
-const TaxAdvisorChat = () => {
+interface TaxAdvisorChatProps {
+  selectedYear?: number;
+}
+
+const TaxAdvisorChat = ({ selectedYear }: TaxAdvisorChatProps) => {
   const { profile } = useAuth();
   const { incomeRecords } = useIncome();
   const { expenses } = useExpenses();
-  const currentYear = new Date().getFullYear();
+  const currentYear = selectedYear || new Date().getFullYear();
   const { deductions } = useStatutoryDeductions(currentYear);
+  const { payments: taxPayments, confirmedTotal: totalTaxPaid } = useTaxPayments(currentYear);
+  const { assets: capitalAssets } = useCapitalAssets();
+  const { transactions: vatTransactions } = useVATTransactions(currentYear);
+  const { transactions: whtTransactions } = useWHTTransactions(currentYear);
+  const { invoices } = useInvoices();
+  const { clients } = useClients();
 
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
@@ -46,8 +66,9 @@ const TaxAdvisorChat = () => {
   const [isExpanded, setIsExpanded] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  // Calculate financial context
+  // Calculate comprehensive financial context
   const financialContext = useMemo(() => {
+    // Filter records by year
     const yearlyIncome = incomeRecords
       .filter((record) => new Date(record.date).getFullYear() === currentYear)
       .reduce((sum, record) => sum + Number(record.amount), 0);
@@ -56,6 +77,23 @@ const TaxAdvisorChat = () => {
       .filter((e) => new Date(e.date).getFullYear() === currentYear)
       .reduce((sum, e) => sum + Number(e.amount), 0);
 
+    // Income by category
+    const incomeByCategory: Record<string, number> = {};
+    incomeRecords
+      .filter((record) => new Date(record.date).getFullYear() === currentYear)
+      .forEach((record) => {
+        incomeByCategory[record.category] = (incomeByCategory[record.category] || 0) + Number(record.amount);
+      });
+
+    // Expenses by category
+    const expensesByCategory: Record<string, number> = {};
+    expenses
+      .filter((e) => new Date(e.date).getFullYear() === currentYear)
+      .forEach((expense) => {
+        expensesByCategory[expense.category] = (expensesByCategory[expense.category] || 0) + Number(expense.amount);
+      });
+
+    // Smart deductions analysis
     const analysis = analyzeSmartDeductions(yearlyIncome, expenses, currentYear, {
       pension_contribution: deductions.pension_contribution,
       nhis_contribution: deductions.nhis_contribution,
@@ -67,21 +105,151 @@ const TaxAdvisorChat = () => {
       pension_benefits_received: deductions.pension_benefits_received,
     });
 
+    // Tax computation
+    const taxResult = computeTax2026(yearlyIncome, {
+      pension_contribution: deductions.pension_contribution,
+      nhis_contribution: deductions.nhis_contribution,
+      nhf_contribution: deductions.nhf_contribution,
+      housing_loan_interest: deductions.housing_loan_interest,
+      life_insurance_premium: deductions.life_insurance_premium,
+      annual_rent_paid: deductions.annual_rent_paid,
+      employment_compensation: deductions.employment_compensation,
+      gifts_received: deductions.gifts_received,
+      pension_benefits_received: deductions.pension_benefits_received,
+    });
+
+    // VAT summary
+    const vatOutput = vatTransactions
+      .filter((t) => t.transactionType === "output" && !t.isExempt)
+      .reduce((sum, t) => sum + Number(t.vatAmount), 0);
+    const vatInput = vatTransactions
+      .filter((t) => t.transactionType === "input" && !t.isExempt)
+      .reduce((sum, t) => sum + Number(t.vatAmount), 0);
+    const netVAT = vatOutput - vatInput;
+
+    // WHT summary
+    const totalWHT = whtTransactions.reduce((sum, t) => sum + Number(t.whtAmount), 0);
+    const whtByType: Record<string, number> = {};
+    whtTransactions.forEach((t) => {
+      whtByType[t.paymentType] = (whtByType[t.paymentType] || 0) + Number(t.whtAmount);
+    });
+
+    // Capital assets summary
+    const totalAssetsCost = capitalAssets.reduce((sum, a) => sum + Number(a.cost), 0);
+    const assetsByCategory: Record<string, { count: number; cost: number }> = {};
+    capitalAssets.forEach((asset) => {
+      if (!assetsByCategory[asset.category]) {
+        assetsByCategory[asset.category] = { count: 0, cost: 0 };
+      }
+      assetsByCategory[asset.category].count += 1;
+      assetsByCategory[asset.category].cost += Number(asset.cost);
+    });
+
+    // Invoice summary
+    const paidInvoices = invoices.filter((i) => i.status === "paid");
+    const overdueInvoices = invoices.filter((i) => i.status === "overdue");
+    const pendingInvoices = invoices.filter((i) => i.status === "sent");
+
     return {
-      grossIncome: yearlyIncome,
-      totalExpenses: yearlyExpenses,
+      year: currentYear,
       accountType: profile?.account_type,
+      businessName: profile?.business_name,
+      
+      // Income breakdown
+      grossIncome: yearlyIncome,
+      incomeByCategory,
+      
+      // Expense breakdown
+      totalExpenses: yearlyExpenses,
+      expensesByCategory,
+      
+      // Statutory deductions claimed
       deductions: {
         pension_contribution: deductions.pension_contribution,
         nhis_contribution: deductions.nhis_contribution,
         nhf_contribution: deductions.nhf_contribution,
         life_insurance_premium: deductions.life_insurance_premium,
         annual_rent_paid: deductions.annual_rent_paid,
+        housing_loan_interest: deductions.housing_loan_interest,
       },
+      
+      // Tax computation result
+      taxComputation: {
+        taxableIncome: taxResult.taxableIncome,
+        netTaxPayable: taxResult.netTaxPayable,
+        effectiveRate: taxResult.effectiveRate,
+        isExempt: taxResult.isExempt,
+        exemptionReason: taxResult.exemptionReason,
+        taxByBracket: taxResult.taxByBracket.filter((b) => b.tax > 0),
+      },
+      
+      // Tax payments
+      taxPayments: {
+        totalPaid: totalTaxPaid,
+        balanceDue: Math.max(0, taxResult.netTaxPayable - totalTaxPaid),
+        paymentCount: taxPayments.length,
+      },
+      
+      // VAT position (for business accounts)
+      vat: {
+        outputVAT: vatOutput,
+        inputVAT: vatInput,
+        netPayable: netVAT,
+        transactionCount: vatTransactions.length,
+      },
+      
+      // WHT position
+      wht: {
+        totalDeducted: totalWHT,
+        byPaymentType: whtByType,
+        transactionCount: whtTransactions.length,
+      },
+      
+      // Capital assets
+      capitalAssets: {
+        totalCost: totalAssetsCost,
+        assetCount: capitalAssets.length,
+        byCategory: assetsByCategory,
+      },
+      
+      // Invoicing (for business accounts)
+      invoices: {
+        totalCount: invoices.length,
+        paidCount: paidInvoices.length,
+        paidValue: paidInvoices.reduce((sum, i) => sum + Number(i.total), 0),
+        overdueCount: overdueInvoices.length,
+        overdueValue: overdueInvoices.reduce((sum, i) => sum + Number(i.total), 0),
+        pendingCount: pendingInvoices.length,
+        pendingValue: pendingInvoices.reduce((sum, i) => sum + Number(i.total), 0),
+      },
+      
+      // Clients
+      clientCount: clients.length,
+      
+      // Smart deduction analysis
       potentialSavings: analysis.totalPotentialSavings,
-      detectedDeductions: analysis.detectedDeductions,
+      detectedDeductions: analysis.detectedDeductions.map((d) => ({
+        category: d.category,
+        suggestion: d.suggestion,
+        confidence: d.confidence,
+      })),
+      taxOptimizationTips: analysis.taxOptimizationTips,
+      recommendedActions: analysis.recommendedActions,
     };
-  }, [incomeRecords, expenses, currentYear, deductions, profile]);
+  }, [
+    incomeRecords,
+    expenses,
+    currentYear,
+    deductions,
+    profile,
+    taxPayments,
+    totalTaxPaid,
+    vatTransactions,
+    whtTransactions,
+    capitalAssets,
+    invoices,
+    clients,
+  ]);
 
   // Auto-scroll to bottom
   useEffect(() => {
@@ -128,6 +296,16 @@ const TaxAdvisorChat = () => {
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
+        
+        if (response.status === 429) {
+          toast.error("Rate limit exceeded. Please try again in a moment.");
+          throw new Error("Rate limit exceeded");
+        }
+        if (response.status === 402) {
+          toast.error("Service temporarily unavailable. Please try again later.");
+          throw new Error("Service unavailable");
+        }
+        
         throw new Error(errorData.error || "Failed to get response");
       }
 
@@ -197,6 +375,8 @@ const TaxAdvisorChat = () => {
     setMessages([]);
   };
 
+  const isBusinessAccount = profile?.account_type === "business";
+
   return (
     <Card
       className={cn(
@@ -212,7 +392,7 @@ const TaxAdvisorChat = () => {
           </CardTitle>
           <div className="flex items-center gap-2">
             <Badge variant="outline" className="bg-primary/10 text-primary">
-              NTA 2025
+              {currentYear}
             </Badge>
             <Button
               variant="ghost"
@@ -256,14 +436,14 @@ const TaxAdvisorChat = () => {
               </div>
               <div>
                 <p className="text-sm font-medium text-foreground">
-                  Ask about Nigerian tax deductions
+                  Ask about Nigerian tax obligations
                 </p>
                 <p className="text-xs text-muted-foreground mt-1">
-                  I analyze your income & expenses to provide personalized advice
+                  I have access to your {currentYear} financial data for personalized advice
                 </p>
               </div>
               <div className="flex flex-wrap gap-2 justify-center">
-                {SUGGESTED_PROMPTS.map((prompt) => (
+                {SUGGESTED_PROMPTS.slice(0, isBusinessAccount ? 6 : 4).map((prompt) => (
                   <Button
                     key={prompt}
                     variant="outline"
@@ -327,7 +507,7 @@ const TaxAdvisorChat = () => {
           <Input
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            placeholder="Ask about tax deductions..."
+            placeholder="Ask about your tax situation..."
             disabled={isLoading}
             className="flex-1"
           />
@@ -341,13 +521,20 @@ const TaxAdvisorChat = () => {
         </form>
 
         {/* Context indicator */}
-        {financialContext.grossIncome > 0 && (
-          <p className="text-[10px] text-muted-foreground text-center">
-            Analyzing your ₦{financialContext.grossIncome.toLocaleString()} income
-            {financialContext.potentialSavings > 0 &&
-              ` • ₦${financialContext.potentialSavings.toLocaleString()} potential savings detected`}
-          </p>
-        )}
+        <div className="text-[10px] text-muted-foreground text-center space-x-2">
+          {financialContext.grossIncome > 0 && (
+            <span>Income: ₦{financialContext.grossIncome.toLocaleString()}</span>
+          )}
+          {financialContext.taxComputation.netTaxPayable > 0 && (
+            <span>• Tax: ₦{financialContext.taxComputation.netTaxPayable.toLocaleString()}</span>
+          )}
+          {isBusinessAccount && financialContext.vat.netPayable !== 0 && (
+            <span>• VAT: ₦{financialContext.vat.netPayable.toLocaleString()}</span>
+          )}
+          {financialContext.potentialSavings > 0 && (
+            <span className="text-green-600">• Savings: ₦{financialContext.potentialSavings.toLocaleString()}</span>
+          )}
+        </div>
       </CardContent>
     </Card>
   );

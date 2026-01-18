@@ -18,10 +18,14 @@ import {
 import { TrendingUp, Calendar, AlertTriangle } from "lucide-react";
 import { format, startOfMonth, endOfMonth, subMonths, addMonths } from "date-fns";
 
-const TaxProjectionChart = () => {
+interface TaxProjectionChartProps {
+  selectedYear?: number;
+}
+
+const TaxProjectionChart = ({ selectedYear }: TaxProjectionChartProps) => {
   const { profile } = useAuth();
   const { incomeRecords } = useIncome();
-  const currentYear = new Date().getFullYear();
+  const currentYear = selectedYear || new Date().getFullYear();
   const { deductions } = useStatutoryDeductions(currentYear);
 
   // Calculate monthly income and project future months

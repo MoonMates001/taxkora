@@ -18,9 +18,13 @@ interface TaxDeadline {
   link?: string;
 }
 
-const TaxCalendarWidget = () => {
+interface TaxCalendarWidgetProps {
+  selectedYear?: number;
+}
+
+const TaxCalendarWidget = ({ selectedYear }: TaxCalendarWidgetProps) => {
   const { profile } = useAuth();
-  const currentYear = new Date().getFullYear();
+  const currentYear = selectedYear || new Date().getFullYear();
   const { filingStatuses } = useVATFilingStatus(currentYear);
   const isBusinessAccount = profile?.account_type === "business";
 

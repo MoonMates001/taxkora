@@ -19,11 +19,15 @@ import {
   TrendingDown,
 } from "lucide-react";
 
-const SmartDeductionsCard = () => {
+interface SmartDeductionsCardProps {
+  selectedYear?: number;
+}
+
+const SmartDeductionsCard = ({ selectedYear }: SmartDeductionsCardProps) => {
   const { profile } = useAuth();
   const { incomeRecords } = useIncome();
   const { expenses } = useExpenses();
-  const currentYear = new Date().getFullYear();
+  const currentYear = selectedYear || new Date().getFullYear();
   const { deductions } = useStatutoryDeductions(currentYear);
 
   // Calculate yearly income

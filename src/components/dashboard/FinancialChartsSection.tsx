@@ -42,29 +42,43 @@ const formatCurrency = (amount: number) => {
   }).format(amount);
 };
 
-const FinancialChartsSection = () => {
+interface FinancialChartsSectionProps {
+  selectedYear?: number;
+}
+
+const FinancialChartsSection = ({ selectedYear }: FinancialChartsSectionProps) => {
   const { profile } = useAuth();
   const { incomeRecords, totalIncome } = useIncome();
   const { expenses, totalExpenses } = useExpenses();
 
+  const currentYear = selectedYear || new Date().getFullYear();
+
   const isBusinessAccount = profile?.account_type === "business";
 
-  // Monthly trend data (last 6 months)
+  // Filter records by selected year
+  const yearIncomeRecords = useMemo(() => {
+    return incomeRecords.filter((r) => new Date(r.date).getFullYear() === currentYear);
+  }, [incomeRecords, currentYear]);
+
+  const yearExpenses = useMemo(() => {
+    return expenses.filter((e) => new Date(e.date).getFullYear() === currentYear);
+  }, [expenses, currentYear]);
+
+  // Monthly trend data for selected year
   const monthlyTrendData = useMemo(() => {
     const months = [];
-    for (let i = 5; i >= 0; i--) {
-      const date = subMonths(new Date(), i);
-      const monthStart = startOfMonth(date);
-      const monthEnd = endOfMonth(date);
+    for (let i = 0; i < 12; i++) {
+      const monthStart = new Date(currentYear, i, 1);
+      const monthEnd = new Date(currentYear, i + 1, 0, 23, 59, 59);
 
-      const monthIncome = incomeRecords
+      const monthIncome = yearIncomeRecords
         .filter((r) => {
           const recordDate = new Date(r.date);
           return recordDate >= monthStart && recordDate <= monthEnd;
         })
         .reduce((sum, r) => sum + Number(r.amount), 0);
 
-      const monthExpenses = expenses
+      const monthExpenses = yearExpenses
         .filter((e) => {
           const expenseDate = new Date(e.date);
           return expenseDate >= monthStart && expenseDate <= monthEnd;
@@ -72,19 +86,19 @@ const FinancialChartsSection = () => {
         .reduce((sum, e) => sum + Number(e.amount), 0);
 
       months.push({
-        month: format(date, "MMM"),
+        month: format(monthStart, "MMM"),
         income: monthIncome,
         expenses: monthExpenses,
         profit: monthIncome - monthExpenses,
       });
     }
     return months;
-  }, [incomeRecords, expenses]);
+  }, [yearIncomeRecords, yearExpenses, currentYear]);
 
-  // Income by category
+  // Income by category for selected year
   const incomeByCategoryData = useMemo(() => {
     const categoryTotals: Record<string, number> = {};
-    incomeRecords.forEach((record) => {
+    yearIncomeRecords.forEach((record) => {
       categoryTotals[record.category] = (categoryTotals[record.category] || 0) + Number(record.amount);
     });
     return Object.entries(categoryTotals)
@@ -94,12 +108,12 @@ const FinancialChartsSection = () => {
       }))
       .sort((a, b) => b.value - a.value)
       .slice(0, 6);
-  }, [incomeRecords]);
+  }, [yearIncomeRecords]);
 
-  // Expenses by category
+  // Expenses by category for selected year
   const expensesByCategoryData = useMemo(() => {
     const categoryTotals: Record<string, number> = {};
-    expenses.forEach((expense) => {
+    yearExpenses.forEach((expense) => {
       categoryTotals[expense.category] = (categoryTotals[expense.category] || 0) + Number(expense.amount);
     });
     return Object.entries(categoryTotals)
@@ -109,9 +123,11 @@ const FinancialChartsSection = () => {
       }))
       .sort((a, b) => b.value - a.value)
       .slice(0, 6);
-  }, [expenses]);
+  }, [yearExpenses]);
 
-  const hasData = totalIncome > 0 || totalExpenses > 0;
+  const yearlyTotalIncome = yearIncomeRecords.reduce((sum, r) => sum + Number(r.amount), 0);
+  const yearlyTotalExpenses = yearExpenses.reduce((sum, e) => sum + Number(e.amount), 0);
+  const hasData = yearlyTotalIncome > 0 || yearlyTotalExpenses > 0;
 
   if (!hasData) {
     return null;
@@ -123,7 +139,7 @@ const FinancialChartsSection = () => {
       <Card className="shadow-card">
         <CardHeader>
           <CardTitle className="font-display text-lg">
-            {isBusinessAccount ? "Revenue vs Expenses" : "Income vs Spending"} (6 Months)
+            {isBusinessAccount ? "Revenue vs Expenses" : "Income vs Spending"} ({currentYear})
           </CardTitle>
         </CardHeader>
         <CardContent>
