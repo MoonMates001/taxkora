@@ -40,13 +40,36 @@ const FinancialStatsGrid = () => {
   const { expenses, totalExpenses } = useExpenses();
   const { invoices } = useInvoices();
   const { clients } = useClients();
-  const { payments: taxPayments, confirmedTotal: totalTaxPaid } = useTaxPayments(new Date().getFullYear());
+  const currentYear = new Date().getFullYear();
+  const { payments: taxPayments, confirmedTotal: totalTaxPaid } = useTaxPayments(currentYear);
   const { assets: capitalAssets } = useCapitalAssets();
   const { transactions: vatTransactions } = useVATTransactions();
   const { transactions: whtTransactions } = useWHTTransactions();
-  const { deductions: statutoryDeductions } = useStatutoryDeductions(new Date().getFullYear());
+  const { deductions: statutoryDeductions } = useStatutoryDeductions(currentYear);
 
   const isBusinessAccount = profile?.account_type === "business";
+
+  // Calculate yearly totals (for tax calculation consistency)
+  const yearlyTotals = useMemo(() => {
+    const yearStart = startOfYear(new Date());
+    const yearEnd = endOfYear(new Date());
+
+    const yearIncome = incomeRecords
+      .filter((r) => {
+        const date = new Date(r.date);
+        return date >= yearStart && date <= yearEnd;
+      })
+      .reduce((sum, r) => sum + Number(r.amount), 0);
+
+    const yearExpenses = expenses
+      .filter((e) => {
+        const date = new Date(e.date);
+        return date >= yearStart && date <= yearEnd;
+      })
+      .reduce((sum, e) => sum + Number(e.amount), 0);
+
+    return { yearIncome, yearExpenses };
+  }, [incomeRecords, expenses]);
 
   // Calculate current month stats
   const currentMonthStats = useMemo(() => {
@@ -85,18 +108,8 @@ const FinancialStatsGrid = () => {
     };
   }, [incomeRecords, expenses, invoices]);
 
-  // Calculate tax liability
+  // Calculate tax liability using yearly income
   const taxCalculation = useMemo(() => {
-    const yearStart = startOfYear(new Date());
-    const yearEnd = endOfYear(new Date());
-
-    const yearlyIncome = incomeRecords
-      .filter((r) => {
-        const date = new Date(r.date);
-        return date >= yearStart && date <= yearEnd;
-      })
-      .reduce((sum, r) => sum + Number(r.amount), 0);
-
     const deductions = statutoryDeductions || {
       pension_contribution: 0,
       nhis_contribution: 0,
@@ -109,13 +122,14 @@ const FinancialStatsGrid = () => {
       pension_benefits_received: 0,
     };
 
-    const result = computeTax2026(yearlyIncome, deductions);
+    const result = computeTax2026(yearlyTotals.yearIncome, deductions);
     return {
       taxPayable: result.netTaxPayable,
+      taxableIncome: result.taxableIncome,
       effectiveRate: result.effectiveRate,
       taxBalance: Math.max(0, result.netTaxPayable - totalTaxPaid),
     };
-  }, [incomeRecords, statutoryDeductions, totalTaxPaid]);
+  }, [yearlyTotals.yearIncome, statutoryDeductions, totalTaxPaid]);
 
   // Calculate VAT/WHT monthly obligations
   const monthlyTaxObligations = useMemo(() => {
@@ -149,19 +163,19 @@ const FinancialStatsGrid = () => {
     return capitalAssets.reduce((sum, a) => sum + Number(a.cost), 0);
   }, [capitalAssets]);
 
-  // Business-specific stats
+  // Business-specific stats (show yearly figures for tax relevance)
   const businessStats = [
     {
-      title: "Total Revenue",
-      value: formatCurrency(totalIncome),
+      title: `Revenue (${currentYear})`,
+      value: formatCurrency(yearlyTotals.yearIncome),
       subtitle: `${formatCurrency(currentMonthStats.income)} this month`,
       icon: TrendingUp,
       color: "text-green-600",
       bgColor: "bg-green-50 dark:bg-green-950/20",
     },
     {
-      title: "Total Expenses",
-      value: formatCurrency(totalExpenses),
+      title: `Expenses (${currentYear})`,
+      value: formatCurrency(yearlyTotals.yearExpenses),
       subtitle: `${formatCurrency(currentMonthStats.expenses)} this month`,
       icon: TrendingDown,
       color: "text-red-500",
@@ -225,19 +239,19 @@ const FinancialStatsGrid = () => {
     },
   ];
 
-  // Personal account stats
+  // Personal account stats (show yearly figures for tax relevance)
   const personalStats = [
     {
-      title: "Total Income",
-      value: formatCurrency(totalIncome),
+      title: `Income (${currentYear})`,
+      value: formatCurrency(yearlyTotals.yearIncome),
       subtitle: `${formatCurrency(currentMonthStats.income)} this month`,
       icon: Wallet,
       color: "text-green-600",
       bgColor: "bg-green-50 dark:bg-green-950/20",
     },
     {
-      title: "Total Expenditure",
-      value: formatCurrency(totalExpenses),
+      title: `Expenditure (${currentYear})`,
+      value: formatCurrency(yearlyTotals.yearExpenses),
       subtitle: `${formatCurrency(currentMonthStats.expenses)} this month`,
       icon: TrendingDown,
       color: "text-red-500",
@@ -245,7 +259,7 @@ const FinancialStatsGrid = () => {
     },
     {
       title: "Taxable Income",
-      value: formatCurrency(Math.max(0, totalIncome - totalExpenses)),
+      value: formatCurrency(taxCalculation.taxableIncome),
       subtitle: `Effective rate: ${taxCalculation.effectiveRate.toFixed(1)}%`,
       icon: TrendingUp,
       color: "text-primary",
@@ -256,7 +270,7 @@ const FinancialStatsGrid = () => {
       value: formatCurrency(taxCalculation.taxPayable),
       subtitle: taxCalculation.taxBalance > 0 
         ? `${formatCurrency(taxCalculation.taxBalance)} balance due`
-        : "Fully paid",
+        : taxCalculation.taxPayable === 0 ? "Below threshold" : "Fully paid",
       icon: Calculator,
       color: taxCalculation.taxBalance > 0 ? "text-orange-500" : "text-green-600",
       bgColor: taxCalculation.taxBalance > 0 
