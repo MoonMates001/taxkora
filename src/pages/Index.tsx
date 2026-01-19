@@ -4,7 +4,6 @@ import Features from "@/components/landing/Features";
 import HowItWorks from "@/components/landing/HowItWorks";
 import TaxSavingsCalculator from "@/components/landing/TaxSavingsCalculator";
 import Pricing from "@/components/landing/Pricing";
-import Testimonials from "@/components/landing/Testimonials";
 import CTA from "@/components/landing/CTA";
 import Footer from "@/components/landing/Footer";
 import UrgencyBanner from "@/components/landing/UrgencyBanner";
@@ -33,7 +32,6 @@ const Index = () => {
         <HowItWorks />
         <TaxSavingsCalculator />
         <Pricing />
-        <Testimonials />
         <CTA />
       </article>
       <Footer />
