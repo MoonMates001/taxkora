@@ -10,10 +10,6 @@ import {
   Receipt,
   TrendingUp,
   PieChart,
-  FileCheck,
-  Sparkles,
-  Bot,
-  CheckCircle2,
   ArrowRight
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -86,18 +82,6 @@ const Features = () => {
     }
   ];
 
-  const aiFeature = {
-    icon: Bot,
-    title: "AI-Powered Tax Advisor",
-    description: "Get personalized tax advice powered by AI. Our assistant understands Nigerian tax law and analyzes your financial data to suggest deductions and optimize your tax position.",
-    benefits: [
-      "Personalized deduction suggestions",
-      "Nigeria Tax Act 2025 compliant",
-      "Real-time financial analysis",
-      "24/7 tax guidance"
-    ]
-  };
-
   return (
     <section id="features" className="py-24 bg-background relative overflow-hidden">
       {/* Subtle background pattern */}
@@ -119,77 +103,6 @@ const Features = () => {
             Whether you're running a business or managing personal finances, 
             TAXKORA provides the complete toolkit for Nigerian tax compliance.
           </p>
-        </div>
-
-        {/* AI Feature Highlight - New Premium Section */}
-        <div className="mb-24">
-          <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-primary via-teal-600 to-teal-700 p-1">
-            <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.1)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.1)_1px,transparent_1px)] bg-[size:20px_20px]" />
-            <div className="relative bg-gradient-to-br from-primary/95 via-teal-600/95 to-teal-700/95 rounded-[22px] p-8 md:p-12">
-              <div className="grid lg:grid-cols-2 gap-8 items-center">
-                <div>
-                  <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-white/10 backdrop-blur-sm rounded-full text-white/90 text-sm font-medium mb-6">
-                    <Sparkles className="w-4 h-4 text-coral-300" />
-                    NEW: AI-Powered
-                  </div>
-                  <h3 className="font-display text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-4">
-                    {aiFeature.title}
-                  </h3>
-                  <p className="text-white/80 text-lg mb-6 leading-relaxed">
-                    {aiFeature.description}
-                  </p>
-                  <div className="grid sm:grid-cols-2 gap-3 mb-8">
-                    {aiFeature.benefits.map((benefit, i) => (
-                      <div key={i} className="flex items-center gap-2 text-white/90">
-                        <CheckCircle2 className="w-5 h-5 text-coral-300 flex-shrink-0" />
-                        <span className="text-sm">{benefit}</span>
-                      </div>
-                    ))}
-                  </div>
-                  <Link to="/auth">
-                    <Button variant="accent" size="lg" className="group">
-                      Try AI Advisor Free
-                      <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                    </Button>
-                  </Link>
-                </div>
-                <div className="relative hidden lg:block">
-                  {/* AI Chat Preview */}
-                  <div className="relative">
-                    <div className="absolute inset-0 bg-gradient-to-br from-coral-400/30 to-teal-300/20 rounded-2xl blur-2xl" />
-                    <div className="relative bg-white/10 backdrop-blur-xl rounded-2xl border border-white/20 p-6">
-                      <div className="flex items-center gap-3 mb-4">
-                        <div className="w-10 h-10 bg-gradient-to-br from-coral-400 to-coral-600 rounded-full flex items-center justify-center">
-                          <Bot className="w-5 h-5 text-white" />
-                        </div>
-                        <div>
-                          <div className="text-sm font-semibold text-white">Tax Advisor AI</div>
-                          <div className="text-xs text-white/60">Online • NRS 2025 Ready</div>
-                        </div>
-                      </div>
-                      <div className="space-y-3">
-                        <div className="bg-white/10 rounded-xl rounded-tl-none p-3">
-                          <p className="text-sm text-white/90">
-                            Based on your ₦4.2M income, I found 3 deductions you may be missing: pension contributions, housing loan interest, and NHIS...
-                          </p>
-                        </div>
-                        <div className="bg-coral-500/20 rounded-xl rounded-tr-none p-3 ml-8">
-                          <p className="text-sm text-white/90">
-                            Tell me more about pension contributions
-                          </p>
-                        </div>
-                        <div className="bg-white/10 rounded-xl rounded-tl-none p-3">
-                          <p className="text-sm text-white/90">
-                            Under the Nigeria Tax Act 2025, you can deduct up to 8% of your gross income for pension contributions...
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
         </div>
 
         {/* Business Module */}

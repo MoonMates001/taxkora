@@ -24,6 +24,9 @@ import SubscriptionPage from "./pages/dashboard/SubscriptionPage";
 import TrialCallbackPage from "./pages/dashboard/TrialCallbackPage";
 import PaymentCallbackPage from "./pages/dashboard/PaymentCallbackPage";
 import ReferralsPage from "./pages/dashboard/ReferralsPage";
+import BlogManagementPage from "./pages/dashboard/BlogManagementPage";
+import BlogPage from "./pages/BlogPage";
+import BlogPostPage from "./pages/BlogPostPage";
 
 const queryClient = new QueryClient();
 
@@ -54,7 +57,10 @@ const App = () => (
               <Route path="filing" element={<TaxFilingPage />} />
               <Route path="referrals" element={<ReferralsPage />} />
               <Route path="settings" element={<SettingsPage />} />
+              <Route path="blog" element={<BlogManagementPage />} />
             </Route>
+            <Route path="/blog" element={<BlogPage />} />
+            <Route path="/blog/:slug" element={<BlogPostPage />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
