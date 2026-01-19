@@ -51,7 +51,7 @@ const CTA = () => {
             </h2>
             
             <p className="text-primary-foreground/75 text-lg sm:text-xl mb-8 max-w-2xl mx-auto">
-              Join <strong className="text-primary-foreground">10,000+ Nigerian businesses</strong> who've saved over ₦2 billion in taxes with TAXKORA's smart compliance platform.
+              TAXKORA's smart compliance platform helps Nigerian businesses save on taxes with automated deductions and seamless filing.
             </p>
 
             {/* Benefits grid */}
@@ -96,21 +96,6 @@ const CTA = () => {
             </div>
           </div>
 
-          {/* Stats */}
-          <div className="mt-16 grid grid-cols-3 gap-8 max-w-lg mx-auto">
-            <div className="text-center">
-              <div className="font-display font-bold text-3xl sm:text-4xl text-primary-foreground">10K+</div>
-              <div className="text-primary-foreground/60 text-sm">Active Users</div>
-            </div>
-            <div className="text-center">
-              <div className="font-display font-bold text-3xl sm:text-4xl text-primary-foreground">₦2B+</div>
-              <div className="text-primary-foreground/60 text-sm">Taxes Processed</div>
-            </div>
-            <div className="text-center">
-              <div className="font-display font-bold text-3xl sm:text-4xl text-primary-foreground">99.9%</div>
-              <div className="text-primary-foreground/60 text-sm">Accuracy Rate</div>
-            </div>
-          </div>
         </div>
       </div>
     </section>

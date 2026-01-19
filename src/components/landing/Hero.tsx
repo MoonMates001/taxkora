@@ -1,34 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import { ArrowRight, Shield, Zap, FileCheck, Play, Star, Users, TrendingUp } from "lucide-react";
-import { useCountAnimation } from "@/hooks/useCountAnimation";
+import { ArrowRight, Shield, Zap, FileCheck, Play, TrendingUp } from "lucide-react";
 import { useState, useEffect } from "react";
-
-const AnimatedStat = ({ endValue, suffix, label }: { endValue: number; suffix: string; label: string }) => {
-  const { count, ref } = useCountAnimation({ end: endValue, duration: 2500 });
-  
-  const formatValue = () => {
-    if (endValue >= 1000000000) {
-      return `₦${(count / 1000000000).toFixed(count >= endValue ? 0 : 1)}B${suffix}`;
-    }
-    if (endValue >= 1000) {
-      return `${(count / 1000).toFixed(0)}K${suffix}`;
-    }
-    if (suffix === "%") {
-      return `${(count / 10).toFixed(1)}${suffix}`;
-    }
-    return `${count}${suffix}`;
-  };
-
-  return (
-    <div ref={ref} className="text-center lg:text-left">
-      <div className="font-display font-bold text-2xl sm:text-3xl text-primary-foreground">
-        {formatValue()}
-      </div>
-      <div className="text-primary-foreground/60 text-sm">{label}</div>
-    </div>
-  );
-};
 
 const TypingText = ({ texts }: { texts: string[] }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -54,22 +27,6 @@ const TypingText = ({ texts }: { texts: string[] }) => {
 };
 
 const Hero = () => {
-  const [activeUsers, setActiveUsers] = useState(127);
-
-  useEffect(() => {
-    // Simulate live user count
-    const interval = setInterval(() => {
-      setActiveUsers((prev) => prev + Math.floor(Math.random() * 3) - 1);
-    }, 10000);
-    return () => clearInterval(interval);
-  }, []);
-
-  const stats = [
-    { endValue: 10000, suffix: "+", label: "Businesses trust us" },
-    { endValue: 2000000000, suffix: "+", label: "Taxes processed" },
-    { endValue: 999, suffix: "%", label: "Filing accuracy" },
-  ];
-
   const rotatingTexts = ["Simplified", "Automated", "Stress-Free"];
 
   return (
@@ -85,39 +42,9 @@ const Hero = () => {
       <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:60px_60px]" />
 
       <div className="container relative mx-auto px-4 sm:px-6 lg:px-8 pt-28 pb-16">
-        {/* Live users indicator */}
-        <div className="flex justify-center lg:justify-start mb-4 animate-fade-up">
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-green-500/10 border border-green-500/20 rounded-full">
-            <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
-            </span>
-            <span className="text-green-400 text-xs font-medium">
-              <strong>{activeUsers}</strong> people viewing this page
-            </span>
-          </div>
-        </div>
-
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
           {/* Left column - Content */}
           <div className="text-center lg:text-left">
-            {/* Trust badge */}
-            <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary-foreground/5 backdrop-blur-md border border-primary-foreground/10 rounded-full text-primary-foreground/90 text-sm font-medium mb-6 animate-fade-up">
-              <div className="flex -space-x-2">
-                {[1, 2, 3, 4].map((i) => (
-                  <div key={i} className="w-6 h-6 rounded-full bg-gradient-to-br from-teal-400 to-teal-600 border-2 border-primary flex items-center justify-center text-[10px] text-white font-bold">
-                    {String.fromCharCode(65 + i)}
-                  </div>
-                ))}
-              </div>
-              <div className="flex items-center gap-1">
-                {[1, 2, 3, 4, 5].map((i) => (
-                  <Star key={i} className="w-3 h-3 text-yellow-400 fill-current" />
-                ))}
-              </div>
-              <span>Rated 4.9/5 by 2,000+ users</span>
-            </div>
-
             {/* Headline */}
             <h1 className="font-display text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold text-primary-foreground leading-[1.1] mb-6 animate-fade-up" style={{ animationDelay: "0.1s" }}>
               Nigeria's #1 Tax Platform,{" "}
@@ -178,10 +105,6 @@ const Hero = () => {
                 <span>Cancel anytime</span>
               </div>
               <div className="h-4 w-px bg-primary-foreground/20 hidden sm:block" />
-              <div className="flex items-center gap-2 text-primary-foreground/60 text-sm">
-                <Users className="w-4 h-4 text-green-400" />
-                <span>10,000+ happy users</span>
-              </div>
             </div>
           </div>
 
@@ -281,19 +204,6 @@ const Hero = () => {
           </div>
         </div>
 
-        {/* Stats bar */}
-        <div className="mt-16 pt-8 border-t border-primary-foreground/10 animate-fade-up" style={{ animationDelay: "0.6s" }}>
-          <div className="grid grid-cols-3 gap-8 max-w-2xl mx-auto lg:mx-0">
-            {stats.map((stat, i) => (
-              <AnimatedStat 
-                key={i}
-                endValue={stat.endValue}
-                suffix={stat.suffix}
-                label={stat.label}
-              />
-            ))}
-          </div>
-        </div>
       </div>
     </section>
   );
