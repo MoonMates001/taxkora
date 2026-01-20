@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Plus, Edit, Trash2, Eye, EyeOff, Loader2, Search } from "lucide-react";
+import { Plus, Edit, Trash2, Eye, EyeOff, Loader2, Search, ShieldAlert } from "lucide-react";
 import { format } from "date-fns";
 import DashboardLayout from "@/components/dashboard/DashboardLayout";
 import { Button } from "@/components/ui/button";
@@ -41,7 +41,9 @@ import {
   BlogPost,
   CreateBlogPostData,
 } from "@/hooks/useBlogPosts";
+import { useUserRole } from "@/hooks/useUserRole";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Link } from "react-router-dom";
 
 const categories = [
   "Tax Tips",
@@ -74,6 +76,7 @@ interface PostFormData {
 }
 
 const BlogManagementPage = () => {
+  const { isAdmin, isLoading: isRoleLoading } = useUserRole();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingPost, setEditingPost] = useState<BlogPost | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
@@ -166,6 +169,34 @@ const BlogManagementPage = () => {
       is_published: !post.is_published,
     });
   };
+
+  // Show loading while checking role
+  if (isRoleLoading) {
+    return (
+      <div className="space-y-6">
+        <Skeleton className="h-10 w-48" />
+        <Skeleton className="h-64 rounded-xl" />
+      </div>
+    );
+  }
+
+  // Show access denied for non-admins
+  if (!isAdmin) {
+    return (
+      <div className="flex flex-col items-center justify-center py-20">
+        <div className="bg-destructive/10 rounded-full p-6 mb-6">
+          <ShieldAlert className="w-12 h-12 text-destructive" />
+        </div>
+        <h1 className="text-2xl font-bold text-foreground mb-2">Access Denied</h1>
+        <p className="text-muted-foreground text-center max-w-md mb-6">
+          You don't have permission to access the Blog Management area. This section is restricted to administrators only.
+        </p>
+        <Link to="/blog">
+          <Button variant="outline">View Blog Instead</Button>
+        </Link>
+      </div>
+    );
+  }
 
   return (
       <div className="space-y-6">

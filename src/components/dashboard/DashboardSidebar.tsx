@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { useSubscription, SUBSCRIPTION_PLANS } from "@/hooks/useSubscription";
+import { useUserRole } from "@/hooks/useUserRole";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -25,6 +26,7 @@ import {
   Crown,
   Clock,
   Gift,
+  PenTool,
 } from "lucide-react";
 import logo from "@/assets/logo.png";
 
@@ -32,6 +34,7 @@ const DashboardSidebar = () => {
   const { profile, signOut } = useAuth();
   const location = useLocation();
   const [isOpen, setIsOpen] = useState(false);
+  const { isAdmin } = useUserRole();
   const { 
     isSubscriptionActive, 
     activePlan, 
@@ -68,7 +71,12 @@ const DashboardSidebar = () => {
     { href: "/dashboard/referrals", label: "Referrals", icon: Gift },
   ];
 
-  const links = isBusinessAccount ? businessLinks : personalLinks;
+  // Add admin-only links
+  const adminLinks = isAdmin ? [
+    { href: "/dashboard/blog", label: "Blog Management", icon: PenTool },
+  ] : [];
+
+  const links = [...(isBusinessAccount ? businessLinks : personalLinks), ...adminLinks];
 
   const handleSignOut = async () => {
     await signOut();

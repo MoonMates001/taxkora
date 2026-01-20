@@ -806,6 +806,27 @@ export type Database = {
         }
         Relationships: []
       }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
       vat_filing_status: {
         Row: {
           created_at: string
@@ -1175,6 +1196,14 @@ export type Database = {
           referrer_id: string
         }[]
       }
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
+      is_admin: { Args: never; Returns: boolean }
       log_audit_event: {
         Args: {
           p_action: string
@@ -1195,6 +1224,7 @@ export type Database = {
     }
     Enums: {
       account_type: "business" | "personal"
+      app_role: "admin" | "moderator" | "user"
       capital_asset_category:
         | "plant_machinery"
         | "motor_vehicles"
@@ -1389,6 +1419,7 @@ export const Constants = {
   public: {
     Enums: {
       account_type: ["business", "personal"],
+      app_role: ["admin", "moderator", "user"],
       capital_asset_category: [
         "plant_machinery",
         "motor_vehicles",

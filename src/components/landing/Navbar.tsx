@@ -22,6 +22,7 @@ const Navbar = () => {
     { label: "Features", href: "#features" },
     { label: "How It Works", href: "#how-it-works" },
     { label: "Pricing", href: "#pricing" },
+    { label: "Blog", href: "/blog", isRoute: true },
     { label: "Contact", href: "#contact" },
   ];
 
@@ -46,17 +47,31 @@ const Navbar = () => {
           {/* Desktop Navigation */}
           <div className="hidden lg:flex items-center gap-8">
             {navLinks.map((link, i) => (
-              <a 
-                key={i}
-                href={link.href} 
-                className={`text-sm font-medium transition-colors ${
-                  isScrolled 
-                    ? "text-muted-foreground hover:text-foreground" 
-                    : "text-primary-foreground/80 hover:text-primary-foreground"
-                }`}
-              >
-                {link.label}
-              </a>
+              link.isRoute ? (
+                <Link 
+                  key={i}
+                  to={link.href}
+                  className={`text-sm font-medium transition-colors ${
+                    isScrolled 
+                      ? "text-muted-foreground hover:text-foreground" 
+                      : "text-primary-foreground/80 hover:text-primary-foreground"
+                  }`}
+                >
+                  {link.label}
+                </Link>
+              ) : (
+                <a 
+                  key={i}
+                  href={link.href} 
+                  className={`text-sm font-medium transition-colors ${
+                    isScrolled 
+                      ? "text-muted-foreground hover:text-foreground" 
+                      : "text-primary-foreground/80 hover:text-primary-foreground"
+                  }`}
+                >
+                  {link.label}
+                </a>
+              )
             ))}
           </div>
 
@@ -121,18 +136,33 @@ const Navbar = () => {
           }`}>
             <div className="flex flex-col gap-2">
               {navLinks.map((link, i) => (
-                <a 
-                  key={i}
-                  href={link.href} 
-                  className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                    isScrolled 
-                      ? "text-muted-foreground hover:text-foreground hover:bg-secondary" 
-                      : "text-primary-foreground/80 hover:text-primary-foreground hover:bg-primary-foreground/10"
-                  }`}
-                  onClick={() => setIsOpen(false)}
-                >
-                  {link.label}
-                </a>
+                link.isRoute ? (
+                  <Link 
+                    key={i}
+                    to={link.href}
+                    className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                      isScrolled 
+                        ? "text-muted-foreground hover:text-foreground hover:bg-secondary" 
+                        : "text-primary-foreground/80 hover:text-primary-foreground hover:bg-primary-foreground/10"
+                    }`}
+                    onClick={() => setIsOpen(false)}
+                  >
+                    {link.label}
+                  </Link>
+                ) : (
+                  <a 
+                    key={i}
+                    href={link.href} 
+                    className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                      isScrolled 
+                        ? "text-muted-foreground hover:text-foreground hover:bg-secondary" 
+                        : "text-primary-foreground/80 hover:text-primary-foreground hover:bg-primary-foreground/10"
+                    }`}
+                    onClick={() => setIsOpen(false)}
+                  >
+                    {link.label}
+                  </a>
+                )
               ))}
               
               <div className={`flex flex-col gap-2 pt-4 mt-2 border-t ${

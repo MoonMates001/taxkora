@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { MessageCircle, X, Send, Bot } from "lucide-react";
+import { MessageCircle, X, Send, HelpCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 
@@ -63,13 +63,13 @@ const LiveChatTrigger = () => {
           <div className="bg-primary p-4">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 bg-primary-foreground/20 rounded-full flex items-center justify-center">
-                <Bot className="w-5 h-5 text-primary-foreground" />
+                <HelpCircle className="w-5 h-5 text-primary-foreground" />
               </div>
               <div>
-                <div className="font-semibold text-primary-foreground">TAXKORA Assistant</div>
+                <div className="font-semibold text-primary-foreground">TAXKORA Support</div>
                 <div className="text-xs text-primary-foreground/70 flex items-center gap-1.5">
                   <span className="w-2 h-2 bg-green-400 rounded-full"></span>
-                  Online • Typically replies instantly
+                  Online • We're here to help
                 </div>
               </div>
             </div>
@@ -80,7 +80,7 @@ const LiveChatTrigger = () => {
             {/* Bot message */}
             <div className="flex gap-3 mb-4">
               <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
-                <Bot className="w-4 h-4 text-primary" />
+                <HelpCircle className="w-4 h-4 text-primary" />
               </div>
               <div className="bg-secondary rounded-2xl rounded-tl-sm p-3 max-w-[80%]">
                 <p className="text-sm text-foreground">
@@ -121,7 +121,7 @@ const LiveChatTrigger = () => {
               </Link>
             </div>
             <p className="text-xs text-muted-foreground text-center mt-2">
-              Sign up to chat with our AI tax advisor
+              Sign up to get personalized support
             </p>
           </div>
         </div>
