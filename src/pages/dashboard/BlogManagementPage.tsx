@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Plus, Edit, Trash2, Eye, EyeOff, Loader2, Search, ShieldAlert } from "lucide-react";
+import { useState, useRef } from "react";
+import { Plus, Edit, Trash2, Eye, EyeOff, Loader2, Search, ShieldAlert, Upload, X, ImageIcon } from "lucide-react";
 import { format } from "date-fns";
 import DashboardLayout from "@/components/dashboard/DashboardLayout";
 import { Button } from "@/components/ui/button";
@@ -44,6 +44,8 @@ import {
 import { useUserRole } from "@/hooks/useUserRole";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Link } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 const categories = [
   "Tax Tips",
@@ -80,6 +82,8 @@ const BlogManagementPage = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingPost, setEditingPost] = useState<BlogPost | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const [isUploading, setIsUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [formData, setFormData] = useState<PostFormData>({
     title: "",
     slug: "",
@@ -96,6 +100,55 @@ const BlogManagementPage = () => {
   const createPost = useCreateBlogPost();
   const updatePost = useUpdateBlogPost();
   const deletePost = useDeleteBlogPost();
+
+  const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    // Validate file type
+    if (!file.type.startsWith("image/")) {
+      toast.error("Please select an image file");
+      return;
+    }
+
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("Image must be less than 5MB");
+      return;
+    }
+
+    setIsUploading(true);
+    try {
+      const fileExt = file.name.split(".").pop();
+      const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
+      const filePath = `covers/${fileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from("blog-images")
+        .upload(filePath, file);
+
+      if (uploadError) throw uploadError;
+
+      const { data: urlData } = supabase.storage
+        .from("blog-images")
+        .getPublicUrl(filePath);
+
+      setFormData({ ...formData, cover_image_url: urlData.publicUrl });
+      toast.success("Image uploaded successfully");
+    } catch (error: any) {
+      console.error("Upload error:", error);
+      toast.error("Failed to upload image: " + error.message);
+    } finally {
+      setIsUploading(false);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
+    }
+  };
+
+  const removeImage = () => {
+    setFormData({ ...formData, cover_image_url: "" });
+  };
 
   const filteredPosts = posts?.filter(
     (post) =>
@@ -272,13 +325,55 @@ const BlogManagementPage = () => {
                       placeholder="Author name"
                     />
                   </div>
-                  <div>
-                    <Label>Cover Image URL</Label>
-                    <Input
-                      value={formData.cover_image_url}
-                      onChange={(e) => setFormData({ ...formData, cover_image_url: e.target.value })}
-                      placeholder="https://example.com/image.jpg"
+                  <div className="sm:col-span-2">
+                    <Label>Cover Image</Label>
+                    <input
+                      type="file"
+                      ref={fileInputRef}
+                      onChange={handleImageUpload}
+                      accept="image/*"
+                      className="hidden"
                     />
+                    {formData.cover_image_url ? (
+                      <div className="relative mt-2">
+                        <img
+                          src={formData.cover_image_url}
+                          alt="Cover preview"
+                          className="w-full h-48 object-cover rounded-lg border border-border"
+                        />
+                        <Button
+                          type="button"
+                          variant="destructive"
+                          size="icon"
+                          className="absolute top-2 right-2"
+                          onClick={removeImage}
+                        >
+                          <X className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    ) : (
+                      <div
+                        onClick={() => fileInputRef.current?.click()}
+                        className="mt-2 border-2 border-dashed border-border rounded-lg p-8 text-center cursor-pointer hover:border-primary/50 hover:bg-muted/50 transition-colors"
+                      >
+                        {isUploading ? (
+                          <div className="flex flex-col items-center gap-2">
+                            <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />
+                            <p className="text-sm text-muted-foreground">Uploading...</p>
+                          </div>
+                        ) : (
+                          <div className="flex flex-col items-center gap-2">
+                            <div className="bg-muted rounded-full p-3">
+                              <ImageIcon className="w-6 h-6 text-muted-foreground" />
+                            </div>
+                            <div>
+                              <p className="text-sm font-medium text-foreground">Click to upload cover image</p>
+                              <p className="text-xs text-muted-foreground">PNG, JPG, GIF up to 5MB</p>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    )}
                   </div>
                   <div className="sm:col-span-2">
                     <Label>Excerpt</Label>
