@@ -60,14 +60,14 @@ const Hero = () => {
 
             {/* Subheadline */}
             <p className="text-lg sm:text-xl text-primary-foreground/75 max-w-xl mx-auto lg:mx-0 mb-6 animate-fade-up" style={{ animationDelay: "0.2s" }}>
-              Stop overpaying taxes. Our AI-powered platform automatically finds deductions, computes your taxes, and files your returns—<strong className="text-primary-foreground">saving you an average of ₦150,000/year</strong>.
+              Stop overpaying taxes. Our platform automatically finds deductions, computes your taxes, and files your returns—<strong className="text-primary-foreground">saving you an average of ₦150,000/year</strong>.
             </p>
 
             {/* Feature pills */}
             <div className="flex flex-wrap justify-center lg:justify-start gap-3 mb-8 animate-fade-up" style={{ animationDelay: "0.3s" }}>
               {[
                 { icon: FileCheck, text: "E-Invoicing" },
-                { icon: Zap, text: "AI Tax Computation" },
+                { icon: Zap, text: "Smart Tax Computation" },
                 { icon: Shield, text: "NRS Direct Filing" },
               ].map((item, i) => (
                 <div key={i} className="flex items-center gap-2 px-3 py-1.5 bg-primary-foreground/10 backdrop-blur-sm rounded-lg text-primary-foreground/90 text-sm">
@@ -163,7 +163,7 @@ const Hero = () => {
                         </div>
                         <div>
                           <div className="text-sm font-medium text-primary-foreground">Smart Deductions Found</div>
-                          <div className="text-xs text-gray-400">AI identified savings opportunity</div>
+                          <div className="text-xs text-gray-400">Identified savings opportunity</div>
                         </div>
                       </div>
                       <div className="text-right">
