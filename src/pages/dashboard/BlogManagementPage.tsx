@@ -1,5 +1,5 @@
 import { useState, useRef } from "react";
-import { Plus, Edit, Trash2, Eye, EyeOff, Loader2, Search, ShieldAlert, Upload, X, ImageIcon } from "lucide-react";
+import { Plus, Edit, Trash2, Eye, EyeOff, Loader2, Search, ShieldAlert, X, ImageIcon } from "lucide-react";
 import { format } from "date-fns";
 import DashboardLayout from "@/components/dashboard/DashboardLayout";
 import { Button } from "@/components/ui/button";
@@ -46,6 +46,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import RichTextEditor from "@/components/blog/RichTextEditor";
 
 const categories = [
   "Tax Tips",
@@ -386,12 +387,10 @@ const BlogManagementPage = () => {
                   </div>
                   <div className="sm:col-span-2">
                     <Label>Content *</Label>
-                    <Textarea
-                      value={formData.content}
-                      onChange={(e) => setFormData({ ...formData, content: e.target.value })}
-                      placeholder="Write your post content..."
-                      rows={12}
-                      required
+                    <RichTextEditor
+                      content={formData.content}
+                      onChange={(content) => setFormData({ ...formData, content })}
+                      placeholder="Write your post content... Use the toolbar to add headings, lists, images, and more."
                     />
                   </div>
                   <div className="sm:col-span-2">

@@ -143,11 +143,10 @@ const BlogPostPage = () => {
               )}
 
               {/* Content */}
-              <div className="prose prose-lg max-w-none">
-                <div className="text-foreground leading-relaxed whitespace-pre-wrap">
-                  {post.content}
-                </div>
-              </div>
+              <div 
+                className="prose prose-lg max-w-none prose-headings:text-foreground prose-p:text-foreground prose-strong:text-foreground prose-li:text-foreground prose-a:text-primary prose-blockquote:text-muted-foreground prose-blockquote:border-primary"
+                dangerouslySetInnerHTML={{ __html: post.content }}
+              />
 
               {/* Tags */}
               {post.tags && post.tags.length > 0 && (
