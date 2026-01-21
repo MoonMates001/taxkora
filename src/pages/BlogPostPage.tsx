@@ -1,9 +1,11 @@
 import { useParams, Link } from "react-router-dom";
 import { Calendar, User, ArrowLeft, Tag, Share2, Clock } from "lucide-react";
 import { format } from "date-fns";
+import { useEffect } from "react";
 import Navbar from "@/components/landing/Navbar";
 import Footer from "@/components/landing/Footer";
 import { useBlogPost, useBlogPosts } from "@/hooks/useBlogPosts";
+import { useRecordPostView } from "@/hooks/useBlogPostViews";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
@@ -12,6 +14,14 @@ const BlogPostPage = () => {
   const { slug } = useParams<{ slug: string }>();
   const { data: post, isLoading, error } = useBlogPost(slug || "");
   const { data: allPosts } = useBlogPosts(true);
+  const recordView = useRecordPostView();
+  
+  // Record view when post loads
+  useEffect(() => {
+    if (post?.id) {
+      recordView.mutate(post.id);
+    }
+  }, [post?.id]);
   
   const relatedPosts = allPosts?.filter(p => 
     p.id !== post?.id && p.category === post?.category
