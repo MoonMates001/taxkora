@@ -16,6 +16,9 @@ export interface BlogPost {
   published_at: string | null;
   created_at: string;
   updated_at: string;
+  meta_title: string | null;
+  meta_description: string | null;
+  meta_keywords: string[] | null;
 }
 
 export interface CreateBlogPostData {
@@ -28,6 +31,9 @@ export interface CreateBlogPostData {
   category?: string;
   tags?: string[];
   is_published?: boolean;
+  meta_title?: string;
+  meta_description?: string;
+  meta_keywords?: string[];
 }
 
 export const useBlogPosts = (publishedOnly = true) => {

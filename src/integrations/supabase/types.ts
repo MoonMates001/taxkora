@@ -122,6 +122,9 @@ export type Database = {
           excerpt: string | null
           id: string
           is_published: boolean
+          meta_description: string | null
+          meta_keywords: string[] | null
+          meta_title: string | null
           published_at: string | null
           slug: string
           tags: string[] | null
@@ -137,6 +140,9 @@ export type Database = {
           excerpt?: string | null
           id?: string
           is_published?: boolean
+          meta_description?: string | null
+          meta_keywords?: string[] | null
+          meta_title?: string | null
           published_at?: string | null
           slug: string
           tags?: string[] | null
@@ -152,6 +158,9 @@ export type Database = {
           excerpt?: string | null
           id?: string
           is_published?: boolean
+          meta_description?: string | null
+          meta_keywords?: string[] | null
+          meta_title?: string | null
           published_at?: string | null
           slug?: string
           tags?: string[] | null

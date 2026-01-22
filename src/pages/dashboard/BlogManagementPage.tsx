@@ -69,6 +69,9 @@ interface PostFormData {
   category: string;
   tags: string;
   is_published: boolean;
+  meta_title: string;
+  meta_description: string;
+  meta_keywords: string;
 }
 
 const BlogManagementPage = () => {
@@ -89,6 +92,9 @@ const BlogManagementPage = () => {
     category: "Tax Tips",
     tags: "",
     is_published: false,
+    meta_title: "",
+    meta_description: "",
+    meta_keywords: "",
   });
 
   const { data: posts, isLoading } = useBlogPosts(false);
@@ -162,6 +168,9 @@ const BlogManagementPage = () => {
       category: categories?.[0]?.name || "Tax Tips",
       tags: "",
       is_published: false,
+      meta_title: "",
+      meta_description: "",
+      meta_keywords: "",
     });
     setEditingPost(null);
   };
@@ -178,6 +187,9 @@ const BlogManagementPage = () => {
       category: post.category,
       tags: post.tags?.join(", ") || "",
       is_published: post.is_published,
+      meta_title: post.meta_title || "",
+      meta_description: post.meta_description || "",
+      meta_keywords: post.meta_keywords?.join(", ") || "",
     });
     setIsDialogOpen(true);
   };
@@ -195,6 +207,9 @@ const BlogManagementPage = () => {
       category: formData.category,
       tags: formData.tags ? formData.tags.split(",").map((t) => t.trim()).filter(Boolean) : undefined,
       is_published: formData.is_published,
+      meta_title: formData.meta_title || undefined,
+      meta_description: formData.meta_description || undefined,
+      meta_keywords: formData.meta_keywords ? formData.meta_keywords.split(",").map((k) => k.trim()).filter(Boolean) : undefined,
     };
 
     if (editingPost) {
@@ -396,6 +411,45 @@ const BlogManagementPage = () => {
                     placeholder="tax tips, vat, compliance"
                   />
                 </div>
+                
+                {/* SEO Fields Section */}
+                <div className="sm:col-span-2 pt-4 border-t border-border">
+                  <h4 className="font-semibold text-foreground mb-4">SEO Settings</h4>
+                </div>
+                <div className="sm:col-span-2">
+                  <Label>Meta Title (for search engines)</Label>
+                  <Input
+                    value={formData.meta_title}
+                    onChange={(e) => setFormData({ ...formData, meta_title: e.target.value })}
+                    placeholder="Custom title for search results (max 60 chars)"
+                    maxLength={60}
+                  />
+                  <p className="text-xs text-muted-foreground mt-1">
+                    {formData.meta_title.length}/60 characters
+                  </p>
+                </div>
+                <div className="sm:col-span-2">
+                  <Label>Meta Description</Label>
+                  <Textarea
+                    value={formData.meta_description}
+                    onChange={(e) => setFormData({ ...formData, meta_description: e.target.value })}
+                    placeholder="Brief description for search results (max 160 chars)"
+                    rows={2}
+                    maxLength={160}
+                  />
+                  <p className="text-xs text-muted-foreground mt-1">
+                    {formData.meta_description.length}/160 characters
+                  </p>
+                </div>
+                <div className="sm:col-span-2">
+                  <Label>Meta Keywords (comma-separated)</Label>
+                  <Input
+                    value={formData.meta_keywords}
+                    onChange={(e) => setFormData({ ...formData, meta_keywords: e.target.value })}
+                    placeholder="Nigeria tax, VAT filing, tax calculator"
+                  />
+                </div>
+                
                 <div className="sm:col-span-2 flex items-center gap-3">
                   <Switch
                     id="published"
