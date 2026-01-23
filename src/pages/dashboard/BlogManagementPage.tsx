@@ -1,5 +1,5 @@
 import { useState, useRef } from "react";
-import { Plus, Edit, Trash2, Eye, EyeOff, Loader2, Search, ShieldAlert, X, ImageIcon, BarChart3 } from "lucide-react";
+import { Plus, Edit, Trash2, Eye, EyeOff, Loader2, Search, ShieldAlert, X, ImageIcon, BarChart3, Clock } from "lucide-react";
 import { format } from "date-fns";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -49,6 +49,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import RichTextEditor from "@/components/blog/RichTextEditor";
 import CategoryManager from "@/components/blog/CategoryManager";
+import PostScheduler from "@/components/blog/PostScheduler";
+import BlogAnalyticsDashboard from "@/components/blog/BlogAnalyticsDashboard";
 
 const generateSlug = (title: string) => {
   return title
@@ -69,6 +71,7 @@ interface PostFormData {
   category: string;
   tags: string;
   is_published: boolean;
+  scheduled_at: Date | null;
   meta_title: string;
   meta_description: string;
   meta_keywords: string;
@@ -92,6 +95,7 @@ const BlogManagementPage = () => {
     category: "Tax Tips",
     tags: "",
     is_published: false,
+    scheduled_at: null,
     meta_title: "",
     meta_description: "",
     meta_keywords: "",
@@ -168,6 +172,7 @@ const BlogManagementPage = () => {
       category: categories?.[0]?.name || "Tax Tips",
       tags: "",
       is_published: false,
+      scheduled_at: null,
       meta_title: "",
       meta_description: "",
       meta_keywords: "",
@@ -187,6 +192,7 @@ const BlogManagementPage = () => {
       category: post.category,
       tags: post.tags?.join(", ") || "",
       is_published: post.is_published,
+      scheduled_at: post.scheduled_at ? new Date(post.scheduled_at) : null,
       meta_title: post.meta_title || "",
       meta_description: post.meta_description || "",
       meta_keywords: post.meta_keywords?.join(", ") || "",
@@ -207,6 +213,7 @@ const BlogManagementPage = () => {
       category: formData.category,
       tags: formData.tags ? formData.tags.split(",").map((t) => t.trim()).filter(Boolean) : undefined,
       is_published: formData.is_published,
+      scheduled_at: formData.scheduled_at ? formData.scheduled_at.toISOString() : null,
       meta_title: formData.meta_title || undefined,
       meta_description: formData.meta_description || undefined,
       meta_keywords: formData.meta_keywords ? formData.meta_keywords.split(",").map((k) => k.trim()).filter(Boolean) : undefined,
@@ -233,7 +240,19 @@ const BlogManagementPage = () => {
     await updatePost.mutateAsync({
       id: post.id,
       is_published: !post.is_published,
+      scheduled_at: null, // Clear schedule when manually toggling
     });
+  };
+
+  const getPostStatus = (post: BlogPost) => {
+    if (post.is_published) return { label: "Published", variant: "default" as const };
+    if (post.scheduled_at) {
+      const scheduledDate = new Date(post.scheduled_at);
+      if (scheduledDate > new Date()) {
+        return { label: "Scheduled", variant: "secondary" as const };
+      }
+    }
+    return { label: "Draft", variant: "outline" as const };
   };
 
   if (isRoleLoading) {
@@ -450,16 +469,35 @@ const BlogManagementPage = () => {
                   />
                 </div>
                 
+                {/* Publishing Options */}
+                <div className="sm:col-span-2 pt-4 border-t border-border">
+                  <h4 className="font-semibold text-foreground mb-4">Publishing Options</h4>
+                </div>
+                
                 <div className="sm:col-span-2 flex items-center gap-3">
                   <Switch
                     id="published"
                     checked={formData.is_published}
-                    onCheckedChange={(checked) => setFormData({ ...formData, is_published: checked })}
+                    onCheckedChange={(checked) => setFormData({ 
+                      ...formData, 
+                      is_published: checked,
+                      scheduled_at: checked ? null : formData.scheduled_at, // Clear schedule if publishing now
+                    })}
                   />
                   <Label htmlFor="published" className="cursor-pointer">
                     Publish immediately
                   </Label>
                 </div>
+                
+                {!formData.is_published && (
+                  <div className="sm:col-span-2">
+                    <PostScheduler
+                      scheduledAt={formData.scheduled_at}
+                      onChange={(date) => setFormData({ ...formData, scheduled_at: date })}
+                      isPublished={formData.is_published}
+                    />
+                  </div>
+                )}
               </div>
               <div className="flex justify-end gap-3">
                 <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>
@@ -469,7 +507,7 @@ const BlogManagementPage = () => {
                   {(createPost.isPending || updatePost.isPending) && (
                     <Loader2 className="w-4 h-4 mr-2 animate-spin" />
                   )}
-                  {editingPost ? "Update Post" : "Create Post"}
+                  {editingPost ? "Update Post" : formData.scheduled_at ? "Schedule Post" : "Create Post"}
                 </Button>
               </div>
             </form>
@@ -477,11 +515,15 @@ const BlogManagementPage = () => {
         </Dialog>
       </div>
 
-      {/* Tabs for Posts and Categories */}
+      {/* Tabs for Posts, Categories, and Analytics */}
       <Tabs defaultValue="posts" className="space-y-6">
         <TabsList>
           <TabsTrigger value="posts">Posts</TabsTrigger>
           <TabsTrigger value="categories">Categories</TabsTrigger>
+          <TabsTrigger value="analytics" className="flex items-center gap-2">
+            <BarChart3 className="w-4 h-4" />
+            Analytics
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="posts" className="space-y-6">
@@ -505,64 +547,73 @@ const BlogManagementPage = () => {
             </div>
           ) : filteredPosts && filteredPosts.length > 0 ? (
             <div className="space-y-4">
-              {filteredPosts.map((post) => (
-                <div
-                  key={post.id}
-                  className="bg-card rounded-xl border border-border p-6 hover:border-primary/30 transition-colors"
-                >
-                  <div className="flex flex-col sm:flex-row gap-4 justify-between">
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-2 flex-wrap">
-                        <Badge variant={post.is_published ? "default" : "secondary"}>
-                          {post.is_published ? "Published" : "Draft"}
-                        </Badge>
-                        <Badge variant="outline">{post.category}</Badge>
-                        {viewCounts && viewCounts[post.id] !== undefined && (
-                          <span className="flex items-center gap-1 text-xs text-muted-foreground">
-                            <BarChart3 className="w-3 h-3" />
-                            {viewCounts[post.id]} views
-                          </span>
-                        )}
+              {filteredPosts.map((post) => {
+                const status = getPostStatus(post);
+                return (
+                  <div
+                    key={post.id}
+                    className="bg-card rounded-xl border border-border p-6 hover:border-primary/30 transition-colors"
+                  >
+                    <div className="flex flex-col sm:flex-row gap-4 justify-between">
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-2 flex-wrap">
+                          <Badge variant={status.variant}>
+                            {status.label}
+                          </Badge>
+                          <Badge variant="outline">{post.category}</Badge>
+                          {post.scheduled_at && !post.is_published && (
+                            <span className="flex items-center gap-1 text-xs text-muted-foreground">
+                              <Clock className="w-3 h-3" />
+                              {format(new Date(post.scheduled_at), "MMM d, h:mm a")}
+                            </span>
+                          )}
+                          {viewCounts && viewCounts[post.id] !== undefined && (
+                            <span className="flex items-center gap-1 text-xs text-muted-foreground">
+                              <BarChart3 className="w-3 h-3" />
+                              {viewCounts[post.id]} views
+                            </span>
+                          )}
+                        </div>
+                        <h3 className="font-semibold text-foreground text-lg truncate">
+                          {post.title}
+                        </h3>
+                        <p className="text-sm text-muted-foreground mt-1">
+                          By {post.author_name} • {format(new Date(post.created_at), "MMM d, yyyy")}
+                        </p>
                       </div>
-                      <h3 className="font-semibold text-foreground text-lg truncate">
-                        {post.title}
-                      </h3>
-                      <p className="text-sm text-muted-foreground mt-1">
-                        By {post.author_name} • {format(new Date(post.created_at), "MMM d, yyyy")}
-                      </p>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => togglePublish(post)}
-                        title={post.is_published ? "Unpublish" : "Publish"}
-                      >
-                        {post.is_published ? (
-                          <EyeOff className="w-4 h-4" />
-                        ) : (
-                          <Eye className="w-4 h-4" />
-                        )}
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => openEditDialog(post)}
-                      >
-                        <Edit className="w-4 h-4" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="text-destructive hover:text-destructive"
-                        onClick={() => setDeleteConfirmId(post.id)}
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </Button>
+                      <div className="flex items-center gap-2">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => togglePublish(post)}
+                          title={post.is_published ? "Unpublish" : "Publish"}
+                        >
+                          {post.is_published ? (
+                            <EyeOff className="w-4 h-4" />
+                          ) : (
+                            <Eye className="w-4 h-4" />
+                          )}
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => openEditDialog(post)}
+                        >
+                          <Edit className="w-4 h-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="text-destructive hover:text-destructive"
+                          onClick={() => setDeleteConfirmId(post.id)}
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           ) : (
             <div className="text-center py-12 bg-card rounded-xl border border-border">
@@ -581,6 +632,10 @@ const BlogManagementPage = () => {
 
         <TabsContent value="categories">
           <CategoryManager />
+        </TabsContent>
+
+        <TabsContent value="analytics">
+          <BlogAnalyticsDashboard />
         </TabsContent>
       </Tabs>
 
