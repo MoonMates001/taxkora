@@ -82,22 +82,31 @@ export type Database = {
       }
       blog_post_views: {
         Row: {
+          country: string | null
+          device_type: string | null
           id: string
           post_id: string
+          referrer: string | null
           user_agent: string | null
           viewed_at: string
           viewer_ip: string | null
         }
         Insert: {
+          country?: string | null
+          device_type?: string | null
           id?: string
           post_id: string
+          referrer?: string | null
           user_agent?: string | null
           viewed_at?: string
           viewer_ip?: string | null
         }
         Update: {
+          country?: string | null
+          device_type?: string | null
           id?: string
           post_id?: string
+          referrer?: string | null
           user_agent?: string | null
           viewed_at?: string
           viewer_ip?: string | null
@@ -126,6 +135,7 @@ export type Database = {
           meta_keywords: string[] | null
           meta_title: string | null
           published_at: string | null
+          scheduled_at: string | null
           slug: string
           tags: string[] | null
           title: string
@@ -144,6 +154,7 @@ export type Database = {
           meta_keywords?: string[] | null
           meta_title?: string | null
           published_at?: string | null
+          scheduled_at?: string | null
           slug: string
           tags?: string[] | null
           title: string
@@ -162,6 +173,7 @@ export type Database = {
           meta_keywords?: string[] | null
           meta_title?: string | null
           published_at?: string | null
+          scheduled_at?: string | null
           slug?: string
           tags?: string[] | null
           title?: string

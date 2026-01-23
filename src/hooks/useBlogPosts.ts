@@ -14,6 +14,7 @@ export interface BlogPost {
   tags: string[] | null;
   is_published: boolean;
   published_at: string | null;
+  scheduled_at: string | null;
   created_at: string;
   updated_at: string;
   meta_title: string | null;
@@ -31,6 +32,7 @@ export interface CreateBlogPostData {
   category?: string;
   tags?: string[];
   is_published?: boolean;
+  scheduled_at?: string | null;
   meta_title?: string;
   meta_description?: string;
   meta_keywords?: string[];
@@ -92,9 +94,13 @@ export const useCreateBlogPost = () => {
       if (error) throw error;
       return post;
     },
-    onSuccess: () => {
+    onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ["blog-posts"] });
-      toast.success("Blog post created successfully");
+      if (variables.scheduled_at) {
+        toast.success(`Blog post scheduled for ${new Date(variables.scheduled_at).toLocaleString()}`);
+      } else {
+        toast.success("Blog post created successfully");
+      }
     },
     onError: (error) => {
       toast.error("Failed to create blog post: " + error.message);
