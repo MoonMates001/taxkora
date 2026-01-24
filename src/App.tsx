@@ -28,6 +28,10 @@ import ReferralsPage from "./pages/dashboard/ReferralsPage";
 import BlogManagementPage from "./pages/dashboard/BlogManagementPage";
 import BlogPage from "./pages/BlogPage";
 import BlogPostPage from "./pages/BlogPostPage";
+import InstallApp from "./pages/InstallApp";
+import PWAInstallPrompt from "./components/pwa/PWAInstallPrompt";
+import PWAUpdatePrompt from "./components/pwa/PWAUpdatePrompt";
+import OfflineIndicator from "./components/pwa/OfflineIndicator";
 
 const queryClient = new QueryClient();
 
@@ -37,11 +41,15 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
+      <PWAInstallPrompt />
+      <PWAUpdatePrompt />
+      <OfflineIndicator />
       <BrowserRouter>
         <AuthProvider>
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/auth" element={<Auth />} />
+            <Route path="/install" element={<InstallApp />} />
             <Route path="/dashboard" element={<DashboardLayout />}>
               <Route index element={<DashboardOverview />} />
               <Route path="subscription" element={<SubscriptionPage />} />
