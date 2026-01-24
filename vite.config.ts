@@ -164,7 +164,8 @@ export default defineConfig(({ mode }) => ({
               networkTimeoutSeconds: 10
             }
           }
-        ]
+        ],
+        maximumFileSizeToCacheInBytes: 5 * 1024 * 1024 // 5 MB limit
       },
       devOptions: {
         enabled: true
