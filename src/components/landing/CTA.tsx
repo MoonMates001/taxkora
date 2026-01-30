@@ -1,20 +1,8 @@
 import { Button } from "@/components/ui/button";
-import { ArrowRight, CheckCircle2, Gift, Shield, Clock } from "lucide-react";
+import { ArrowRight, CheckCircle2, Shield, Clock } from "lucide-react";
 import { Link } from "react-router-dom";
-import { useState, useEffect } from "react";
 
 const CTA = () => {
-  const [spotsLeft, setSpotsLeft] = useState(23);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      if (Math.random() > 0.8 && spotsLeft > 5) {
-        setSpotsLeft((prev) => prev - 1);
-      }
-    }, 45000);
-    return () => clearInterval(interval);
-  }, [spotsLeft]);
-
   const benefits = [
     "90-day free trial",
     "No credit card required",
@@ -35,14 +23,6 @@ const CTA = () => {
 
       <div className="container relative mx-auto px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto">
-          {/* Urgency badge */}
-          <div className="flex justify-center mb-8">
-            <div className="inline-flex items-center gap-2 px-4 py-2 bg-coral-500/20 border border-coral-500/30 rounded-full text-coral-300 text-sm font-semibold animate-pulse">
-              <Gift className="w-4 h-4" />
-              <span>Only <strong>{spotsLeft} spots</strong> left for priority onboarding this week</span>
-            </div>
-          </div>
-
           <div className="text-center">
             {/* Headline */}
             <h2 className="font-display text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-primary-foreground mb-6 leading-tight">
