@@ -1,40 +1,14 @@
 import { useState, useEffect } from "react";
-import { Clock, X } from "lucide-react";
+import { Sparkles, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 
 const UrgencyBanner = () => {
   const [isDismissed, setIsDismissed] = useState(false);
-  const [timeLeft, setTimeLeft] = useState({ hours: 23, minutes: 45, seconds: 30 });
 
   useEffect(() => {
-    // Check if dismissed this session
     const dismissed = sessionStorage.getItem("urgencyBannerDismissed");
     if (dismissed) setIsDismissed(true);
-  }, []);
-
-  useEffect(() => {
-    // Countdown timer
-    const interval = setInterval(() => {
-      setTimeLeft(prev => {
-        let { hours, minutes, seconds } = prev;
-        
-        if (seconds > 0) {
-          seconds--;
-        } else if (minutes > 0) {
-          minutes--;
-          seconds = 59;
-        } else if (hours > 0) {
-          hours--;
-          minutes = 59;
-          seconds = 59;
-        }
-        
-        return { hours, minutes, seconds };
-      });
-    }, 1000);
-
-    return () => clearInterval(interval);
   }, []);
 
   const handleDismiss = () => {
@@ -44,8 +18,6 @@ const UrgencyBanner = () => {
 
   if (isDismissed) return null;
 
-  const pad = (n: number) => n.toString().padStart(2, "0");
-
   return (
     <div className="bg-gradient-to-r from-coral-600 via-coral-500 to-coral-600 text-white relative overflow-hidden">
       {/* Animated background */}
@@ -53,17 +25,9 @@ const UrgencyBanner = () => {
       
       <div className="container relative mx-auto px-4 py-2.5">
         <div className="flex items-center justify-center gap-4 text-sm">
-          {/* Timer */}
           <div className="flex items-center gap-2">
-            <Clock className="w-4 h-4" />
-            <span className="font-medium">Limited time offer ends in:</span>
-            <div className="flex gap-1 font-mono font-bold">
-              <span className="bg-white/20 rounded px-1.5 py-0.5">{pad(timeLeft.hours)}</span>
-              <span>:</span>
-              <span className="bg-white/20 rounded px-1.5 py-0.5">{pad(timeLeft.minutes)}</span>
-              <span>:</span>
-              <span className="bg-white/20 rounded px-1.5 py-0.5">{pad(timeLeft.seconds)}</span>
-            </div>
+            <Sparkles className="w-4 h-4" />
+            <span className="font-medium">Start your 90-day free trial today — no credit card required!</span>
           </div>
 
           {/* CTA */}
