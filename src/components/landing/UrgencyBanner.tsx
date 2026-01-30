@@ -1,11 +1,10 @@
 import { useState, useEffect } from "react";
-import { Clock, Users, X } from "lucide-react";
+import { Clock, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 
 const UrgencyBanner = () => {
   const [isDismissed, setIsDismissed] = useState(false);
-  const [spotsLeft, setSpotsLeft] = useState(23);
   const [timeLeft, setTimeLeft] = useState({ hours: 23, minutes: 45, seconds: 30 });
 
   useEffect(() => {
@@ -38,17 +37,6 @@ const UrgencyBanner = () => {
     return () => clearInterval(interval);
   }, []);
 
-  useEffect(() => {
-    // Randomly decrease spots occasionally
-    const interval = setInterval(() => {
-      if (Math.random() > 0.7 && spotsLeft > 5) {
-        setSpotsLeft(prev => prev - 1);
-      }
-    }, 30000);
-
-    return () => clearInterval(interval);
-  }, [spotsLeft]);
-
   const handleDismiss = () => {
     setIsDismissed(true);
     sessionStorage.setItem("urgencyBannerDismissed", "true");
@@ -66,9 +54,9 @@ const UrgencyBanner = () => {
       <div className="container relative mx-auto px-4 py-2.5">
         <div className="flex items-center justify-center gap-4 text-sm">
           {/* Timer */}
-          <div className="hidden sm:flex items-center gap-2">
+          <div className="flex items-center gap-2">
             <Clock className="w-4 h-4" />
-            <span className="font-medium">Offer ends in:</span>
+            <span className="font-medium">Limited time offer ends in:</span>
             <div className="flex gap-1 font-mono font-bold">
               <span className="bg-white/20 rounded px-1.5 py-0.5">{pad(timeLeft.hours)}</span>
               <span>:</span>
@@ -78,20 +66,10 @@ const UrgencyBanner = () => {
             </div>
           </div>
 
-          <div className="h-4 w-px bg-white/30 hidden sm:block" />
-
-          {/* Spots left */}
-          <div className="flex items-center gap-2">
-            <Users className="w-4 h-4" />
-            <span>
-              <strong>{spotsLeft} spots left</strong> for priority onboarding
-            </span>
-          </div>
-
           {/* CTA */}
           <Link to="/auth" className="hidden md:block">
             <Button variant="secondary" size="sm" className="text-coral-600 hover:text-coral-700 h-7 text-xs font-semibold">
-              Claim Your Spot
+              Get Started
             </Button>
           </Link>
 
