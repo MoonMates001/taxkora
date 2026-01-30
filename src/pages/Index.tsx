@@ -7,7 +7,6 @@ import Pricing from "@/components/landing/Pricing";
 import CustomerSupport from "@/components/landing/CustomerSupport";
 import CTA from "@/components/landing/CTA";
 import Footer from "@/components/landing/Footer";
-import UrgencyBanner from "@/components/landing/UrgencyBanner";
 import StickyCtaBar from "@/components/landing/StickyCtaBar";
 import ExitIntentPopup from "@/components/landing/ExitIntentPopup";
 import ScrollProgressBar from "@/components/landing/ScrollProgressBar";
@@ -18,7 +17,6 @@ const Index = () => {
     <main className="min-h-screen">
       {/* Engagement components */}
       <ScrollProgressBar />
-      <UrgencyBanner />
       <ExitIntentPopup />
       <StickyCtaBar />
       <LiveChatTrigger />
