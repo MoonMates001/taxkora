@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { BlogAuthor } from "./useBlogAuthors";
 
 export interface BlogPost {
   id: string;
@@ -10,6 +11,7 @@ export interface BlogPost {
   content: string;
   cover_image_url: string | null;
   author_name: string;
+  author_id: string | null;
   category: string;
   tags: string[] | null;
   is_published: boolean;
@@ -20,6 +22,7 @@ export interface BlogPost {
   meta_title: string | null;
   meta_description: string | null;
   meta_keywords: string[] | null;
+  author?: BlogAuthor;
 }
 
 export interface CreateBlogPostData {
@@ -29,6 +32,7 @@ export interface CreateBlogPostData {
   content: string;
   cover_image_url?: string;
   author_name?: string;
+  author_id?: string;
   category?: string;
   tags?: string[];
   is_published?: boolean;
@@ -38,13 +42,20 @@ export interface CreateBlogPostData {
   meta_keywords?: string[];
 }
 
+export interface PaginatedBlogPosts {
+  posts: BlogPost[];
+  totalCount: number;
+  totalPages: number;
+  currentPage: number;
+}
+
 export const useBlogPosts = (publishedOnly = true) => {
   return useQuery({
     queryKey: ["blog-posts", publishedOnly],
     queryFn: async () => {
       let query = supabase
         .from("blog_posts")
-        .select("*")
+        .select("*, author:blog_authors(*)")
         .order("published_at", { ascending: false, nullsFirst: false });
       
       if (publishedOnly) {
@@ -59,13 +70,61 @@ export const useBlogPosts = (publishedOnly = true) => {
   });
 };
 
+export const usePaginatedBlogPosts = (page: number = 1, pageSize: number = 9, publishedOnly = true) => {
+  return useQuery({
+    queryKey: ["blog-posts-paginated", page, pageSize, publishedOnly],
+    queryFn: async (): Promise<PaginatedBlogPosts> => {
+      const from = (page - 1) * pageSize;
+      const to = from + pageSize - 1;
+
+      // Get total count first
+      let countQuery = supabase
+        .from("blog_posts")
+        .select("*", { count: "exact", head: true });
+      
+      if (publishedOnly) {
+        countQuery = countQuery.eq("is_published", true);
+      }
+      
+      const { count, error: countError } = await countQuery;
+      
+      if (countError) throw countError;
+
+      // Get paginated data with author
+      let dataQuery = supabase
+        .from("blog_posts")
+        .select("*, author:blog_authors(*)")
+        .order("published_at", { ascending: false, nullsFirst: false })
+        .range(from, to);
+      
+      if (publishedOnly) {
+        dataQuery = dataQuery.eq("is_published", true);
+      }
+      
+      const { data, error: dataError } = await dataQuery;
+      
+      if (dataError) throw dataError;
+
+      const totalCount = count || 0;
+      const totalPages = Math.ceil(totalCount / pageSize);
+
+      return {
+        posts: data as BlogPost[],
+        totalCount,
+        totalPages,
+        currentPage: page,
+      };
+    },
+  });
+};
+
 export const useBlogPost = (slug: string) => {
   return useQuery({
     queryKey: ["blog-post", slug],
     queryFn: async () => {
       const { data, error } = await supabase
         .from("blog_posts")
-        .select("*")
+        .select("*, author:blog_authors(*)")
         .eq("slug", slug)
         .eq("is_published", true)
         .single();

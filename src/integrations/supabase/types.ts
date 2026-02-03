@@ -53,6 +53,51 @@ export type Database = {
         }
         Relationships: []
       }
+      blog_authors: {
+        Row: {
+          avatar_url: string | null
+          bio: string | null
+          created_at: string
+          email: string | null
+          id: string
+          job_title: string | null
+          linkedin_url: string | null
+          name: string
+          slug: string
+          twitter_url: string | null
+          updated_at: string
+          website_url: string | null
+        }
+        Insert: {
+          avatar_url?: string | null
+          bio?: string | null
+          created_at?: string
+          email?: string | null
+          id?: string
+          job_title?: string | null
+          linkedin_url?: string | null
+          name: string
+          slug: string
+          twitter_url?: string | null
+          updated_at?: string
+          website_url?: string | null
+        }
+        Update: {
+          avatar_url?: string | null
+          bio?: string | null
+          created_at?: string
+          email?: string | null
+          id?: string
+          job_title?: string | null
+          linkedin_url?: string | null
+          name?: string
+          slug?: string
+          twitter_url?: string | null
+          updated_at?: string
+          website_url?: string | null
+        }
+        Relationships: []
+      }
       blog_categories: {
         Row: {
           created_at: string
@@ -123,6 +168,7 @@ export type Database = {
       }
       blog_posts: {
         Row: {
+          author_id: string | null
           author_name: string
           category: string
           content: string
@@ -142,6 +188,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          author_id?: string | null
           author_name?: string
           category?: string
           content: string
@@ -161,6 +208,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          author_id?: string | null
           author_name?: string
           category?: string
           content?: string
@@ -179,7 +227,15 @@ export type Database = {
           title?: string
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "blog_posts_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "blog_authors"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       capital_assets: {
         Row: {
