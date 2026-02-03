@@ -1,5 +1,5 @@
 import { useParams, Link } from "react-router-dom";
-import { Calendar, User, ArrowLeft, Tag, Share2, Clock } from "lucide-react";
+import { Calendar, ArrowLeft, Tag, Share2, Clock } from "lucide-react";
 import { format } from "date-fns";
 import { useEffect } from "react";
 import Navbar from "@/components/landing/Navbar";
@@ -10,6 +10,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { SEOHead, ArticleJsonLd, BreadcrumbJsonLd, WebPageJsonLd } from "@/components/seo";
+import AuthorCard from "@/components/blog/AuthorCard";
 
 const BlogPostPage = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -89,7 +90,7 @@ const BlogPostPage = () => {
             ogImage={post.cover_image_url || undefined}
             ogType="article"
             keywords={post.meta_keywords || post.tags || []}
-            author={post.author_name}
+            author={post.author?.name || post.author_name}
             publishedTime={post.published_at || undefined}
             modifiedTime={post.updated_at}
             section={post.category}
@@ -100,7 +101,7 @@ const BlogPostPage = () => {
             description={post.meta_description || post.excerpt || post.content.substring(0, 160)}
             url={postUrl}
             imageUrl={post.cover_image_url || undefined}
-            authorName={post.author_name}
+            authorName={post.author?.name || post.author_name}
             publishedTime={post.published_at || undefined}
             modifiedTime={post.updated_at}
             section={post.category}
@@ -173,10 +174,11 @@ const BlogPostPage = () => {
 
                 <div className="flex flex-wrap items-center justify-between gap-4">
                   <div className="flex items-center gap-4 text-muted-foreground">
-                    <span className="flex items-center gap-2">
-                      <User className="w-4 h-4" />
-                      {post.author_name}
-                    </span>
+                    {post.author ? (
+                      <AuthorCard author={post.author} variant="compact" />
+                    ) : (
+                      <span className="text-muted-foreground">{post.author_name}</span>
+                    )}
                     {post.published_at && (
                       <span className="flex items-center gap-2">
                         <Calendar className="w-4 h-4" />
@@ -222,6 +224,16 @@ const BlogPostPage = () => {
                       </span>
                     ))}
                   </div>
+                </div>
+              )}
+
+              {/* Author Bio Card - Full version */}
+              {post.author && (
+                <div className="mt-12 pt-8 border-t border-border">
+                  <h3 className="font-display text-lg font-semibold text-foreground mb-4">
+                    About the Author
+                  </h3>
+                  <AuthorCard author={post.author} variant="full" />
                 </div>
               )}
             </div>

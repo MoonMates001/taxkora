@@ -1,18 +1,27 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Calendar, User, ArrowRight, Clock } from "lucide-react";
 import { format } from "date-fns";
 import Navbar from "@/components/landing/Navbar";
 import Footer from "@/components/landing/Footer";
-import { useBlogPosts } from "@/hooks/useBlogPosts";
+import { usePaginatedBlogPosts } from "@/hooks/useBlogPosts";
 import { Skeleton } from "@/components/ui/skeleton";
-import { SEOHead, BreadcrumbJsonLd, WebPageJsonLd } from "@/components/seo";
+import { SEOHead, BreadcrumbJsonLd } from "@/components/seo";
 import { Helmet } from "react-helmet-async";
+import BlogPagination from "@/components/blog/BlogPagination";
+
+const POSTS_PER_PAGE = 9;
 
 const BlogPage = () => {
-  const { data: posts, isLoading } = useBlogPosts(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const { data, isLoading } = usePaginatedBlogPosts(currentPage, POSTS_PER_PAGE, true);
 
-  const featuredPost = posts?.[0];
-  const regularPosts = posts?.slice(1) || [];
+  const posts = data?.posts || [];
+  const totalPages = data?.totalPages || 1;
+  const totalCount = data?.totalCount || 0;
+
+  const featuredPost = currentPage === 1 ? posts[0] : null;
+  const regularPosts = currentPage === 1 ? posts.slice(1) : posts;
 
   const blogUrl = "https://taxkora.com/blog";
 
@@ -37,22 +46,28 @@ const BlogPage = () => {
     inLanguage: "en-NG",
     mainEntity: {
       "@type": "ItemList",
-      itemListElement: posts?.slice(0, 10).map((post, index) => ({
+      numberOfItems: totalCount,
+      itemListElement: posts.slice(0, 10).map((post, index) => ({
         "@type": "ListItem",
-        position: index + 1,
+        position: (currentPage - 1) * POSTS_PER_PAGE + index + 1,
         url: `https://taxkora.com/blog/${post.slug}`,
         name: post.title
-      })) || []
+      }))
     }
+  };
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   return (
     <main className="min-h-screen bg-background">
       {/* SEO Meta Tags */}
       <SEOHead
-        title="Blog - Nigerian Tax Guides & Insights"
+        title={currentPage > 1 ? `Blog - Page ${currentPage}` : "Blog - Nigerian Tax Guides & Insights"}
         description="Expert tax insights, compliance guides, and tips for Nigerian businesses, freelancers, and SMEs. Learn about Personal Income Tax, Company Income Tax, VAT, Withholding Tax, and FIRS requirements."
-        canonicalUrl={blogUrl}
+        canonicalUrl={currentPage > 1 ? `${blogUrl}?page=${currentPage}` : blogUrl}
         ogType="website"
         keywords={[
           "Nigeria tax blog",
@@ -92,6 +107,11 @@ const BlogPage = () => {
             <p className="text-xl text-primary-foreground/80">
               Expert insights, tax tips, and guides to help Nigerian businesses and individuals navigate tax compliance with confidence.
             </p>
+            {totalCount > 0 && (
+              <p className="text-primary-foreground/60 mt-4">
+                {totalCount} article{totalCount !== 1 ? "s" : ""} published
+              </p>
+            )}
           </div>
         </div>
       </section>
@@ -108,9 +128,9 @@ const BlogPage = () => {
                 ))}
               </div>
             </div>
-          ) : posts && posts.length > 0 ? (
+          ) : posts.length > 0 ? (
             <>
-              {/* Featured Post */}
+              {/* Featured Post - Only on first page */}
               {featuredPost && (
                 <div className="mb-16">
                   <Link 
@@ -147,7 +167,7 @@ const BlogPage = () => {
                         <div className="flex items-center gap-4 text-sm text-muted-foreground">
                           <span className="flex items-center gap-1">
                             <User className="w-4 h-4" />
-                            {featuredPost.author_name}
+                            {featuredPost.author?.name || featuredPost.author_name}
                           </span>
                           {featuredPost.published_at && (
                             <span className="flex items-center gap-1">
@@ -209,7 +229,7 @@ const BlogPage = () => {
                         <div className="flex items-center justify-between">
                           <span className="text-sm text-muted-foreground flex items-center gap-1">
                             <User className="w-3 h-3" />
-                            {post.author_name}
+                            {post.author?.name || post.author_name}
                           </span>
                           <span className="text-primary text-sm font-medium flex items-center gap-1 group-hover:gap-2 transition-all">
                             Read
@@ -221,6 +241,13 @@ const BlogPage = () => {
                   ))}
                 </div>
               )}
+
+              {/* Pagination */}
+              <BlogPagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={handlePageChange}
+              />
             </>
           ) : (
             <div className="text-center py-20">
