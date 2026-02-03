@@ -2,7 +2,6 @@ import { useParams, Link } from "react-router-dom";
 import { Calendar, User, ArrowLeft, Tag, Share2, Clock } from "lucide-react";
 import { format } from "date-fns";
 import { useEffect } from "react";
-import { Helmet } from "react-helmet-async";
 import Navbar from "@/components/landing/Navbar";
 import Footer from "@/components/landing/Footer";
 import { useBlogPost, useBlogPosts } from "@/hooks/useBlogPosts";
@@ -10,6 +9,7 @@ import { useRecordPostView } from "@/hooks/useBlogPostViews";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import { SEOHead, ArticleJsonLd, BreadcrumbJsonLd, WebPageJsonLd } from "@/components/seo";
 
 const BlogPostPage = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -74,40 +74,55 @@ const BlogPostPage = () => {
     );
   }
 
+  const postUrl = `https://taxkora.com/blog/${post?.slug}`;
+  const wordCount = post ? post.content.split(/\s+/).length : 0;
+
   return (
     <main className="min-h-screen bg-background">
       {/* SEO Meta Tags */}
       {post && (
-        <Helmet>
-          <title>{post.meta_title || post.title} | TAXKORA Blog</title>
-          <meta 
-            name="description" 
-            content={post.meta_description || post.excerpt || post.content.substring(0, 160)} 
+        <>
+          <SEOHead
+            title={post.meta_title || post.title}
+            description={post.meta_description || post.excerpt || post.content.substring(0, 160)}
+            canonicalUrl={postUrl}
+            ogImage={post.cover_image_url || undefined}
+            ogType="article"
+            keywords={post.meta_keywords || post.tags || []}
+            author={post.author_name}
+            publishedTime={post.published_at || undefined}
+            modifiedTime={post.updated_at}
+            section={post.category}
+            tags={post.tags || []}
           />
-          {post.meta_keywords && post.meta_keywords.length > 0 && (
-            <meta name="keywords" content={post.meta_keywords.join(", ")} />
-          )}
-          <meta property="og:title" content={post.meta_title || post.title} />
-          <meta 
-            property="og:description" 
-            content={post.meta_description || post.excerpt || post.content.substring(0, 160)} 
+          <ArticleJsonLd
+            title={post.title}
+            description={post.meta_description || post.excerpt || post.content.substring(0, 160)}
+            url={postUrl}
+            imageUrl={post.cover_image_url || undefined}
+            authorName={post.author_name}
+            publishedTime={post.published_at || undefined}
+            modifiedTime={post.updated_at}
+            section={post.category}
+            tags={post.tags || []}
+            wordCount={wordCount}
           />
-          {post.cover_image_url && (
-            <meta property="og:image" content={post.cover_image_url} />
-          )}
-          <meta property="og:type" content="article" />
-          <meta property="og:url" content={`https://taxkora.com/blog/${post.slug}`} />
-          <meta name="twitter:card" content="summary_large_image" />
-          <meta name="twitter:title" content={post.meta_title || post.title} />
-          <meta 
-            name="twitter:description" 
-            content={post.meta_description || post.excerpt || post.content.substring(0, 160)} 
+          <WebPageJsonLd
+            title={post.title}
+            description={post.meta_description || post.excerpt || post.content.substring(0, 160)}
+            url={postUrl}
+            imageUrl={post.cover_image_url || undefined}
+            datePublished={post.published_at || undefined}
+            dateModified={post.updated_at}
           />
-          {post.cover_image_url && (
-            <meta name="twitter:image" content={post.cover_image_url} />
-          )}
-          <link rel="canonical" href={`https://taxkora.com/blog/${post.slug}`} />
-        </Helmet>
+          <BreadcrumbJsonLd
+            items={[
+              { name: "Home", url: "https://taxkora.com" },
+              { name: "Blog", url: "https://taxkora.com/blog" },
+              { name: post.title, url: postUrl },
+            ]}
+          />
+        </>
       )}
       
       <Navbar />
