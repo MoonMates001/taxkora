@@ -1,26 +1,41 @@
 # TAXKORA - Nigeria Tax Compliance Platform
 # https://taxkora.com
 
+# Primary search engines
 User-agent: Googlebot
 Allow: /
+Crawl-delay: 1
 
 User-agent: Bingbot
 Allow: /
+Crawl-delay: 1
 
+# Social media crawlers
 User-agent: Twitterbot
 Allow: /
 
 User-agent: facebookexternalhit
 Allow: /
 
-User-agent: *
+User-agent: LinkedInBot
 Allow: /
 
-# Static sitemap
-Sitemap: https://taxkora.com/sitemap.xml
+# All other bots
+User-agent: *
+Allow: /
+Crawl-delay: 2
 
-# Dynamic sitemap with blog posts (auto-updated)
+# Sitemaps - Static for core pages, Dynamic for blog content
+Sitemap: https://taxkora.com/sitemap.xml
 Sitemap: https://xvrmtsgagzcbdgxrwdly.supabase.co/functions/v1/sitemap
 
-# Disallow private areas
+# Disallow private/authenticated areas
 Disallow: /dashboard/
+Disallow: /dashboard/*
+Disallow: /api/
+Disallow: /*?*token=
+Disallow: /*?*session=
+
+# Disallow utility pages
+Disallow: /trial-callback
+Disallow: /payment-callback
