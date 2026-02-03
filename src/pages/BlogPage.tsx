@@ -1,10 +1,12 @@
 import { Link } from "react-router-dom";
-import { Calendar, User, ArrowRight, Tag, Clock } from "lucide-react";
+import { Calendar, User, ArrowRight, Clock } from "lucide-react";
 import { format } from "date-fns";
 import Navbar from "@/components/landing/Navbar";
 import Footer from "@/components/landing/Footer";
 import { useBlogPosts } from "@/hooks/useBlogPosts";
 import { Skeleton } from "@/components/ui/skeleton";
+import { SEOHead, BreadcrumbJsonLd, WebPageJsonLd } from "@/components/seo";
+import { Helmet } from "react-helmet-async";
 
 const BlogPage = () => {
   const { data: posts, isLoading } = useBlogPosts(true);
@@ -12,8 +14,71 @@ const BlogPage = () => {
   const featuredPost = posts?.[0];
   const regularPosts = posts?.slice(1) || [];
 
+  const blogUrl = "https://taxkora.com/blog";
+
+  // Generate CollectionPage JSON-LD for blog listing
+  const collectionJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    "@id": `${blogUrl}#webpage`,
+    url: blogUrl,
+    name: "TAXKORA Blog - Nigerian Tax Guides & Insights",
+    description: "Expert tax insights, compliance guides, and tips for Nigerian businesses, freelancers, and SMEs. Learn about PIT, CIT, VAT, WHT, and FIRS requirements.",
+    isPartOf: {
+      "@type": "WebSite",
+      "@id": "https://taxkora.com/#website",
+      url: "https://taxkora.com",
+      name: "TAXKORA Nigeria"
+    },
+    about: {
+      "@type": "Thing",
+      name: "Nigerian Tax Compliance"
+    },
+    inLanguage: "en-NG",
+    mainEntity: {
+      "@type": "ItemList",
+      itemListElement: posts?.slice(0, 10).map((post, index) => ({
+        "@type": "ListItem",
+        position: index + 1,
+        url: `https://taxkora.com/blog/${post.slug}`,
+        name: post.title
+      })) || []
+    }
+  };
+
   return (
     <main className="min-h-screen bg-background">
+      {/* SEO Meta Tags */}
+      <SEOHead
+        title="Blog - Nigerian Tax Guides & Insights"
+        description="Expert tax insights, compliance guides, and tips for Nigerian businesses, freelancers, and SMEs. Learn about Personal Income Tax, Company Income Tax, VAT, Withholding Tax, and FIRS requirements."
+        canonicalUrl={blogUrl}
+        ogType="website"
+        keywords={[
+          "Nigeria tax blog",
+          "Nigerian tax tips",
+          "FIRS compliance guide",
+          "tax filing Nigeria",
+          "PIT guide Nigeria",
+          "CIT guide Nigeria",
+          "VAT Nigeria guide",
+          "WHT Nigeria",
+          "tax compliance SME Nigeria",
+          "freelancer tax Nigeria"
+        ]}
+      />
+      <BreadcrumbJsonLd
+        items={[
+          { name: "Home", url: "https://taxkora.com" },
+          { name: "Blog", url: blogUrl },
+        ]}
+      />
+      <Helmet>
+        <script type="application/ld+json">
+          {JSON.stringify(collectionJsonLd)}
+        </script>
+      </Helmet>
+
       <Navbar />
       
       {/* Hero Section */}
