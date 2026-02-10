@@ -174,9 +174,37 @@ const Auth = () => {
             }
           }
           
+          // Auto-create 90-day trial for business accounts
+          if (accountType === "business") {
+            try {
+              const { data: { session } } = await supabase.auth.getSession();
+              if (session?.user) {
+                const startDate = new Date();
+                const endDate = new Date();
+                endDate.setDate(endDate.getDate() + 90);
+
+                await supabase
+                  .from("subscriptions")
+                  .insert({
+                    user_id: session.user.id,
+                    plan: "pit_business" as const,
+                    status: "active" as const,
+                    amount: 0,
+                    start_date: startDate.toISOString().split("T")[0],
+                    end_date: endDate.toISOString().split("T")[0],
+                    payment_reference: "TRIAL",
+                  });
+              }
+            } catch (trialError) {
+              console.error("Failed to create trial subscription:", trialError);
+            }
+          }
+
           toast({
             title: "Account Created!",
-            description: "Welcome to TAXKORA! Redirecting to your dashboard...",
+            description: accountType === "business" 
+              ? "Welcome to TAXKORA! Your 90-day free trial has started." 
+              : "Welcome to TAXKORA! Redirecting to your dashboard...",
           });
           navigate("/dashboard");
         }
