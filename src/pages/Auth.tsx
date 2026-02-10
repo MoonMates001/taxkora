@@ -151,23 +151,24 @@ const Auth = () => {
               const { data: { session } } = await supabase.auth.getSession();
               
               if (session?.user) {
-                // Update the referral record
+                // Immediately mark referral as subscribed (completed) upon registration
                 await supabase
                   .from("referrals")
                   .update({
                     referred_user_id: session.user.id,
                     referred_email: email,
-                    status: "signed_up",
+                    status: "subscribed",
+                    completed_at: new Date().toISOString(),
                   })
                   .eq("referral_code", referralCode)
                   .eq("status", "pending");
 
-                // Send notification to referrer
+                // Send notification to referrer as subscribed (completed)
                 await supabase.functions.invoke("referral-notification", {
                   body: {
                     referrerId: referralData.referrer_id,
                     referredEmail: email,
-                    eventType: "signed_up",
+                    eventType: "subscribed",
                   },
                 });
               }
