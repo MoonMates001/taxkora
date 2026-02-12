@@ -1330,6 +1330,7 @@ export type Database = {
         Returns: {
           referral_code: string
           referrer_id: string
+          referrer_name: string
         }[]
       }
       has_role: {
