@@ -45,20 +45,14 @@ const Auth = () => {
       setIsLogin(false); // Switch to signup mode for referrals
       
       const fetchReferrer = async () => {
-        // Use secure function to get referral info
+        // Use secure function to get referral info (includes referrer name)
         const { data } = await supabase
           .rpc("get_referral_by_code", { p_code: referralCode });
         
         if (data && data.length > 0) {
           const referral = data[0];
-          const { data: profile } = await supabase
-            .from("profiles")
-            .select("full_name")
-            .eq("user_id", referral.referrer_id)
-            .maybeSingle();
-          
-          if (profile?.full_name) {
-            setReferrerName(profile.full_name);
+          if (referral.referrer_name) {
+            setReferrerName(referral.referrer_name);
           }
         }
       };
