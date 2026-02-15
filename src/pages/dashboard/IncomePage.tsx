@@ -154,24 +154,24 @@ const IncomePage = () => {
   return (
     <div className="space-y-8">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div className="flex flex-col gap-4">
         <div>
-          <h1 className="font-display text-3xl font-bold text-foreground">
+          <h1 className="font-display text-2xl sm:text-3xl font-bold text-foreground">
             {isBusinessAccount ? "Income" : "Income Sources"}
           </h1>
-          <p className="text-muted-foreground mt-1">
+          <p className="text-muted-foreground mt-1 text-sm sm:text-base">
             {isBusinessAccount
               ? "Track all your business income and revenue"
               : "Aggregate income from all your sources"}
           </p>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
           <YearSelector
             selectedYear={selectedYear}
             onYearChange={setSelectedYear}
             availableYears={availableYears}
           />
-          <Button className="gap-2" onClick={handleAddNew}>
+          <Button className="gap-2 w-full sm:w-auto" onClick={handleAddNew}>
             <Plus className="w-4 h-4" />
             Add {isBusinessAccount ? "Income" : "Income Source"}
           </Button>
