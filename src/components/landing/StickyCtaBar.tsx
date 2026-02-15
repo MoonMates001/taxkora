@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { ArrowRight, X, Clock, Users } from "lucide-react";
@@ -6,20 +6,27 @@ import { ArrowRight, X, Clock, Users } from "lucide-react";
 const StickyCtaBar = () => {
   const [isVisible, setIsVisible] = useState(false);
   const [isDismissed, setIsDismissed] = useState(false);
+  const rafRef = useRef<number>(0);
 
-  useEffect(() => {
-    const handleScroll = () => {
-      // Show after scrolling past hero section (~500px)
+  const handleScroll = useCallback(() => {
+    if (rafRef.current) return;
+    rafRef.current = requestAnimationFrame(() => {
       if (window.scrollY > 500 && !isDismissed) {
         setIsVisible(true);
       } else {
         setIsVisible(false);
       }
-    };
-
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
+      rafRef.current = 0;
+    });
   }, [isDismissed]);
+
+  useEffect(() => {
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+    };
+  }, [handleScroll]);
 
   if (!isVisible) return null;
 
@@ -28,7 +35,6 @@ const StickyCtaBar = () => {
       <div className="bg-primary/95 backdrop-blur-lg border-t border-primary-foreground/10 shadow-2xl">
         <div className="container mx-auto px-4 py-3">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
-            {/* Left side - urgency message */}
             <div className="flex items-center gap-4 text-primary-foreground">
               <div className="hidden sm:flex items-center gap-2 text-sm">
                 <Users className="w-4 h-4 text-coral-400" />
@@ -39,8 +45,6 @@ const StickyCtaBar = () => {
                 <span>90-day free trial • No credit card</span>
               </div>
             </div>
-
-            {/* Right side - CTA */}
             <div className="flex items-center gap-3">
               <Link to="/auth">
                 <Button variant="accent" size="sm" className="group whitespace-nowrap">
