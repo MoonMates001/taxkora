@@ -170,7 +170,7 @@ const HowItWorks = () => {
             <div className="bg-card px-6 py-4 border-t border-border">
               <div className="flex items-center justify-between">
                 <div>
-                  <h4 className="font-semibold text-foreground text-sm">See TAXKORA in Action</h4>
+                  <h3 className="font-semibold text-foreground text-sm">See TAXKORA in Action</h3>
                   <p className="text-muted-foreground text-xs">Watch how easy it is to manage your taxes</p>
                 </div>
                 <Link to="/auth">
