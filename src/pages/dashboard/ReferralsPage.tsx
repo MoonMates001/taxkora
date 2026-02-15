@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { useReferrals } from "@/hooks/useReferrals";
+import { useReferralAnalytics } from "@/hooks/useReferralAnalytics";
 import { 
   Users, 
   Copy, 
@@ -17,11 +18,98 @@ import {
   Loader2,
   MessageCircle,
   Twitter,
-  Facebook
+  Facebook,
+  MousePointerClick,
+  TrendingUp,
+  BarChart3,
 } from "lucide-react";
 import { toast } from "sonner";
 import { format } from "date-fns";
 import logo from "@/assets/logo.png";
+
+const ReferralAnalyticsSection = () => {
+  const {
+    totalClicks,
+    convertedClicks,
+    conversionRate,
+    recentClicks,
+    monthlyClicks,
+    sourceBreakdown,
+    isLoading: isLoadingAnalytics,
+  } = useReferralAnalytics();
+
+  if (isLoadingAnalytics) return null;
+
+  const topSources = Object.entries(sourceBreakdown)
+    .sort(([, a], [, b]) => b - a)
+    .slice(0, 5);
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <BarChart3 className="w-5 h-5" />
+          Referral Link Analytics
+        </CardTitle>
+        <CardDescription>
+          Track how your referral link is performing
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+          <div className="text-center p-3 bg-muted/50 rounded-lg">
+            <MousePointerClick className="w-5 h-5 mx-auto mb-1 text-primary" />
+            <p className="text-2xl font-bold text-foreground">{totalClicks}</p>
+            <p className="text-xs text-muted-foreground">Total Clicks</p>
+          </div>
+          <div className="text-center p-3 bg-muted/50 rounded-lg">
+            <TrendingUp className="w-5 h-5 mx-auto mb-1 text-green-600" />
+            <p className="text-2xl font-bold text-foreground">{convertedClicks}</p>
+            <p className="text-xs text-muted-foreground">Conversions</p>
+          </div>
+          <div className="text-center p-3 bg-muted/50 rounded-lg">
+            <BarChart3 className="w-5 h-5 mx-auto mb-1 text-blue-600" />
+            <p className="text-2xl font-bold text-foreground">{conversionRate.toFixed(1)}%</p>
+            <p className="text-xs text-muted-foreground">Conversion Rate</p>
+          </div>
+          <div className="text-center p-3 bg-muted/50 rounded-lg">
+            <MousePointerClick className="w-5 h-5 mx-auto mb-1 text-orange-500" />
+            <p className="text-2xl font-bold text-foreground">{recentClicks}</p>
+            <p className="text-xs text-muted-foreground">Last 7 Days</p>
+          </div>
+        </div>
+
+        {topSources.length > 0 && (
+          <div>
+            <h4 className="text-sm font-medium text-muted-foreground mb-3">Traffic Sources</h4>
+            <div className="space-y-2">
+              {topSources.map(([source, count]) => (
+                <div key={source} className="flex items-center justify-between">
+                  <span className="text-sm text-foreground">{source}</span>
+                  <div className="flex items-center gap-2">
+                    <div className="w-24 h-2 bg-muted rounded-full overflow-hidden">
+                      <div
+                        className="h-full bg-primary rounded-full"
+                        style={{ width: `${totalClicks > 0 ? (count / totalClicks) * 100 : 0}%` }}
+                      />
+                    </div>
+                    <span className="text-sm font-medium text-muted-foreground w-8 text-right">{count}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {totalClicks === 0 && (
+          <p className="text-sm text-muted-foreground text-center py-4">
+            No link clicks tracked yet. Share your referral link to start seeing analytics!
+          </p>
+        )}
+      </CardContent>
+    </Card>
+  );
+};
 
 const ReferralsPage = () => {
   const [inviteEmail, setInviteEmail] = useState("");
@@ -238,6 +326,9 @@ const ReferralsPage = () => {
             </div>
           </CardContent>
         </Card>
+
+        {/* Referral Analytics */}
+        <ReferralAnalyticsSection />
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">

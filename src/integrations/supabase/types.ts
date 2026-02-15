@@ -669,6 +669,42 @@ export type Database = {
         }
         Relationships: []
       }
+      referral_link_clicks: {
+        Row: {
+          converted: boolean
+          converted_user_id: string | null
+          created_at: string
+          id: string
+          referral_code: string
+          referrer_id: string
+          referrer_url: string | null
+          user_agent: string | null
+          visitor_ip: string | null
+        }
+        Insert: {
+          converted?: boolean
+          converted_user_id?: string | null
+          created_at?: string
+          id?: string
+          referral_code: string
+          referrer_id: string
+          referrer_url?: string | null
+          user_agent?: string | null
+          visitor_ip?: string | null
+        }
+        Update: {
+          converted?: boolean
+          converted_user_id?: string | null
+          created_at?: string
+          id?: string
+          referral_code?: string
+          referrer_id?: string
+          referrer_url?: string | null
+          user_agent?: string | null
+          visitor_ip?: string | null
+        }
+        Relationships: []
+      }
       referrals: {
         Row: {
           completed_at: string | null

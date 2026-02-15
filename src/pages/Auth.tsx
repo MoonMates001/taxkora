@@ -39,12 +39,12 @@ const Auth = () => {
     }
   }, [user, navigate]);
 
-  // Check if referral code is valid and get referrer info
+  // Check if referral code is valid and get referrer info + track click
   useEffect(() => {
     if (referralCode) {
       setIsLogin(false); // Switch to signup mode for referrals
       
-      const fetchReferrer = async () => {
+      const fetchReferrerAndTrackClick = async () => {
         // Use secure function to get referral info (includes referrer name)
         const { data } = await supabase
           .rpc("get_referral_by_code", { p_code: referralCode });
@@ -54,10 +54,20 @@ const Auth = () => {
           if (referral.referrer_name) {
             setReferrerName(referral.referrer_name);
           }
+          
+          // Track the referral link click
+          await supabase
+            .from("referral_link_clicks")
+            .insert({
+              referral_code: referralCode,
+              referrer_id: referral.referrer_id,
+              user_agent: navigator.userAgent,
+              referrer_url: document.referrer || null,
+            });
         }
       };
       
-      fetchReferrer();
+      fetchReferrerAndTrackClick();
     }
   }, [referralCode]);
 
@@ -130,42 +140,78 @@ const Auth = () => {
             });
           }
         } else {
-          // If signed up with referral code, update the referral record and send notification
+          // If signed up with referral code, update or create the referral record and send notification
           if (referralCode) {
-            // Get the referrer info first
-            const { data: referralData } = await supabase
-              .from("referrals")
-              .select("referrer_id")
-              .eq("referral_code", referralCode)
-              .eq("status", "pending")
-              .maybeSingle();
+            // Get the newly created user session
+            const { data: { session } } = await supabase.auth.getSession();
+            
+            if (session?.user) {
+              // Try to find an existing pending referral with this code for this email
+              const { data: existingReferral } = await supabase
+                .from("referrals")
+                .select("id, referrer_id")
+                .eq("referral_code", referralCode)
+                .eq("status", "pending")
+                .eq("referred_email", email)
+                .maybeSingle();
 
-            if (referralData) {
-              // Get the newly created user session
-              const { data: { session } } = await supabase.auth.getSession();
-              
-              if (session?.user) {
-                // Immediately mark referral as subscribed (completed) upon registration
+              if (existingReferral) {
+                // Update existing email-invited referral
                 await supabase
                   .from("referrals")
                   .update({
                     referred_user_id: session.user.id,
-                    referred_email: email,
                     status: "subscribed",
                     completed_at: new Date().toISOString(),
                   })
-                  .eq("referral_code", referralCode)
-                  .eq("status", "pending");
+                  .eq("id", existingReferral.id);
 
-                // Send notification to referrer as subscribed (completed)
+                // Send notification
                 await supabase.functions.invoke("referral-notification", {
                   body: {
-                    referrerId: referralData.referrer_id,
+                    referrerId: existingReferral.referrer_id,
                     referredEmail: email,
                     eventType: "subscribed",
                   },
                 });
+              } else {
+                // No matching email invite — this is a link-based signup
+                // Get referrer info
+                const { data: referrerData } = await supabase
+                  .rpc("get_referral_by_code", { p_code: referralCode });
+
+                if (referrerData && referrerData.length > 0) {
+                  const referrerId = referrerData[0].referrer_id;
+
+                  // Create a new completed referral record
+                  await supabase
+                    .from("referrals")
+                    .insert({
+                      referrer_id: referrerId,
+                      referral_code: referralCode,
+                      referred_user_id: session.user.id,
+                      referred_email: email,
+                      status: "subscribed",
+                      completed_at: new Date().toISOString(),
+                    });
+
+                  // Send notification
+                  await supabase.functions.invoke("referral-notification", {
+                    body: {
+                      referrerId: referrerId,
+                      referredEmail: email,
+                      eventType: "subscribed",
+                    },
+                  });
+                }
               }
+
+              // Mark corresponding link click as converted
+              await supabase
+                .from("referral_link_clicks")
+                .update({ converted: true, converted_user_id: session.user.id })
+                .eq("referral_code", referralCode)
+                .eq("converted", false);
             }
           }
           
