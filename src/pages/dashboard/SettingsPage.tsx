@@ -6,6 +6,7 @@ import { Building2, User } from "lucide-react";
 import { BusinessProfileForm } from "@/components/settings/BusinessProfileForm";
 import { InvoiceCustomizationForm } from "@/components/settings/InvoiceCustomizationForm";
 import AdminSubscriptionManager from "@/components/settings/AdminSubscriptionManager";
+import UpdateReminderSettings from "@/components/settings/UpdateReminderSettings";
 
 const SettingsPage = () => {
   const { profile } = useAuth();
@@ -21,6 +22,9 @@ const SettingsPage = () => {
           Manage your account settings and preferences
         </p>
       </div>
+
+      {/* Update Reminders */}
+      <UpdateReminderSettings />
 
       {/* Profile Section */}
       <BusinessProfileForm />
