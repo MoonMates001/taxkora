@@ -49,8 +49,8 @@ const App = () => (
       <PWAInstallPrompt />
       <PWAUpdatePrompt />
       <OfflineIndicator />
-      <CookieConsentBanner />
       <BrowserRouter>
+        <CookieConsentBanner />
         <AuthProvider>
           <Routes>
             <Route path="/" element={<Index />} />
