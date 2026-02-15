@@ -164,18 +164,46 @@ export default defineConfig(({ mode }) => ({
             }
           },
           {
-            urlPattern: /^https:\/\/xvrmtsgagzcbdgxrwdly\.supabase\.co\/.*/i,
+            urlPattern: /\.(?:js|css)$/i,
+            handler: "StaleWhileRevalidate",
+            options: {
+              cacheName: "static-resources-cache",
+              expiration: {
+                maxEntries: 50,
+                maxAgeSeconds: 60 * 60 * 24 * 30 // 30 days
+              },
+              cacheableResponse: {
+                statuses: [0, 200]
+              }
+            }
+          },
+          {
+            urlPattern: /^https:\/\/xvrmtsgagzcbdgxrwdly\.supabase\.co\/rest\/.*/i,
             handler: "NetworkFirst",
             options: {
-              cacheName: "supabase-cache",
+              cacheName: "supabase-api-cache",
               expiration: {
                 maxEntries: 100,
-                maxAgeSeconds: 60 * 60 * 24 // 1 day
+                maxAgeSeconds: 60 * 60 // 1 hour for API data
               },
               cacheableResponse: {
                 statuses: [0, 200]
               },
               networkTimeoutSeconds: 10
+            }
+          },
+          {
+            urlPattern: /^https:\/\/xvrmtsgagzcbdgxrwdly\.supabase\.co\/storage\/.*/i,
+            handler: "CacheFirst",
+            options: {
+              cacheName: "supabase-storage-cache",
+              expiration: {
+                maxEntries: 50,
+                maxAgeSeconds: 60 * 60 * 24 * 7 // 7 days for storage files
+              },
+              cacheableResponse: {
+                statuses: [0, 200]
+              }
             }
           },
           {
@@ -193,7 +221,10 @@ export default defineConfig(({ mode }) => ({
             }
           }
         ],
-        maximumFileSizeToCacheInBytes: 5 * 1024 * 1024 // 5 MB limit
+        maximumFileSizeToCacheInBytes: 5 * 1024 * 1024, // 5 MB limit
+        cleanupOutdatedCaches: true,
+        skipWaiting: true,
+        clientsClaim: true,
       },
       devOptions: {
         enabled: true
