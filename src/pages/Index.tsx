@@ -1,18 +1,17 @@
 import { lazy, Suspense } from "react";
 import Navbar from "@/components/landing/Navbar";
 import Hero from "@/components/landing/Hero";
-import {
-  SEOHead,
-  OrganizationJsonLd,
-  WebSiteJsonLd,
-  SoftwareApplicationJsonLd,
-  FAQPageJsonLd,
-  ServiceJsonLd,
-  LocalBusinessJsonLd,
-  TaxCalculationHowTo,
-  PricingProducts,
-  BreadcrumbJsonLd,
-} from "@/components/seo";
+import { SEOHead, BreadcrumbJsonLd } from "@/components/seo";
+
+// Lazy-load JSON-LD components — they only inject <script> tags, not visual content
+const OrganizationJsonLd = lazy(() => import("@/components/seo/OrganizationJsonLd"));
+const WebSiteJsonLd = lazy(() => import("@/components/seo/WebSiteJsonLd"));
+const SoftwareApplicationJsonLd = lazy(() => import("@/components/seo/SoftwareApplicationJsonLd"));
+const FAQPageJsonLd = lazy(() => import("@/components/seo/FAQPageJsonLd"));
+const ServiceJsonLd = lazy(() => import("@/components/seo/ServiceJsonLd"));
+const LocalBusinessJsonLd = lazy(() => import("@/components/seo/LocalBusinessJsonLd"));
+const TaxCalculationHowTo = lazy(() => import("@/components/seo/HowToJsonLd").then(m => ({ default: m.TaxCalculationHowTo })));
+const PricingProducts = lazy(() => import("@/components/seo/ProductJsonLd").then(m => ({ default: m.PricingProducts })));
 
 // Lazy-load below-fold sections to reduce initial bundle and unblock main thread
 const Features = lazy(() => import("@/components/landing/Features"));
@@ -60,14 +59,16 @@ const Index = () => {
       <BreadcrumbJsonLd
         items={[{ name: "Home", url: "https://taxkora.com" }]}
       />
-      <OrganizationJsonLd />
-      <WebSiteJsonLd />
-      <SoftwareApplicationJsonLd />
-      <FAQPageJsonLd />
-      <ServiceJsonLd />
-      <LocalBusinessJsonLd />
-      <TaxCalculationHowTo />
-      <PricingProducts />
+      <Suspense fallback={null}>
+        <OrganizationJsonLd />
+        <WebSiteJsonLd />
+        <SoftwareApplicationJsonLd />
+        <FAQPageJsonLd />
+        <ServiceJsonLd />
+        <LocalBusinessJsonLd />
+        <TaxCalculationHowTo />
+        <PricingProducts />
+      </Suspense>
 
       {/* Engagement components - lazy loaded */}
       <Suspense fallback={null}>

@@ -1,18 +1,20 @@
 import { lazy, Suspense } from "react";
-import { Toaster } from "@/components/ui/toaster";
-import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
 import { AuthProvider } from "@/hooks/useAuth";
-import CookieConsentBanner from "./components/CookieConsentBanner";
-import PWAInstallPrompt from "./components/pwa/PWAInstallPrompt";
-import PWAUpdatePrompt from "./components/pwa/PWAUpdatePrompt";
-import OfflineIndicator from "./components/pwa/OfflineIndicator";
 
 // Eagerly load the landing page for fast LCP
 import Index from "./pages/Index";
+
+// Lazy-load non-critical shell components to reduce initial JS
+const Toaster = lazy(() => import("@/components/ui/toaster").then(m => ({ default: m.Toaster })));
+const Sonner = lazy(() => import("@/components/ui/sonner").then(m => ({ default: m.Toaster })));
+const CookieConsentBanner = lazy(() => import("./components/CookieConsentBanner"));
+const PWAInstallPrompt = lazy(() => import("./components/pwa/PWAInstallPrompt"));
+const PWAUpdatePrompt = lazy(() => import("./components/pwa/PWAUpdatePrompt"));
+const OfflineIndicator = lazy(() => import("./components/pwa/OfflineIndicator"));
 
 // Lazy-load all other pages to break critical request chains
 const Auth = lazy(() => import("./pages/Auth"));
@@ -55,13 +57,17 @@ const App = () => (
   <HelmetProvider>
     <QueryClientProvider client={queryClient}>
     <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <PWAInstallPrompt />
-      <PWAUpdatePrompt />
-      <OfflineIndicator />
+      <Suspense fallback={null}>
+        <Toaster />
+        <Sonner />
+        <PWAInstallPrompt />
+        <PWAUpdatePrompt />
+        <OfflineIndicator />
+      </Suspense>
       <BrowserRouter>
-        <CookieConsentBanner />
+        <Suspense fallback={null}>
+          <CookieConsentBanner />
+        </Suspense>
         <AuthProvider>
           <Suspense fallback={<LazyFallback />}>
             <Routes>
