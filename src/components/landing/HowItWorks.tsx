@@ -263,9 +263,9 @@ const HowItWorks = () => {
         </div>
 
         {/* CTA */}
-        <div className="mt-16 text-center">
-          <Link to="/auth">
-            <Button size="lg" className="group">
+        <div className="mt-16 text-center px-4 sm:px-0">
+          <Link to="/auth" className="block sm:inline-block">
+            <Button size="lg" className="group w-full sm:w-auto">
               Get Started Free
               <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </Button>

@@ -47,7 +47,7 @@ const CTA = () => {
             {/* CTA buttons */}
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-8">
               <Link to="/auth" className="w-full sm:w-auto">
-                <Button variant="accent" size="xl" className="group w-full text-lg px-8 py-6">
+                <Button variant="accent" size="xl" className="group w-full">
                   Start Your Free Trial Now
                   <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                 </Button>
