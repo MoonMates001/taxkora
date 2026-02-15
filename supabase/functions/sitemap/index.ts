@@ -19,8 +19,12 @@ const BASE_URL = "https://taxkora.com";
 const staticPages = [
   { path: "/", priority: "1.0", changefreq: "weekly" },
   { path: "/blog", priority: "0.9", changefreq: "daily" },
+  { path: "/support", priority: "0.6", changefreq: "monthly" },
   { path: "/auth", priority: "0.6", changefreq: "monthly" },
+  { path: "/terms", priority: "0.5", changefreq: "monthly" },
   { path: "/install", priority: "0.5", changefreq: "monthly" },
+  { path: "/privacy", priority: "0.4", changefreq: "monthly" },
+  { path: "/cookies", priority: "0.4", changefreq: "monthly" },
 ];
 
 function escapeXml(str: string): string {
