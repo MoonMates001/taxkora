@@ -274,8 +274,26 @@
       ]
     }
     </script>
-    <!-- Shown.io Analytics -->
-    <script defer src="https://shown.io/metrics/Q781EVPm8x" type="text/javascript"></script>
+    <!-- Shown.io Analytics - loaded after user interaction to reduce main thread blocking -->
+    <script>
+      (function() {
+        var loaded = false;
+        function loadAnalytics() {
+          if (loaded) return;
+          loaded = true;
+          var s = document.createElement('script');
+          s.src = 'https://shown.io/metrics/Q781EVPm8x';
+          s.type = 'text/javascript';
+          s.async = true;
+          document.head.appendChild(s);
+        }
+        // Load on first interaction or after 5 seconds
+        ['click', 'scroll', 'keydown', 'touchstart'].forEach(function(evt) {
+          document.addEventListener(evt, loadAnalytics, { once: true, passive: true });
+        });
+        setTimeout(loadAnalytics, 5000);
+      })();
+    </script>
   </head>
   <body>
     <div id="root">

@@ -1,16 +1,6 @@
+import { lazy, Suspense } from "react";
 import Navbar from "@/components/landing/Navbar";
 import Hero from "@/components/landing/Hero";
-import Features from "@/components/landing/Features";
-import HowItWorks from "@/components/landing/HowItWorks";
-import TaxSavingsCalculator from "@/components/landing/TaxSavingsCalculator";
-import Pricing from "@/components/landing/Pricing";
-import CustomerSupport from "@/components/landing/CustomerSupport";
-import CTA from "@/components/landing/CTA";
-import Footer from "@/components/landing/Footer";
-import StickyCtaBar from "@/components/landing/StickyCtaBar";
-import ExitIntentPopup from "@/components/landing/ExitIntentPopup";
-import ScrollProgressBar from "@/components/landing/ScrollProgressBar";
-import LiveChatTrigger from "@/components/landing/LiveChatTrigger";
 import {
   SEOHead,
   OrganizationJsonLd,
@@ -23,6 +13,23 @@ import {
   PricingProducts,
   BreadcrumbJsonLd,
 } from "@/components/seo";
+
+// Lazy-load below-fold sections to reduce initial bundle and unblock main thread
+const Features = lazy(() => import("@/components/landing/Features"));
+const HowItWorks = lazy(() => import("@/components/landing/HowItWorks"));
+const TaxSavingsCalculator = lazy(() => import("@/components/landing/TaxSavingsCalculator"));
+const Pricing = lazy(() => import("@/components/landing/Pricing"));
+const CustomerSupport = lazy(() => import("@/components/landing/CustomerSupport"));
+const CTA = lazy(() => import("@/components/landing/CTA"));
+const Footer = lazy(() => import("@/components/landing/Footer"));
+
+// Lazy-load engagement widgets (non-critical)
+const StickyCtaBar = lazy(() => import("@/components/landing/StickyCtaBar"));
+const ExitIntentPopup = lazy(() => import("@/components/landing/ExitIntentPopup"));
+const ScrollProgressBar = lazy(() => import("@/components/landing/ScrollProgressBar"));
+const LiveChatTrigger = lazy(() => import("@/components/landing/LiveChatTrigger"));
+
+const SectionFallback = () => <div className="min-h-[200px]" />;
 
 const Index = () => {
   return (
@@ -62,24 +69,40 @@ const Index = () => {
       <TaxCalculationHowTo />
       <PricingProducts />
 
-      {/* Engagement components */}
-      <ScrollProgressBar />
-      <ExitIntentPopup />
-      <StickyCtaBar />
-      <LiveChatTrigger />
+      {/* Engagement components - lazy loaded */}
+      <Suspense fallback={null}>
+        <ScrollProgressBar />
+        <ExitIntentPopup />
+        <StickyCtaBar />
+        <LiveChatTrigger />
+      </Suspense>
 
-      {/* Main content */}
+      {/* Critical above-fold content */}
       <Navbar />
       <article>
         <Hero />
-        <Features />
-        <HowItWorks />
-        <TaxSavingsCalculator />
-        <Pricing />
-        <CustomerSupport />
-        <CTA />
+        <Suspense fallback={<SectionFallback />}>
+          <Features />
+        </Suspense>
+        <Suspense fallback={<SectionFallback />}>
+          <HowItWorks />
+        </Suspense>
+        <Suspense fallback={<SectionFallback />}>
+          <TaxSavingsCalculator />
+        </Suspense>
+        <Suspense fallback={<SectionFallback />}>
+          <Pricing />
+        </Suspense>
+        <Suspense fallback={<SectionFallback />}>
+          <CustomerSupport />
+        </Suspense>
+        <Suspense fallback={<SectionFallback />}>
+          <CTA />
+        </Suspense>
       </article>
-      <Footer />
+      <Suspense fallback={<SectionFallback />}>
+        <Footer />
+      </Suspense>
     </main>
   );
 };
