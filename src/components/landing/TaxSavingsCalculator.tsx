@@ -101,7 +101,7 @@ const TaxSavingsCalculator = () => {
                           setIncome(Number(e.target.value));
                           setHasCalculated(true);
                         }}
-                        className="w-full h-2 bg-secondary rounded-lg appearance-none cursor-pointer accent-primary"
+                        className="w-full h-3 sm:h-2 bg-secondary rounded-lg appearance-none cursor-pointer accent-primary [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:h-6"
                       />
                     </div>
                     <div className="mt-2 text-2xl font-bold text-foreground">
@@ -124,7 +124,7 @@ const TaxSavingsCalculator = () => {
                         setExpenses(Number(e.target.value));
                         setHasCalculated(true);
                       }}
-                      className="w-full h-2 bg-secondary rounded-lg appearance-none cursor-pointer accent-coral-500"
+                      className="w-full h-3 sm:h-2 bg-secondary rounded-lg appearance-none cursor-pointer accent-coral-500 [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:h-6"
                     />
                     <div className="mt-2 text-2xl font-bold text-foreground">
                       {formatCurrency(expenses)}

@@ -35,7 +35,7 @@ const LiveChatTrigger = () => {
           setHasInteracted(true);
           setShowPulse(false);
         }}
-        className={`fixed bottom-24 right-4 z-50 w-14 h-14 rounded-full shadow-lg transition-all duration-300 flex items-center justify-center ${
+        className={`fixed bottom-24 right-4 z-50 w-14 h-14 min-w-[48px] min-h-[48px] rounded-full shadow-lg transition-all duration-300 flex items-center justify-center ${
           isOpen 
             ? "bg-muted text-muted-foreground hover:bg-muted/90" 
             : "bg-primary text-primary-foreground hover:bg-primary/90"

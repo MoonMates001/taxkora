@@ -132,15 +132,15 @@ const Navbar = () => {
         {/* Mobile Menu */}
         {isOpen && (
           <div className={`lg:hidden py-4 border-t animate-fade-in ${
-            isScrolled ? "border-border" : "border-primary-foreground/10"
+            isScrolled ? "border-border bg-background" : "border-primary-foreground/10 bg-hero"
           }`}>
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-1">
               {navLinks.map((link, i) => (
                 link.isRoute ? (
                   <Link 
                     key={i}
                     to={link.href}
-                    className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                    className={`px-4 py-3 rounded-lg text-base font-medium transition-colors min-h-[44px] flex items-center ${
                       isScrolled 
                         ? "text-muted-foreground hover:text-foreground hover:bg-secondary" 
                         : "text-primary-foreground/80 hover:text-primary-foreground hover:bg-primary-foreground/10"
@@ -153,7 +153,7 @@ const Navbar = () => {
                   <a 
                     key={i}
                     href={link.href} 
-                    className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                    className={`px-4 py-3 rounded-lg text-base font-medium transition-colors min-h-[44px] flex items-center ${
                       isScrolled 
                         ? "text-muted-foreground hover:text-foreground hover:bg-secondary" 
                         : "text-primary-foreground/80 hover:text-primary-foreground hover:bg-primary-foreground/10"
