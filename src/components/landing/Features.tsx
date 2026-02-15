@@ -208,13 +208,13 @@ const Features = () => {
 
         {/* Bottom CTA */}
         <div className="mt-20 text-center">
-          <div className="inline-flex flex-col sm:flex-row items-center gap-4 p-6 bg-secondary/50 rounded-2xl border border-border">
+          <div className="inline-flex flex-col sm:flex-row items-center gap-4 p-6 bg-secondary/50 rounded-2xl border border-border w-full sm:w-auto">
             <div className="text-center sm:text-left">
               <p className="font-semibold text-foreground">Ready to simplify your tax compliance?</p>
               <p className="text-sm text-muted-foreground">Start your 90-day free trial today. No credit card required.</p>
             </div>
-            <Link to="/auth">
-              <Button size="lg" className="group whitespace-nowrap">
+            <Link to="/auth" className="w-full sm:w-auto">
+              <Button size="lg" className="group w-full sm:w-auto whitespace-nowrap">
                 Get Started Free
                 <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </Button>
