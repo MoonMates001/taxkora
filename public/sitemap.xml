@@ -7,7 +7,7 @@
   <!-- Homepage - Highest priority -->
   <url>
     <loc>https://taxkora.com/</loc>
-    <lastmod>2026-02-03</lastmod>
+    <lastmod>2026-02-15</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
@@ -15,7 +15,7 @@
   <!-- Blog listing page -->
   <url>
     <loc>https://taxkora.com/blog</loc>
-    <lastmod>2026-02-03</lastmod>
+    <lastmod>2026-02-15</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
   </url>
@@ -23,7 +23,7 @@
   <!-- Authentication page -->
   <url>
     <loc>https://taxkora.com/auth</loc>
-    <lastmod>2026-02-03</lastmod>
+    <lastmod>2026-02-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
@@ -31,7 +31,7 @@
   <!-- Install/PWA page -->
   <url>
     <loc>https://taxkora.com/install</loc>
-    <lastmod>2026-02-03</lastmod>
+    <lastmod>2026-02-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
