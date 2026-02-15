@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { SEOHead, ArticleJsonLd, BreadcrumbJsonLd, WebPageJsonLd } from "@/components/seo";
 import AuthorCard from "@/components/blog/AuthorCard";
+import NewsletterSignup from "@/components/blog/NewsletterSignup";
 
 const BlogPostPage = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -236,6 +237,11 @@ const BlogPostPage = () => {
                   <AuthorCard author={post.author} variant="full" />
                 </div>
               )}
+
+              {/* Newsletter CTA */}
+              <div className="mt-12 pt-8 border-t border-border">
+                <NewsletterSignup source="blog_post" />
+              </div>
             </div>
           </article>
 

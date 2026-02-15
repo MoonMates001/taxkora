@@ -9,6 +9,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { SEOHead, BreadcrumbJsonLd } from "@/components/seo";
 import { Helmet } from "react-helmet-async";
 import BlogPagination from "@/components/blog/BlogPagination";
+import NewsletterSignup from "@/components/blog/NewsletterSignup";
 
 const POSTS_PER_PAGE = 9;
 
@@ -260,6 +261,13 @@ const BlogPage = () => {
               </p>
             </div>
           )}
+        </div>
+      </section>
+
+      {/* Newsletter Section */}
+      <section className="py-16 bg-secondary/30">
+        <div className="container mx-auto px-4 max-w-2xl">
+          <NewsletterSignup source="blog_listing" />
         </div>
       </section>
 
