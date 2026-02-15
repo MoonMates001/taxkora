@@ -37,7 +37,7 @@ const Index = () => {
       {/* Complete SEO Schema */}
       <SEOHead
         title="TAXKORA - Nigeria Tax Calculator 2026 | PIT, CIT, VAT & WHT Compliance"
-        description="Nigeria's #1 tax compliance software. Calculate Nigerian tax rates 2026, file personal income tax, company income tax, VAT & withholding tax. Free tax calculator for Nigerian businesses and freelancers. FIRS/NRS compliant."
+        description="Nigeria's #1 tax software. Calculate PIT, CIT, VAT & WHT, track expenses, and file returns. 90-day free trial."
         canonicalUrl="https://taxkora.com"
         ogType="website"
         keywords={[
