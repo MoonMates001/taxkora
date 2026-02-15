@@ -173,7 +173,7 @@ const IncomePage = () => {
           />
           <Button className="gap-2 w-full sm:w-auto" onClick={handleAddNew}>
             <Plus className="w-4 h-4" />
-            Add {isBusinessAccount ? "Income" : "Income Source"}
+            Add Income
           </Button>
         </div>
       </div>
