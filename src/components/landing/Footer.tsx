@@ -82,10 +82,10 @@ const Footer = () => {
           {/* Links Columns */}
           <div>
             <h4 className="font-semibold text-white mb-4">Product</h4>
-            <ul className="space-y-3">
+            <ul className="space-y-1">
               {footerLinks.product.map((link, index) => (
                 <li key={index}>
-                  <a href={link.href} className="text-sm hover:text-teal-400 transition-colors">
+                  <a href={link.href} className="text-sm hover:text-teal-400 transition-colors inline-flex items-center min-h-[44px] py-2">
                     {link.label}
                   </a>
                 </li>
@@ -95,10 +95,10 @@ const Footer = () => {
 
           <div>
             <h4 className="font-semibold text-white mb-4">Solutions</h4>
-            <ul className="space-y-3">
+            <ul className="space-y-1">
               {footerLinks.solutions.map((link, index) => (
                 <li key={index}>
-                  <a href={link.href} className="text-sm hover:text-teal-400 transition-colors">
+                  <a href={link.href} className="text-sm hover:text-teal-400 transition-colors inline-flex items-center min-h-[44px] py-2">
                     {link.label}
                   </a>
                 </li>
@@ -108,10 +108,10 @@ const Footer = () => {
 
           <div>
             <h4 className="font-semibold text-white mb-4">Resources</h4>
-            <ul className="space-y-3">
+            <ul className="space-y-1">
               {footerLinks.resources.map((link, index) => (
                 <li key={index}>
-                  <a href={link.href} className="text-sm hover:text-teal-400 transition-colors">
+                  <a href={link.href} className="text-sm hover:text-teal-400 transition-colors inline-flex items-center min-h-[44px] py-2">
                     {link.label}
                   </a>
                 </li>
@@ -121,10 +121,10 @@ const Footer = () => {
 
           <div>
             <h4 className="font-semibold text-white mb-4">Company</h4>
-            <ul className="space-y-3">
+            <ul className="space-y-1">
               {footerLinks.company.map((link, index) => (
                 <li key={index}>
-                  <a href={link.href} className="text-sm hover:text-teal-400 transition-colors">
+                  <a href={link.href} className="text-sm hover:text-teal-400 transition-colors inline-flex items-center min-h-[44px] py-2">
                     {link.label}
                   </a>
                 </li>
@@ -141,14 +141,14 @@ const Footer = () => {
             <p className="text-sm text-gray-500">
               © {new Date().getFullYear()} TAXKORA. All rights reserved.
             </p>
-            <div className="flex items-center gap-6">
-              <a href="#" className="text-sm text-gray-500 hover:text-teal-400 transition-colors">
+            <div className="flex flex-wrap items-center gap-2 sm:gap-6">
+              <a href="#" className="text-sm text-gray-500 hover:text-teal-400 transition-colors inline-flex items-center min-h-[44px] py-2 px-1">
                 Privacy Policy
               </a>
-              <a href="#" className="text-sm text-gray-500 hover:text-teal-400 transition-colors">
+              <a href="#" className="text-sm text-gray-500 hover:text-teal-400 transition-colors inline-flex items-center min-h-[44px] py-2 px-1">
                 Terms of Service
               </a>
-              <a href="#" className="text-sm text-gray-500 hover:text-teal-400 transition-colors">
+              <a href="#" className="text-sm text-gray-500 hover:text-teal-400 transition-colors inline-flex items-center min-h-[44px] py-2 px-1">
                 Cookie Policy
               </a>
             </div>
