@@ -1,14 +1,12 @@
 import { useEffect, useState, useCallback } from "react";
-import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
-import { Bell, BellOff, Clock, AlertTriangle, CheckCircle, Settings2, ArrowRight, TrendingUp, TrendingDown } from "lucide-react";
+import { Bell, BellOff, Clock, AlertTriangle, CheckCircle, Settings2 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
@@ -31,7 +29,6 @@ const FREQUENCY_OPTIONS: { value: ReminderFrequency; label: string }[] = [
 ];
 
 const UpdateReminderSettings = () => {
-  const navigate = useNavigate();
   const { user } = useAuth();
   const [reminderEnabled, setReminderEnabled] = useState(() => {
     return localStorage.getItem(REMINDER_KEY) !== "false";
@@ -232,21 +229,9 @@ const UpdateReminderSettings = () => {
               </p>
             </div>
           </div>
-          <div className="flex items-center gap-2">
-            <Badge variant={incomeOverdue ? "destructive" : "secondary"}>
-              {incomeOverdue ? "Overdue" : "Up to date"}
-            </Badge>
-            <Button
-              size="sm"
-              variant={incomeOverdue ? "default" : "outline"}
-              className="gap-1"
-              onClick={() => navigate("/dashboard/income")}
-            >
-              <TrendingUp className="w-3.5 h-3.5" />
-              Update
-              <ArrowRight className="w-3 h-3" />
-            </Button>
-          </div>
+          <Badge variant={incomeOverdue ? "destructive" : "secondary"}>
+            {incomeOverdue ? "Overdue" : "Up to date"}
+          </Badge>
         </div>
 
         {/* Expense status */}
@@ -267,21 +252,9 @@ const UpdateReminderSettings = () => {
               </p>
             </div>
           </div>
-          <div className="flex items-center gap-2">
-            <Badge variant={expenseOverdue ? "destructive" : "secondary"}>
-              {expenseOverdue ? "Overdue" : "Up to date"}
-            </Badge>
-            <Button
-              size="sm"
-              variant={expenseOverdue ? "default" : "outline"}
-              className="gap-1"
-              onClick={() => navigate("/dashboard/expenses")}
-            >
-              <TrendingDown className="w-3.5 h-3.5" />
-              Update
-              <ArrowRight className="w-3 h-3" />
-            </Button>
-          </div>
+          <Badge variant={expenseOverdue ? "destructive" : "secondary"}>
+            {expenseOverdue ? "Overdue" : "Up to date"}
+          </Badge>
         </div>
 
         {reminderEnabled && (
