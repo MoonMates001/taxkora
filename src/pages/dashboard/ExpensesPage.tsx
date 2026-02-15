@@ -49,6 +49,7 @@ import {
   Calendar,
   Loader2,
 } from "lucide-react";
+import YearSelector from "@/components/dashboard/YearSelector";
 
 const ExpensesPage = () => {
   const { profile } = useAuth();
@@ -60,41 +61,55 @@ const ExpensesPage = () => {
     [profile?.account_type]
   );
 
+  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingExpense, setEditingExpense] = useState<Expense | null>(null);
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [categoryFilter, setCategoryFilter] = useState<string>("all");
 
+  // Available years from data
+  const availableYears = useMemo(() => {
+    const yearsSet = new Set<number>();
+    yearsSet.add(new Date().getFullYear());
+    expenses.forEach((e) => yearsSet.add(new Date(e.date).getFullYear()));
+    return Array.from(yearsSet).sort((a, b) => b - a);
+  }, [expenses]);
+
+  // Records filtered by year
+  const yearExpenses = useMemo(() => {
+    return expenses.filter((e) => new Date(e.date).getFullYear() === selectedYear);
+  }, [expenses, selectedYear]);
+
+  const yearTotalExpenses = useMemo(() => {
+    return yearExpenses.reduce((sum, e) => sum + Number(e.amount), 0);
+  }, [yearExpenses]);
+
   const thisMonthExpenses = useMemo(() => {
     const now = new Date();
     const currentMonth = now.getMonth();
-    const currentYear = now.getFullYear();
-    return expenses
+    return yearExpenses
       .filter((expense) => {
         const expenseDate = new Date(expense.date);
-        return (
-          expenseDate.getMonth() === currentMonth &&
-          expenseDate.getFullYear() === currentYear
-        );
+        return expenseDate.getMonth() === currentMonth && new Date(expense.date).getFullYear() === selectedYear;
       })
       .reduce((sum, expense) => sum + Number(expense.amount), 0);
-  }, [expenses]);
+  }, [yearExpenses, selectedYear]);
 
   const avgMonthlyExpenses = useMemo(() => {
-    if (expenses.length === 0) return 0;
-    const dates = expenses.map((e) => new Date(e.date));
+    if (yearExpenses.length === 0) return 0;
+    const dates = yearExpenses.map((e) => new Date(e.date));
     const minDate = new Date(Math.min(...dates.map((d) => d.getTime())));
     const maxDate = new Date(Math.max(...dates.map((d) => d.getTime())));
     const monthsDiff =
       (maxDate.getFullYear() - minDate.getFullYear()) * 12 +
       (maxDate.getMonth() - minDate.getMonth()) +
       1;
-    return totalExpenses / Math.max(monthsDiff, 1);
-  }, [expenses, totalExpenses]);
+    return yearTotalExpenses / Math.max(monthsDiff, 1);
+  }, [yearExpenses, yearTotalExpenses]);
 
   const filteredExpenses = useMemo(() => {
-    return expenses.filter((expense) => {
+    return yearExpenses.filter((expense) => {
       const matchesSearch =
         expense.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
         expense.vendor?.toLowerCase().includes(searchQuery.toLowerCase());
@@ -102,7 +117,7 @@ const ExpensesPage = () => {
         categoryFilter === "all" || expense.category === categoryFilter;
       return matchesSearch && matchesCategory;
     });
-  }, [expenses, searchQuery, categoryFilter]);
+  }, [yearExpenses, searchQuery, categoryFilter]);
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat("en-NG", {
@@ -147,10 +162,17 @@ const ExpensesPage = () => {
               : "Track your personal expenditure for tax deductions"}
           </p>
         </div>
-        <Button className="gap-2" onClick={handleAddNew}>
-          <Plus className="w-4 h-4" />
-          Add {isBusinessAccount ? "Expense" : "Expenditure"}
-        </Button>
+        <div className="flex items-center gap-3">
+          <YearSelector
+            selectedYear={selectedYear}
+            onYearChange={setSelectedYear}
+            availableYears={availableYears}
+          />
+          <Button className="gap-2" onClick={handleAddNew}>
+            <Plus className="w-4 h-4" />
+            Add {isBusinessAccount ? "Expense" : "Expenditure"}
+          </Button>
+        </div>
       </div>
 
       {/* Summary Cards */}
@@ -163,10 +185,10 @@ const ExpensesPage = () => {
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">
-                  Total {isBusinessAccount ? "Expenses" : "Expenditure"}
+                  Total {isBusinessAccount ? "Expenses" : "Expenditure"} ({selectedYear})
                 </p>
                 <p className="font-display text-2xl font-bold text-foreground">
-                  {formatCurrency(totalExpenses)}
+                  {formatCurrency(yearTotalExpenses)}
                 </p>
               </div>
             </div>
