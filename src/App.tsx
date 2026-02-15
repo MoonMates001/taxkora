@@ -32,6 +32,8 @@ import InstallApp from "./pages/InstallApp";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsOfService from "./pages/TermsOfService";
 import SupportPage from "./pages/SupportPage";
+import CookiePolicy from "./pages/CookiePolicy";
+import CookieConsentBanner from "./components/CookieConsentBanner";
 import PWAInstallPrompt from "./components/pwa/PWAInstallPrompt";
 import PWAUpdatePrompt from "./components/pwa/PWAUpdatePrompt";
 import OfflineIndicator from "./components/pwa/OfflineIndicator";
@@ -47,6 +49,7 @@ const App = () => (
       <PWAInstallPrompt />
       <PWAUpdatePrompt />
       <OfflineIndicator />
+      <CookieConsentBanner />
       <BrowserRouter>
         <AuthProvider>
           <Routes>
@@ -77,6 +80,7 @@ const App = () => (
             <Route path="/privacy" element={<PrivacyPolicy />} />
             <Route path="/terms" element={<TermsOfService />} />
             <Route path="/support" element={<SupportPage />} />
+            <Route path="/cookies" element={<CookiePolicy />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
