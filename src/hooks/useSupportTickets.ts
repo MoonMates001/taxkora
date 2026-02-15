@@ -14,14 +14,11 @@ export interface CreateSupportTicketData {
 export const useCreateSupportTicket = () => {
   return useMutation({
     mutationFn: async (data: CreateSupportTicketData) => {
-      const { data: ticket, error } = await supabase
+      const { error } = await supabase
         .from("support_tickets")
-        .insert(data)
-        .select()
-        .single();
+        .insert(data);
       
       if (error) throw error;
-      return ticket;
     },
     onSuccess: () => {
       toast.success("Your message has been sent! We'll get back to you soon.");
