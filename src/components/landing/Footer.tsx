@@ -142,9 +142,9 @@ const Footer = () => {
               © {new Date().getFullYear()} TAXKORA. All rights reserved.
             </p>
             <div className="flex flex-wrap items-center gap-2 sm:gap-6">
-              <a href="#" className="text-sm text-gray-500 hover:text-teal-400 transition-colors inline-flex items-center min-h-[44px] py-2 px-1">
+              <Link to="/privacy" className="text-sm text-gray-500 hover:text-teal-400 transition-colors inline-flex items-center min-h-[44px] py-2 px-1">
                 Privacy Policy
-              </a>
+              </Link>
               <a href="#" className="text-sm text-gray-500 hover:text-teal-400 transition-colors inline-flex items-center min-h-[44px] py-2 px-1">
                 Terms of Service
               </a>
