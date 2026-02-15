@@ -278,20 +278,32 @@
       ]
     }
     </script>
-    <!-- Shown.io Analytics - loaded after user interaction to reduce main thread blocking -->
+    <!-- Google Analytics 4 + Shown.io - deferred to reduce main thread blocking -->
     <script>
       (function() {
         var loaded = false;
         function loadAnalytics() {
           if (loaded) return;
           loaded = true;
+          // GA4
+          var g = document.createElement('script');
+          g.src = 'https://www.googletagmanager.com/gtag/js?id=G-Z76RE8VCZ9';
+          g.async = true;
+          document.head.appendChild(g);
+          g.onload = function() {
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            window.gtag = gtag;
+            gtag('js', new Date());
+            gtag('config', 'G-Z76RE8VCZ9');
+          };
+          // Shown.io
           var s = document.createElement('script');
           s.src = 'https://shown.io/metrics/Q781EVPm8x';
           s.type = 'text/javascript';
           s.async = true;
           document.head.appendChild(s);
         }
-        // Load on first interaction or after 5 seconds
         ['click', 'scroll', 'keydown', 'touchstart'].forEach(function(evt) {
           document.addEventListener(evt, loadAnalytics, { once: true, passive: true });
         });
