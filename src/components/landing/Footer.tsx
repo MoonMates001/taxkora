@@ -15,9 +15,9 @@ const Footer = () => {
       { label: "For Corporations", href: "#features" }
     ],
     resources: [
-      { label: "Help Center", href: "#" },
+      { label: "Help Center", href: "/support" },
       { label: "Tax Guides", href: "#" },
-      { label: "Blog", href: "#" }
+      { label: "Blog", href: "/blog" }
     ],
     company: [
       { label: "About Us", href: "#" },
