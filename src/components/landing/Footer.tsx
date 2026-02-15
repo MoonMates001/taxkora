@@ -145,9 +145,9 @@ const Footer = () => {
               <Link to="/privacy" className="text-sm text-gray-500 hover:text-teal-400 transition-colors inline-flex items-center min-h-[44px] py-2 px-1">
                 Privacy Policy
               </Link>
-              <a href="#" className="text-sm text-gray-500 hover:text-teal-400 transition-colors inline-flex items-center min-h-[44px] py-2 px-1">
+              <Link to="/terms" className="text-sm text-gray-500 hover:text-teal-400 transition-colors inline-flex items-center min-h-[44px] py-2 px-1">
                 Terms of Service
-              </a>
+              </Link>
               <a href="#" className="text-sm text-gray-500 hover:text-teal-400 transition-colors inline-flex items-center min-h-[44px] py-2 px-1">
                 Cookie Policy
               </a>
