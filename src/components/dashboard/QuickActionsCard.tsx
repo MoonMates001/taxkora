@@ -44,7 +44,7 @@ const QuickActionsCard = () => {
         <CardTitle className="font-display">Quick Actions</CardTitle>
       </CardHeader>
       <CardContent>
-        <div className={`grid gap-3 ${isBusinessAccount ? "sm:grid-cols-2 lg:grid-cols-4" : "sm:grid-cols-2 lg:grid-cols-4"}`}>
+        <div className={`grid grid-cols-2 gap-3 ${isBusinessAccount ? "lg:grid-cols-4" : "lg:grid-cols-4"}`}>
           {quickActions.map((action, index) => (
             <Link key={index} to={action.href}>
               <Button
