@@ -49,6 +49,7 @@ import {
   Calendar,
   Loader2,
 } from "lucide-react";
+import YearSelector from "@/components/dashboard/YearSelector";
 
 const IncomePage = () => {
   const { profile } = useAuth();
@@ -60,44 +61,58 @@ const IncomePage = () => {
     [profile?.account_type]
   );
 
+  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingIncome, setEditingIncome] = useState<IncomeRecord | null>(null);
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [categoryFilter, setCategoryFilter] = useState<string>("all");
 
-  // Calculate this month's income
+  // Available years from data
+  const availableYears = useMemo(() => {
+    const yearsSet = new Set<number>();
+    yearsSet.add(new Date().getFullYear());
+    incomeRecords.forEach((r) => yearsSet.add(new Date(r.date).getFullYear()));
+    return Array.from(yearsSet).sort((a, b) => b - a);
+  }, [incomeRecords]);
+
+  // Records filtered by year
+  const yearRecords = useMemo(() => {
+    return incomeRecords.filter((r) => new Date(r.date).getFullYear() === selectedYear);
+  }, [incomeRecords, selectedYear]);
+
+  const yearTotalIncome = useMemo(() => {
+    return yearRecords.reduce((sum, r) => sum + Number(r.amount), 0);
+  }, [yearRecords]);
+
+  // Calculate this month's income (only for selected year)
   const thisMonthIncome = useMemo(() => {
     const now = new Date();
     const currentMonth = now.getMonth();
-    const currentYear = now.getFullYear();
-    return incomeRecords
+    return yearRecords
       .filter((record) => {
         const recordDate = new Date(record.date);
-        return (
-          recordDate.getMonth() === currentMonth &&
-          recordDate.getFullYear() === currentYear
-        );
+        return recordDate.getMonth() === currentMonth && new Date(record.date).getFullYear() === selectedYear;
       })
       .reduce((sum, record) => sum + Number(record.amount), 0);
-  }, [incomeRecords]);
+  }, [yearRecords, selectedYear]);
 
-  // Calculate average monthly income
+  // Calculate average monthly income for selected year
   const avgMonthlyIncome = useMemo(() => {
-    if (incomeRecords.length === 0) return 0;
-    const dates = incomeRecords.map((r) => new Date(r.date));
+    if (yearRecords.length === 0) return 0;
+    const dates = yearRecords.map((r) => new Date(r.date));
     const minDate = new Date(Math.min(...dates.map((d) => d.getTime())));
     const maxDate = new Date(Math.max(...dates.map((d) => d.getTime())));
     const monthsDiff =
       (maxDate.getFullYear() - minDate.getFullYear()) * 12 +
       (maxDate.getMonth() - minDate.getMonth()) +
       1;
-    return totalIncome / Math.max(monthsDiff, 1);
-  }, [incomeRecords, totalIncome]);
+    return yearTotalIncome / Math.max(monthsDiff, 1);
+  }, [yearRecords, yearTotalIncome]);
 
-  // Filter income records
+  // Filter income records by search/category (already year-filtered)
   const filteredRecords = useMemo(() => {
-    return incomeRecords.filter((record) => {
+    return yearRecords.filter((record) => {
       const matchesSearch =
         record.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
         record.clients?.name?.toLowerCase().includes(searchQuery.toLowerCase());
@@ -105,7 +120,7 @@ const IncomePage = () => {
         categoryFilter === "all" || record.category === categoryFilter;
       return matchesSearch && matchesCategory;
     });
-  }, [incomeRecords, searchQuery, categoryFilter]);
+  }, [yearRecords, searchQuery, categoryFilter]);
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat("en-NG", {
@@ -150,10 +165,17 @@ const IncomePage = () => {
               : "Aggregate income from all your sources"}
           </p>
         </div>
-        <Button className="gap-2" onClick={handleAddNew}>
-          <Plus className="w-4 h-4" />
-          Add {isBusinessAccount ? "Income" : "Income Source"}
-        </Button>
+        <div className="flex items-center gap-3">
+          <YearSelector
+            selectedYear={selectedYear}
+            onYearChange={setSelectedYear}
+            availableYears={availableYears}
+          />
+          <Button className="gap-2" onClick={handleAddNew}>
+            <Plus className="w-4 h-4" />
+            Add {isBusinessAccount ? "Income" : "Income Source"}
+          </Button>
+        </div>
       </div>
 
       {/* Summary Cards */}
@@ -165,9 +187,9 @@ const IncomePage = () => {
                 <TrendingUp className="w-6 h-6 text-green-600" />
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">Total Income</p>
+                <p className="text-sm text-muted-foreground">Total Income ({selectedYear})</p>
                 <p className="font-display text-2xl font-bold text-foreground">
-                  {formatCurrency(totalIncome)}
+                  {formatCurrency(yearTotalIncome)}
                 </p>
               </div>
             </div>
