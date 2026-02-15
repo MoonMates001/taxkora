@@ -278,7 +278,24 @@
     <script defer src="https://shown.io/metrics/Q781EVPm8x" type="text/javascript"></script>
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <!-- Initial content for PageSpeed / crawlers before JS hydration -->
+      <div style="display:flex;align-items:center;justify-content:center;min-height:100vh;font-family:system-ui,sans-serif;background:#0F172A;color:#fff;">
+        <div style="text-align:center;">
+          <h1 style="font-size:2rem;font-weight:700;margin-bottom:0.5rem;">TAXKORA</h1>
+          <p style="color:#94a3b8;">Nigeria's #1 Tax Compliance Software — Loading...</p>
+        </div>
+      </div>
+    </div>
+    <noscript>
+      <div style="display:flex;align-items:center;justify-content:center;min-height:100vh;font-family:system-ui,sans-serif;background:#0F172A;color:#fff;padding:2rem;">
+        <div style="text-align:center;max-width:600px;">
+          <h1 style="font-size:2rem;font-weight:700;margin-bottom:1rem;">TAXKORA - Nigeria Tax Calculator 2026</h1>
+          <p style="color:#94a3b8;margin-bottom:1rem;">Calculate Nigerian tax rates including Personal Income Tax (PIT), Company Income Tax (CIT), VAT at 7.5%, and Withholding Tax (WHT).</p>
+          <p style="color:#f87171;">JavaScript is required to use TAXKORA. Please enable JavaScript in your browser settings.</p>
+        </div>
+      </div>
+    </noscript>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
