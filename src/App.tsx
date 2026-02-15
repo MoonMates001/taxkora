@@ -30,6 +30,7 @@ import BlogPage from "./pages/BlogPage";
 import BlogPostPage from "./pages/BlogPostPage";
 import InstallApp from "./pages/InstallApp";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
+import TermsOfService from "./pages/TermsOfService";
 import PWAInstallPrompt from "./components/pwa/PWAInstallPrompt";
 import PWAUpdatePrompt from "./components/pwa/PWAUpdatePrompt";
 import OfflineIndicator from "./components/pwa/OfflineIndicator";
@@ -73,6 +74,7 @@ const App = () => (
             <Route path="/blog" element={<BlogPage />} />
             <Route path="/blog/:slug" element={<BlogPostPage />} />
             <Route path="/privacy" element={<PrivacyPolicy />} />
+            <Route path="/terms" element={<TermsOfService />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
