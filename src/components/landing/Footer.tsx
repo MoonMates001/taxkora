@@ -148,9 +148,9 @@ const Footer = () => {
               <Link to="/terms" className="text-sm text-gray-500 hover:text-teal-400 transition-colors inline-flex items-center min-h-[44px] py-2 px-1">
                 Terms of Service
               </Link>
-              <a href="#" className="text-sm text-gray-500 hover:text-teal-400 transition-colors inline-flex items-center min-h-[44px] py-2 px-1">
+              <Link to="/cookies" className="text-sm text-gray-500 hover:text-teal-400 transition-colors inline-flex items-center min-h-[44px] py-2 px-1">
                 Cookie Policy
-              </a>
+              </Link>
             </div>
           </div>
         </div>
