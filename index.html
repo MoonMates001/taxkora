@@ -4,8 +4,8 @@
     <meta charset="UTF-8" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" />
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" media="print" onload="this.media='all'" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" media="print" onload="this.media='all'" />
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" /></noscript>
     <link rel="icon" type="image/png" href="/favicon.png" />
     <link rel="apple-touch-icon" sizes="180x180" href="/pwa-icons/icon-192x192.png" />
     <link rel="apple-touch-icon" sizes="152x152" href="/pwa-icons/icon-152x152.png" />
@@ -278,14 +278,7 @@
       ]
     }
     </script>
-    <!-- Google Analytics 4 - loaded immediately for tag detection -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-Z76RE8VCZ9"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'G-Z76RE8VCZ9');
-    </script>
+    <!-- GA4 moved to body to avoid blocking initial render -->
     <!-- Shown.io Analytics - deferred to reduce main thread blocking -->
     <script>
       (function() {
@@ -326,5 +319,13 @@
       </div>
     </noscript>
     <script type="module" src="/src/main.tsx"></script>
+    <!-- Google Analytics 4 - in body to avoid blocking initial render -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-Z76RE8VCZ9"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-Z76RE8VCZ9');
+    </script>
   </body>
 </html>
