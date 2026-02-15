@@ -280,12 +280,17 @@ const Auth = () => {
       </div>
 
       <div className="w-full max-w-md relative z-10">
-        {/* Logo */}
-        <div className="text-center mb-8">
+        {/* Logo & Nav */}
+        <div className="text-center mb-8 space-y-2">
           <a href="/" className="inline-flex items-center gap-2">
             <img src={logoImage} alt="TAXKORA" className="w-10 h-10 rounded-lg object-contain" />
             <span className="font-display font-bold text-2xl text-primary-foreground">TAXKORA</span>
           </a>
+          <div>
+            <a href="/blog" className="text-sm text-primary-foreground/70 hover:text-primary-foreground hover:underline transition-colors">
+              Visit our Blog
+            </a>
+          </div>
         </div>
 
         {/* Referral Banner */}
