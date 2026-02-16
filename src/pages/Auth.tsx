@@ -9,6 +9,7 @@ import { useToast } from "@/hooks/use-toast";
 import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
 import logoImage from "@/assets/logo.png";
+import { SEOHead } from "@/components/seo";
 
 const emailSchema = z.string().email("Please enter a valid email address");
 const passwordSchema = z.string().min(6, "Password must be at least 6 characters");
@@ -273,6 +274,12 @@ const Auth = () => {
 
   return (
     <div className="min-h-screen bg-hero flex items-center justify-center p-4">
+      <SEOHead
+        title="Sign In or Create Account | TAXKORA"
+        description="Log in or sign up for TAXKORA — Nigeria's #1 tax calculator and compliance platform. Business and personal accounts available with 90-day free trial."
+        canonicalUrl="https://taxkora.com/auth"
+        keywords={["TAXKORA login", "TAXKORA sign up", "Nigeria tax account", "tax calculator sign in"]}
+      />
       {/* Background decorations */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-1/4 -left-20 w-96 h-96 bg-teal-500/10 rounded-full blur-3xl" />
