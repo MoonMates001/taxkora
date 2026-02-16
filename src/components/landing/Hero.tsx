@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import { ArrowRight, Shield, Zap, FileCheck, Play, TrendingUp } from "lucide-react";
+import { ArrowRight, Shield, Zap, FileCheck } from "lucide-react";
 import { useState, useEffect } from "react";
 
 const TypingText = ({ texts }: { texts: string[] }) => {
@@ -42,9 +42,8 @@ const Hero = () => {
       <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:60px_60px]" />
 
       <div className="container relative mx-auto px-4 sm:px-6 lg:px-8 pt-28 pb-16">
-        <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
-          {/* Left column - Content */}
-          <div className="text-center lg:text-left">
+        <div className="max-w-3xl mx-auto">
+          <div className="text-center">
             {/* Headline */}
             <h1 className="font-display text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold text-primary-foreground leading-[1.1] mb-6 animate-fade-up" style={{ animationDelay: "0.1s" }}>
               Nigeria's #1 Tax Platform,{" "}
@@ -64,7 +63,7 @@ const Hero = () => {
             </p>
 
             {/* Feature pills */}
-            <div className="flex flex-wrap justify-center lg:justify-start gap-3 mb-8 animate-fade-up" style={{ animationDelay: "0.3s" }}>
+            <div className="flex flex-wrap justify-center gap-3 mb-8 animate-fade-up" style={{ animationDelay: "0.3s" }}>
               {[
                 { icon: FileCheck, text: "E-Invoicing" },
                 { icon: Zap, text: "Smart Tax Computation" },
@@ -78,132 +77,30 @@ const Hero = () => {
             </div>
 
             {/* CTA buttons */}
-            <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 animate-fade-up" style={{ animationDelay: "0.4s" }}>
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 animate-fade-up" style={{ animationDelay: "0.4s" }}>
               <Link to="/auth" className="w-full sm:w-auto">
                 <Button variant="accent" size="xl" className="group w-full">
                   Start 90-Day Free Trial
                   <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                 </Button>
               </Link>
-              <a href="#how-it-works" className="w-full sm:w-auto">
-                <Button variant="heroOutline" size="xl" className="w-full group">
-                  <Play className="w-4 h-4 mr-1 group-hover:scale-110 transition-transform" />
-                  Watch 2-Min Demo
-                </Button>
-              </a>
             </div>
 
             {/* Trust indicators */}
-            <div className="flex flex-wrap justify-center lg:justify-start items-center gap-4 mt-6 animate-fade-up" style={{ animationDelay: "0.5s" }}>
+            <div className="flex flex-wrap justify-center items-center gap-4 mt-6 animate-fade-up" style={{ animationDelay: "0.5s" }}>
               <div className="flex items-center gap-2 text-primary-foreground/60 text-sm">
                 <Shield className="w-4 h-4 text-green-400" />
                 <span>No credit card required</span>
               </div>
               <div className="h-4 w-px bg-primary-foreground/20 hidden sm:block" />
               <div className="flex items-center gap-2 text-primary-foreground/60 text-sm">
-                <TrendingUp className="w-4 h-4 text-green-400" />
+                <Shield className="w-4 h-4 text-green-400" />
                 <span>Cancel anytime</span>
               </div>
               <div className="h-4 w-px bg-primary-foreground/20 hidden sm:block" />
             </div>
           </div>
-
-          {/* Right column - Dashboard Preview */}
-          <div className="relative animate-fade-up lg:block" style={{ animationDelay: "0.4s" }}>
-            <div className="relative">
-              {/* Glow effect behind card */}
-              <div className="absolute inset-4 bg-gradient-to-br from-teal-500/30 to-coral-500/20 rounded-3xl blur-2xl" />
-              
-              {/* Main dashboard card */}
-              <div className="relative bg-gray-900/80 backdrop-blur-xl rounded-2xl border border-primary-foreground/10 p-6 shadow-2xl">
-                {/* Browser dots */}
-                <div className="flex items-center gap-2 mb-6">
-                  <div className="w-3 h-3 rounded-full bg-coral-500" />
-                  <div className="w-3 h-3 rounded-full bg-yellow-400" />
-                  <div className="w-3 h-3 rounded-full bg-green-400" />
-                  <div className="flex-1 ml-4 h-6 bg-gray-800 rounded-md" />
-                </div>
-
-                {/* Dashboard content mock */}
-                <div className="space-y-4">
-                  {/* Stats row */}
-                  <div className="grid grid-cols-3 gap-3">
-                    <div className="bg-gray-800/60 rounded-xl p-4">
-                      <div className="text-xs text-gray-400 mb-1">Total Income</div>
-                      <div className="text-lg font-bold text-primary-foreground">₦4.2M</div>
-                      <div className="text-xs text-green-400">+12.5%</div>
-                    </div>
-                    <div className="bg-gray-800/60 rounded-xl p-4">
-                      <div className="text-xs text-gray-400 mb-1">Expenses</div>
-                      <div className="text-lg font-bold text-primary-foreground">₦1.8M</div>
-                      <div className="text-xs text-coral-400">-3.2%</div>
-                    </div>
-                    <div className="bg-teal-600/30 rounded-xl p-4 border border-teal-500/30">
-                      <div className="text-xs text-teal-300 mb-1">Tax Due</div>
-                      <div className="text-lg font-bold text-primary-foreground">₦245K</div>
-                      <div className="text-xs text-teal-400">Computed</div>
-                    </div>
-                  </div>
-
-                  {/* Chart placeholder */}
-                  <div className="bg-gray-800/40 rounded-xl p-4 h-32">
-                    <div className="flex items-end justify-between h-full gap-2">
-                      {[40, 65, 45, 80, 55, 90, 70, 85, 60, 95, 75, 88].map((h, i) => (
-                        <div key={i} className="flex-1 bg-gradient-to-t from-teal-600 to-teal-400 rounded-t" style={{ height: `${h}%` }} />
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Savings highlight */}
-                  <div className="bg-gradient-to-r from-coral-500/20 to-coral-500/10 rounded-xl p-4 border border-coral-500/20">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-coral-500/30 rounded-lg flex items-center justify-center">
-                          <TrendingUp className="w-5 h-5 text-coral-400" />
-                        </div>
-                        <div>
-                          <div className="text-sm font-medium text-primary-foreground">Smart Deductions Found</div>
-                          <div className="text-xs text-gray-400">Identified savings opportunity</div>
-                        </div>
-                      </div>
-                      <div className="text-right">
-                        <div className="text-lg font-bold text-coral-400">₦156,000</div>
-                        <div className="text-xs text-green-400">Potential savings</div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Floating card - Tax filing */}
-              <div className="absolute -left-8 bottom-8 bg-card rounded-xl shadow-xl border border-border p-4 animate-float hidden lg:block">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
-                    <Shield className="w-5 h-5 text-green-600" />
-                  </div>
-                  <div>
-                    <div className="text-sm font-semibold text-foreground">Tax Filed ✓</div>
-                    <div className="text-xs text-muted-foreground">Q4 2025 • ₦245,000</div>
-                  </div>
-                </div>
-              </div>
-
-              {/* New floating card - Recent activity */}
-              <div className="absolute -right-4 top-16 bg-card rounded-xl shadow-xl border border-border p-3 animate-float hidden lg:block" style={{ animationDelay: "0.3s" }}>
-                <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center">
-                    <Zap className="w-4 h-4 text-primary" />
-                  </div>
-                  <div>
-                    <div className="text-xs font-semibold text-foreground">Invoice Sent</div>
-                    <div className="text-[10px] text-muted-foreground">₦850,000 to Acme Corp</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
         </div>
-
       </div>
     </section>
   );
