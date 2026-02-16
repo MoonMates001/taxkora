@@ -1,5 +1,5 @@
-import { Helmet } from "react-helmet-async";
 import { Link } from "react-router-dom";
+import { SEOHead } from "@/components/seo";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { usePWA } from "@/hooks/usePWA";
@@ -72,10 +72,12 @@ const InstallApp = () => {
 
   return (
     <>
-      <Helmet>
-        <title>Install TAXKORA App | Nigeria Tax Calculator Mobile App</title>
-        <meta name="description" content="Install TAXKORA on your mobile device. Access Nigeria's #1 tax calculator app offline. Calculate PIT, CIT, VAT & WHT on the go." />
-      </Helmet>
+      <SEOHead
+        title="Install TAXKORA App | Nigeria Tax Calculator"
+        description="Install TAXKORA on your mobile device. Access Nigeria's #1 tax calculator app offline. Calculate PIT, CIT, VAT & WHT on the go."
+        canonicalUrl="https://taxkora.com/install"
+        keywords={["TAXKORA app install", "Nigeria tax calculator app", "tax app Nigeria", "PWA tax calculator"]}
+      />
 
       <div className="min-h-screen bg-background">
         {/* Header */}
