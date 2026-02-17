@@ -1,4 +1,6 @@
-import { lazy, Suspense } from "react";
+import { lazy, Suspense, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/hooks/useAuth";
 import Navbar from "@/components/landing/Navbar";
 import Hero from "@/components/landing/Hero";
 import { SEOHead, BreadcrumbJsonLd } from "@/components/seo";
@@ -31,6 +33,15 @@ const LiveChatTrigger = lazy(() => import("@/components/landing/LiveChatTrigger"
 const SectionFallback = () => <div className="min-h-[200px]" />;
 
 const Index = () => {
+  const { user, loading } = useAuth();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!loading && user) {
+      navigate("/dashboard", { replace: true });
+    }
+  }, [user, loading, navigate]);
+
   return (
     <main className="min-h-screen">
       {/* Complete SEO Schema */}
