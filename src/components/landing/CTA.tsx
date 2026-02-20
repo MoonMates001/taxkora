@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { ArrowRight, CheckCircle2, Shield, Clock } from "lucide-react";
+import { ArrowRight, CheckCircle2, Shield, Clock, Smartphone } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const CTA = () => {
@@ -52,9 +52,10 @@ const CTA = () => {
                   <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                 </Button>
               </Link>
-              <a href="#calculator" className="w-full sm:w-auto">
-                <Button variant="heroOutline" size="xl" className="w-full">
-                  Calculate Your Savings
+              <a href="https://play.google.com/store/apps/details?id=co.median.android.kreodzl&pcampaignid=web_share" target="_blank" rel="noopener noreferrer" className="w-full sm:w-auto">
+                <Button variant="heroOutline" size="xl" className="w-full gap-2">
+                  <Smartphone className="w-5 h-5" />
+                  Get the App
                 </Button>
               </a>
             </div>
