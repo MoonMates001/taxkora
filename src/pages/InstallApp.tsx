@@ -124,17 +124,31 @@ const InstallApp = () => {
                 <span className="font-medium">App Already Installed!</span>
               </div>
             ) : isInstallable ? (
-              <Button 
-                size="lg" 
-                onClick={promptInstall}
-                className="gap-2 text-lg px-8 py-6"
-              >
-                <Download className="w-5 h-5" />
-                Install Now
-              </Button>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <Button 
+                  size="lg" 
+                  onClick={promptInstall}
+                  className="gap-2 text-lg px-8 py-6"
+                >
+                  <Download className="w-5 h-5" />
+                  Install Now
+                </Button>
+                <a href="https://play.google.com/store/apps/details?id=co.median.android.kreodzl&pcampaignid=web_share" target="_blank" rel="noopener noreferrer">
+                  <Button size="lg" variant="outline" className="gap-2 text-lg px-8 py-6 w-full">
+                    <Smartphone className="w-5 h-5" />
+                    Get on Google Play
+                  </Button>
+                </a>
+              </div>
             ) : (
-              <div className="text-muted-foreground">
-                <p className="mb-4">Use the instructions below to install on your device</p>
+              <div className="text-center">
+                <p className="text-muted-foreground mb-4">Install from the Google Play Store</p>
+                <a href="https://play.google.com/store/apps/details?id=co.median.android.kreodzl&pcampaignid=web_share" target="_blank" rel="noopener noreferrer">
+                  <Button size="lg" className="gap-2 text-lg px-8 py-6">
+                    <Smartphone className="w-5 h-5" />
+                    Get on Google Play
+                  </Button>
+                </a>
               </div>
             )}
           </div>
