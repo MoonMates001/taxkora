@@ -17,6 +17,7 @@ export interface Profile {
   business_state: string | null;
   invoice_primary_color: string | null;
   invoice_logo_url: string | null;
+  country_of_residence: string | null;
 }
 
 interface AuthContextType {
@@ -24,7 +25,7 @@ interface AuthContextType {
   session: Session | null;
   profile: Profile | null;
   loading: boolean;
-  signUp: (email: string, password: string, fullName: string, accountType: AccountType, businessName?: string) => Promise<{ error: Error | null }>;
+  signUp: (email: string, password: string, fullName: string, accountType: AccountType, businessName?: string, countryOfResidence?: string) => Promise<{ error: Error | null }>;
   signIn: (email: string, password: string) => Promise<{ error: Error | null }>;
   signOut: () => Promise<void>;
 }
@@ -87,7 +88,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     password: string,
     fullName: string,
     accountType: AccountType,
-    businessName?: string
+    businessName?: string,
+    countryOfResidence?: string
   ) => {
     const redirectUrl = `${window.location.origin}/`;
 
@@ -100,6 +102,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           full_name: fullName,
           account_type: accountType,
           business_name: businessName || null,
+          country_of_residence: countryOfResidence || null,
         },
       },
     });
