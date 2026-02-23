@@ -2,11 +2,12 @@ import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Building2, User, Mail, Phone, MapPin, Save, Loader2 } from "lucide-react";
+import { Building2, User, Mail, Phone, MapPin, Save, Loader2, Globe } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {
   Form,
   FormControl,
@@ -17,6 +18,7 @@ import {
 } from "@/components/ui/form";
 import { useAuth, Profile } from "@/hooks/useAuth";
 import { useProfile, ProfileUpdate } from "@/hooks/useProfile";
+import { AFRICAN_COUNTRIES, OTHER_COUNTRIES } from "@/lib/countries";
 
 const profileSchema = z.object({
   full_name: z.string().min(1, "Full name is required").max(100),
@@ -25,6 +27,7 @@ const profileSchema = z.object({
   business_address: z.string().max(200).optional().nullable(),
   business_city: z.string().max(50).optional().nullable(),
   business_state: z.string().max(50).optional().nullable(),
+  country_of_residence: z.string().max(100).optional().nullable(),
 });
 
 type ProfileFormData = z.infer<typeof profileSchema>;
@@ -43,6 +46,7 @@ export const BusinessProfileForm = () => {
       business_address: profile?.business_address || "",
       business_city: profile?.business_city || "",
       business_state: profile?.business_state || "",
+      country_of_residence: profile?.country_of_residence || "",
     },
   });
 
@@ -55,6 +59,7 @@ export const BusinessProfileForm = () => {
         business_address: profile.business_address || "",
         business_city: profile.business_city || "",
         business_state: profile.business_state || "",
+        country_of_residence: profile.country_of_residence || "",
       });
     }
   }, [profile, form]);
@@ -67,6 +72,7 @@ export const BusinessProfileForm = () => {
       business_address: data.business_address || null,
       business_city: data.business_city || null,
       business_state: data.business_state || null,
+      country_of_residence: data.country_of_residence || null,
     };
     await updateProfile.mutateAsync(updates);
   };
@@ -159,6 +165,45 @@ export const BusinessProfileForm = () => {
                 />
               )}
             </div>
+
+            {/* Country of Residence */}
+            <FormField
+              control={form.control}
+              name="country_of_residence"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="flex items-center gap-2">
+                    <Globe className="w-4 h-4 text-primary" />
+                    Country of Residence
+                  </FormLabel>
+                  <Select
+                    value={field.value || ""}
+                    onValueChange={field.onChange}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select your country" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectGroup>
+                        <SelectLabel>Africa</SelectLabel>
+                        {AFRICAN_COUNTRIES.map((country) => (
+                          <SelectItem key={country} value={country}>{country}</SelectItem>
+                        ))}
+                      </SelectGroup>
+                      <SelectGroup>
+                        <SelectLabel>Rest of World</SelectLabel>
+                        {OTHER_COUNTRIES.map((country) => (
+                          <SelectItem key={country} value={country}>{country}</SelectItem>
+                        ))}
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
             {/* Business Address Section */}
             {isBusinessAccount && (
