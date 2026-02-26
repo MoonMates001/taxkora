@@ -46,25 +46,25 @@ const Index = () => {
     <main className="min-h-screen">
       {/* Complete SEO Schema */}
       <SEOHead
-        title="TAXKORA – Nigeria Tax Calculator 2026 | PIT, CIT, VAT"
-        description="Nigeria's #1 tax software. Calculate PIT, CIT, VAT & WHT, track expenses, and file returns. 90-day free trial."
+        title="TAXKORA – Global Tax Calculator 2026 | PIT, CIT, VAT for 50+ Countries"
+        description="Calculate PIT, CIT, VAT & WHT across 50+ countries. Smart deductions, real-time compliance, and assisted filing. 90-day free trial."
         canonicalUrl="https://taxkora.com"
         ogType="website"
         keywords={[
-          "Nigeria tax rates 2026",
-          "Nigerian tax rates",
-          "how to calculate tax in Nigeria",
-          "Nigeria tax calculator online",
-          "tax filing requirements in Nigeria",
-          "Personal Income Tax Nigeria",
-          "Company Income Tax Nigeria",
-          "VAT Nigeria",
-          "Withholding Tax Nigeria",
-          "PAYE tax rates Nigeria",
-          "freelancer tax Nigeria",
-          "small business tax Nigeria",
-          "FIRS Nigeria",
-          "tax compliance SME Nigeria",
+          "global tax calculator",
+          "international tax software",
+          "PIT calculator",
+          "CIT calculator",
+          "VAT calculator",
+          "WHT rates by country",
+          "tax filing software",
+          "multi-country tax compliance",
+          "small business tax software",
+          "freelancer tax calculator",
+          "Nigeria tax calculator",
+          "UK tax calculator",
+          "US tax calculator",
+          "India tax calculator",
         ]}
       />
       <BreadcrumbJsonLd
