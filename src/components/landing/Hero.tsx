@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import { ArrowRight, Shield, Zap, FileCheck } from "lucide-react";
+import { ArrowRight, Shield, Zap, Globe } from "lucide-react";
 import { useState, useEffect } from "react";
 
 const TypingText = ({ texts }: { texts: string[] }) => {
@@ -27,7 +27,7 @@ const TypingText = ({ texts }: { texts: string[] }) => {
 };
 
 const Hero = () => {
-  const rotatingTexts = ["Simplified", "Automated", "Stress-Free"];
+  const rotatingTexts = ["Simplified", "Automated", "Worldwide"];
 
   return (
     <section className="relative min-h-[95vh] bg-hero overflow-hidden flex items-center">
@@ -46,7 +46,7 @@ const Hero = () => {
           <div className="text-center">
             {/* Headline */}
             <h1 className="font-display text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold text-primary-foreground leading-[1.1] mb-6 animate-fade-up" style={{ animationDelay: "0.1s" }}>
-              Nigeria's #1 Tax Platform,{" "}
+              Global Tax Compliance,{" "}
               <span className="relative">
                 <span className="text-coral-400">
                   <TypingText texts={rotatingTexts} />
@@ -59,15 +59,15 @@ const Hero = () => {
 
             {/* Subheadline */}
             <p className="text-lg sm:text-xl text-primary-foreground/75 max-w-xl mx-auto lg:mx-0 mb-6 animate-fade-up" style={{ animationDelay: "0.2s" }}>
-              Stop overpaying taxes. Our platform automatically finds deductions, computes your taxes, and files your returns—<strong className="text-primary-foreground">saving you an average of ₦150,000/year</strong>.
+              Calculate PIT, CIT, VAT & WHT across <strong className="text-primary-foreground">50+ countries</strong>. Smart deductions, real-time compliance tracking, and assisted filing—all in one platform.
             </p>
 
             {/* Feature pills */}
             <div className="flex flex-wrap justify-center gap-3 mb-8 animate-fade-up" style={{ animationDelay: "0.3s" }}>
               {[
-                { icon: FileCheck, text: "E-Invoicing" },
-                { icon: Zap, text: "Smart Tax Computation" },
-                { icon: Shield, text: "NRS Direct Filing" },
+                { icon: Globe, text: "50+ Countries" },
+                { icon: Zap, text: "Smart Tax Engine" },
+                { icon: Shield, text: "Compliance Ready" },
               ].map((item, i) => (
                 <div key={i} className="flex items-center gap-2 px-3 py-1.5 bg-primary-foreground/10 backdrop-blur-sm rounded-lg text-primary-foreground/90 text-sm">
                   <item.icon className="w-4 h-4 text-coral-400" />
@@ -94,10 +94,14 @@ const Hero = () => {
               </div>
               <div className="h-4 w-px bg-primary-foreground/20 hidden sm:block" />
               <div className="flex items-center gap-2 text-primary-foreground/60 text-sm">
+                <Globe className="w-4 h-4 text-green-400" />
+                <span>50+ countries supported</span>
+              </div>
+              <div className="h-4 w-px bg-primary-foreground/20 hidden sm:block" />
+              <div className="flex items-center gap-2 text-primary-foreground/60 text-sm">
                 <Shield className="w-4 h-4 text-green-400" />
                 <span>Cancel anytime</span>
               </div>
-              <div className="h-4 w-px bg-primary-foreground/20 hidden sm:block" />
             </div>
           </div>
         </div>

@@ -14,6 +14,44 @@ import { southAfricaConfig } from "./southAfrica";
 import { uaeConfig } from "./uae";
 import { saudiArabiaConfig } from "./saudiArabia";
 import { singaporeConfig } from "./singapore";
+import { chinaConfig } from "./china";
+import { japanConfig } from "./japan";
+import { italyConfig } from "./italy";
+import { brazilConfig } from "./brazil";
+import { russiaConfig } from "./russia";
+import { southKoreaConfig } from "./southKorea";
+import { australiaConfig } from "./australia";
+import { spainConfig } from "./spain";
+import { mexicoConfig } from "./mexico";
+import { indonesiaConfig } from "./indonesia";
+import { netherlandsConfig } from "./netherlands";
+import { turkeyConfig } from "./turkey";
+import { switzerlandConfig } from "./switzerland";
+import { polandConfig } from "./poland";
+import { taiwanConfig } from "./taiwan";
+import { belgiumConfig } from "./belgium";
+import { swedenConfig } from "./sweden";
+import { argentinaConfig } from "./argentina";
+import { irelandConfig } from "./ireland";
+import { thailandConfig } from "./thailand";
+import { israelConfig } from "./israel";
+import { philippinesConfig } from "./philippines";
+import { malaysiaConfig } from "./malaysia";
+import { vietnamConfig } from "./vietnam";
+import { colombiaConfig } from "./colombia";
+import { chileConfig } from "./chile";
+import { bangladeshConfig } from "./bangladesh";
+import { norwayConfig } from "./norway";
+import { austriaConfig } from "./austria";
+import { egyptConfig } from "./egypt";
+import { denmarkConfig } from "./denmark";
+import { greeceConfig } from "./greece";
+import { finlandConfig } from "./finland";
+import { romaniaConfig } from "./romania";
+import { portugalConfig } from "./portugal";
+import { czechRepublicConfig } from "./czechRepublic";
+import { peruConfig } from "./peru";
+import { kazakhstanConfig } from "./kazakhstan";
 
 /**
  * Registry of all supported country tax configurations.
@@ -30,6 +68,44 @@ export const COUNTRY_TAX_CONFIGS: Record<string, CountryTaxConfig> = {
   "United Arab Emirates": uaeConfig,
   "Saudi Arabia": saudiArabiaConfig,
   "Singapore": singaporeConfig,
+  "China": chinaConfig,
+  "Japan": japanConfig,
+  "Italy": italyConfig,
+  "Brazil": brazilConfig,
+  "Russia": russiaConfig,
+  "South Korea": southKoreaConfig,
+  "Australia": australiaConfig,
+  "Spain": spainConfig,
+  "Mexico": mexicoConfig,
+  "Indonesia": indonesiaConfig,
+  "Netherlands": netherlandsConfig,
+  "Turkey": turkeyConfig,
+  "Switzerland": switzerlandConfig,
+  "Poland": polandConfig,
+  "Taiwan": taiwanConfig,
+  "Belgium": belgiumConfig,
+  "Sweden": swedenConfig,
+  "Argentina": argentinaConfig,
+  "Ireland": irelandConfig,
+  "Thailand": thailandConfig,
+  "Israel": israelConfig,
+  "Philippines": philippinesConfig,
+  "Malaysia": malaysiaConfig,
+  "Vietnam": vietnamConfig,
+  "Colombia": colombiaConfig,
+  "Chile": chileConfig,
+  "Bangladesh": bangladeshConfig,
+  "Norway": norwayConfig,
+  "Austria": austriaConfig,
+  "Egypt": egyptConfig,
+  "Denmark": denmarkConfig,
+  "Greece": greeceConfig,
+  "Finland": finlandConfig,
+  "Romania": romaniaConfig,
+  "Portugal": portugalConfig,
+  "Czech Republic": czechRepublicConfig,
+  "Peru": peruConfig,
+  "Kazakhstan": kazakhstanConfig,
 };
 
 /** Countries with specialized engines (not using generic engine) */
