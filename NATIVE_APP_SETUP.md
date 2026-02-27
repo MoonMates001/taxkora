@@ -126,6 +126,47 @@ To build a standalone app that doesn't require internet:
 
 The splash screen is configured in `capacitor.config.ts` with TAXKORA's teal brand color (#0D9488).
 
+## Android 15 Edge-to-Edge Compliance (SDK 35)
+
+Starting with Android 15, apps targeting SDK 35 display edge-to-edge by default. The Capacitor config already includes `edgeToEdgeEnforcement: true` for forward compatibility.
+
+### Required Steps
+
+1. **Handle system bar insets** in your CSS:
+   ```css
+   /* Add safe area padding for edge-to-edge displays */
+   body {
+     padding-top: env(safe-area-inset-top);
+     padding-bottom: env(safe-area-inset-bottom);
+     padding-left: env(safe-area-inset-left);
+     padding-right: env(safe-area-inset-right);
+   }
+   ```
+
+2. **In Android Studio**, update `styles.xml` to use `enableEdgeToEdge()`:
+   ```xml
+   <!-- android/app/src/main/res/values/styles.xml -->
+   <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+     <item name="android:windowOptOutEdgeToEdgeEnforcement">false</item>
+   </style>
+   ```
+
+3. **Migrate deprecated APIs**: If using `WindowInsetsController` or `setSystemBarsBehavior()`, replace with the `WindowInsetsCompat` API from AndroidX.
+
+4. **Test thoroughly** on Android 15 emulator (API 35) to verify content doesn't overlap with status bar, navigation bar, or camera cutouts.
+
+### Quick Verification
+
+```bash
+# Run on Android 15 emulator
+npx cap run android --target=emulator-5554
+```
+
+Check that:
+- Content doesn't hide behind the status bar
+- Bottom navigation doesn't overlap with gesture bar
+- Landscape mode handles cutouts correctly
+
 ## Troubleshooting
 
 ### Build Errors
@@ -140,12 +181,18 @@ The splash screen is configured in `capacitor.config.ts` with TAXKORA's teal bra
 - Enable Release mode for testing
 - Consider code splitting for faster load times
 
+### Edge-to-Edge Issues (Android 15)
+- Ensure `env(safe-area-inset-*)` CSS is applied
+- Check that no fixed-position elements overlap system bars
+- Test on both gesture navigation and 3-button navigation
+
 ## Publishing to Play Store
 
 1. Create a [Google Play Developer Account](https://play.google.com/console/)
 2. Generate a signed APK or App Bundle
 3. Create app listing with screenshots
 4. Submit for review
+5. **Important**: Target SDK 35 or higher for new submissions
 
 ## Support
 
@@ -156,4 +203,4 @@ For issues with:
 
 ---
 
-**TAXKORA** - Nigeria's #1 Tax Calculator App
+**TAXKORA** - Global Tax Compliance Platform for 50+ Countries
