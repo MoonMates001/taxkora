@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Mail, Phone, MapPin, MessageSquare, Clock, Send, Loader2 } from "lucide-react";
+import { Mail, Phone, Globe, MessageSquare, Clock, Send, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -86,11 +86,11 @@ const CustomerSupport = () => {
       description: "Quick responses on WhatsApp",
     },
     {
-      icon: MapPin,
-      title: "Office",
-      value: "Lagos, Nigeria",
+      icon: Globe,
+      title: "Global Coverage",
+      value: "50+ Countries",
       href: "#",
-      description: "Visit us in person",
+      description: "Support across all time zones",
     },
   ];
 
@@ -119,7 +119,7 @@ const CustomerSupport = () => {
             We're Here to <span className="text-gradient">Help</span>
           </h2>
           <p className="text-muted-foreground text-lg">
-            Have questions about your taxes or need assistance with TAXKORA? Our dedicated support team is ready to help you succeed.
+            Have questions about your taxes or need assistance with TAXKORA? Our dedicated support team is ready to help you succeed, wherever you are.
           </p>
         </div>
 
@@ -200,7 +200,7 @@ const CustomerSupport = () => {
                       type="tel"
                       value={formData.phone}
                       onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                      placeholder="+234 XXX XXX XXXX"
+                      placeholder="+1 XXX XXX XXXX"
                     />
                   </div>
                   <div>

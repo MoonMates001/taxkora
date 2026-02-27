@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import { ArrowRight, X, Clock, Users } from "lucide-react";
+import { ArrowRight, X, Clock, Globe } from "lucide-react";
 
 const StickyCtaBar = () => {
   const [isVisible, setIsVisible] = useState(false);
@@ -37,8 +37,8 @@ const StickyCtaBar = () => {
           <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
             <div className="flex items-center gap-4 text-primary-foreground">
               <div className="hidden sm:flex items-center gap-2 text-sm">
-                <Users className="w-4 h-4 text-coral-400" />
-                <span><strong className="text-coral-400">127 people</strong> started their trial today</span>
+                <Globe className="w-4 h-4 text-coral-400" />
+                <span>Tax compliance for <strong className="text-coral-400">50+ countries</strong></span>
               </div>
               <div className="flex items-center gap-2 text-sm">
                 <Clock className="w-4 h-4 text-coral-400" />
