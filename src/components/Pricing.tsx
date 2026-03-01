@@ -6,8 +6,8 @@ const Pricing = () => {
     {
       name: "Individual",
       description: "Perfect for employed individuals",
-      price: "$5",
-      period: "/month",
+      price: "$3",
+      period: "/year",
       features: [
         "Personal tax computation",
         "Multi-country support (50+)",
@@ -21,8 +21,8 @@ const Pricing = () => {
     {
       name: "Business",
       description: "Best for growing businesses",
-      price: "$15",
-      period: "/month",
+      price: "$7",
+      period: "/year",
       features: [
         "Everything in Individual",
         "Unlimited invoices",
@@ -38,8 +38,8 @@ const Pricing = () => {
     {
       name: "Enterprise",
       description: "For larger organizations",
-      price: "$50",
-      period: "/month",
+      price: "$25",
+      period: "/year",
       features: [
         "Everything in Business",
         "CIT computation",

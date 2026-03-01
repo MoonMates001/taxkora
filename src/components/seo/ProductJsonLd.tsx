@@ -77,7 +77,7 @@ export const PricingProducts = () => (
     <ProductJsonLd
       name="TAXKORA Individual Plan"
       description="Personal income tax compliance for individuals worldwide. Includes multi-country tax computation, income tracking, and tax reports."
-      price="5"
+      price="3"
       sku="TAXKORA-INDIVIDUAL"
       features={[
         "Personal income tax computation",
@@ -91,7 +91,7 @@ export const PricingProducts = () => (
     <ProductJsonLd
       name="TAXKORA Business Plan"
       description="Complete tax compliance for SMEs, freelancers, and self-employed professionals worldwide. Includes invoicing, VAT, WHT, and business tax computation."
-      price="15"
+      price="7"
       sku="TAXKORA-BUSINESS"
       features={[
         "Unlimited professional invoicing",
@@ -105,7 +105,7 @@ export const PricingProducts = () => (
     <ProductJsonLd
       name="TAXKORA Enterprise Plan"
       description="Enterprise tax compliance for incorporated businesses worldwide. Includes CIT computation, corporate filing, and dedicated support."
-      price="50"
+      price="25"
       sku="TAXKORA-ENTERPRISE"
       features={[
         "CIT computation",

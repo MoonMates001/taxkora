@@ -8,8 +8,8 @@ const Pricing = () => {
       name: "Individual",
       icon: User,
       description: "For employed individuals and personal taxpayers",
-      price: "$5",
-      period: "/month",
+      price: "$3",
+      period: "/year",
       features: [
         "Personal income tax computation",
         "Multi-country tax support (50+)",
@@ -28,8 +28,8 @@ const Pricing = () => {
       name: "Business",
       icon: Briefcase,
       description: "For SMEs, freelancers, and self-employed professionals",
-      price: "$15",
-      period: "/month",
+      price: "$7",
+      period: "/year",
       features: [
         "Everything in Individual",
         "Unlimited professional invoicing",
@@ -48,8 +48,8 @@ const Pricing = () => {
       name: "Enterprise",
       icon: Building2,
       description: "For incorporated businesses and enterprises",
-      price: "$50",
-      period: "/month",
+      price: "$25",
+      period: "/year",
       features: [
         "Everything in Business",
         "CIT computation",
@@ -83,7 +83,7 @@ const Pricing = () => {
           </h2>
           <p className="text-muted-foreground text-lg">
             All plans include a <span className="font-semibold text-foreground">14-day free trial</span>. 
-            Cancel anytime. No hidden fees.
+            Pay annually and save. No hidden fees.
           </p>
         </div>
 

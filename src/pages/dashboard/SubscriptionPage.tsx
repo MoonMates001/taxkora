@@ -257,7 +257,7 @@ export default function SubscriptionPage() {
                   <CardContent className="flex-1">
                     <div className="text-center mb-6">
                       <span className="text-4xl font-bold">{formatCurrency(plan.amount)}</span>
-                      <span className="text-muted-foreground">/month</span>
+                      <span className="text-muted-foreground">/year</span>
                       {canStartTrial && !isSubscriptionActive && (
                         <div className="mt-2">
                          <Badge variant="outline" className="text-green-600 border-green-600">
@@ -543,7 +543,7 @@ export default function SubscriptionPage() {
               <div className="flex justify-between items-center py-2 border-t">
                 <span className="text-muted-foreground">After trial ends</span>
                 <span className="font-semibold">
-                  {formatCurrency(SUBSCRIPTION_PLANS[pendingTrialPlan].amount)}/month
+                  {formatCurrency(SUBSCRIPTION_PLANS[pendingTrialPlan].amount)}/year
                 </span>
               </div>
             )}
