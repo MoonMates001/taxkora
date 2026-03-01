@@ -29,9 +29,9 @@ export const SUBSCRIPTION_PLANS = {
   pit_individual: {
     name: "Individual",
     description: "Personal tax filing for employed individuals",
-    amount: 5,
+    amount: 3,
     currency: "USD",
-    period: "month",
+    period: "year",
     trialDays: 14,
     features: [
       "Personal income tax computation",
@@ -45,9 +45,9 @@ export const SUBSCRIPTION_PLANS = {
   pit_business: {
     name: "Business",
     description: "Complete tax compliance for business owners & freelancers",
-    amount: 15,
+    amount: 7,
     currency: "USD",
-    period: "month",
+    period: "year",
     trialDays: 14,
     features: [
       "Everything in Individual",
@@ -62,9 +62,9 @@ export const SUBSCRIPTION_PLANS = {
   cit: {
     name: "Enterprise",
     description: "Corporate tax filing for incorporated businesses",
-    amount: 50,
+    amount: 25,
     currency: "USD",
-    period: "month",
+    period: "year",
     trialDays: 14,
     features: [
       "Everything in Business",
