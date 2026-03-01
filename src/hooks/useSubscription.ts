@@ -27,41 +27,53 @@ export interface Subscription {
 
 export const SUBSCRIPTION_PLANS = {
   pit_individual: {
-    name: "Individual PIT",
-    description: "Personal Income Tax filing for individuals without business",
-    amount: 2500,
-    trialDays: 90, // 3 months
+    name: "Individual",
+    description: "Personal tax filing for employed individuals",
+    amount: 5,
+    currency: "USD",
+    period: "month",
+    trialDays: 14,
     features: [
-      "Annual PIT computation",
+      "Personal income tax computation",
+      "Multi-country tax support (50+)",
+      "Income & expense tracking",
       "Tax liability tracking",
       "Payment reminders",
       "Basic tax reports",
     ],
   },
   pit_business: {
-    name: "Business PIT",
-    description: "Personal Income Tax filing for business owners",
-    amount: 7500,
-    trialDays: 90, // 3 months
+    name: "Business",
+    description: "Complete tax compliance for business owners & freelancers",
+    amount: 15,
+    currency: "USD",
+    period: "month",
+    trialDays: 14,
     features: [
-      "Full PIT computation with business income",
-      "Expense tracking & deductions",
-      "Invoice management",
-      "VAT & WHT tracking",
-      "Comprehensive tax reports",
+      "Everything in Individual",
+      "Unlimited professional invoicing",
+      "VAT & WHT management",
+      "Capital asset depreciation",
+      "Business tax computation",
+      "Advanced analytics & reports",
+      "Priority support",
     ],
   },
   cit: {
-    name: "Companies Income Tax",
-    description: "Corporate tax filing for registered companies",
-    amount: 25000,
-    trialDays: 90, // 3 months
+    name: "Enterprise",
+    description: "Corporate tax filing for incorporated businesses",
+    amount: 50,
+    currency: "USD",
+    period: "month",
+    trialDays: 14,
     features: [
-      "Complete CIT computation",
-      "Capital allowance tracking",
+      "Everything in Business",
+      "CIT computation",
+      "Corporate tax filing",
       "Multi-year tax planning",
-      "Advanced financial reports",
-      "Priority support",
+      "Audit trail & compliance logs",
+      "Dedicated support",
+      "Assisted filing service",
     ],
   },
 } as const;
@@ -218,7 +230,7 @@ export const useSubscription = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["subscription"] });
       queryClient.invalidateQueries({ queryKey: ["all-subscriptions"] });
-      toast.success("Your 3-month free trial has started! Check your email for details.");
+      toast.success("Your 14-day free trial has started! Check your email for details.");
     },
     onError: (error) => {
       toast.error("Failed to start trial: " + error.message);
