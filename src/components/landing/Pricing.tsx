@@ -5,18 +5,18 @@ import { Link } from "react-router-dom";
 const Pricing = () => {
   const plans = [
     {
-      name: "Individual PIT",
+      name: "Individual",
       icon: User,
       description: "For employed individuals and personal taxpayers",
-      price: "₦2,500",
-      period: "/year",
+      price: "$5",
+      period: "/month",
       features: [
-        "Personal income tracking",
-        "Multi-source income aggregation",
-        "Personal expense categorization",
-        "PIT tax computation",
-        "Personal tax filing",
-        "TCC support",
+        "Personal income tax computation",
+        "Multi-country tax support (50+)",
+        "Income & expense tracking",
+        "Tax liability tracking",
+        "Payment reminders",
+        "Basic tax reports",
         "Email support"
       ],
       popular: false,
@@ -25,20 +25,19 @@ const Pricing = () => {
       iconColor: "text-gray-600"
     },
     {
-      name: "Business PIT",
+      name: "Business",
       icon: Briefcase,
-      description: "For SMEs, freelancers, and self-employed",
-      price: "₦7,500",
-      period: "/year",
+      description: "For SMEs, freelancers, and self-employed professionals",
+      price: "$15",
+      period: "/month",
       features: [
-        "Everything in Individual PIT",
+        "Everything in Individual",
         "Unlimited professional invoicing",
-        "Business income & expense tracking",
-        "VAT management & returns",
-        "WHT transaction tracking",
+        "VAT & WHT management",
         "Capital asset depreciation",
         "Business tax computation",
-        "Priority email support"
+        "Advanced analytics & reports",
+        "Priority support"
       ],
       popular: true,
       buttonVariant: "default" as const,
@@ -46,17 +45,16 @@ const Pricing = () => {
       iconColor: "text-white"
     },
     {
-      name: "Companies Income Tax",
+      name: "Enterprise",
       icon: Building2,
       description: "For incorporated businesses and enterprises",
-      price: "₦25,000",
-      period: "/year",
+      price: "$50",
+      period: "/month",
       features: [
-        "Everything in Business PIT",
-        "CIT tax computation",
+        "Everything in Business",
+        "CIT computation",
         "Corporate tax filing",
-        "Multi-year tax records",
-        "Advanced financial reports",
+        "Multi-year tax planning",
         "Audit trail & compliance logs",
         "Dedicated support",
         "Assisted filing service"
@@ -78,14 +76,14 @@ const Pricing = () => {
         <div className="text-center max-w-3xl mx-auto mb-16">
           <div className="inline-flex items-center gap-2 px-4 py-2 bg-accent/10 rounded-full text-accent text-sm font-medium mb-4">
             <Sparkles className="w-4 h-4" />
-            Simple, Annual Pricing
+            Simple, Transparent Pricing
           </div>
           <h2 className="font-display text-3xl sm:text-4xl md:text-5xl font-bold text-foreground mb-6">
             Choose Your Plan
           </h2>
           <p className="text-muted-foreground text-lg">
-            All plans include a <span className="font-semibold text-foreground">90-day free trial</span>. 
-            Pay annually and save on tax compliance costs.
+            All plans include a <span className="font-semibold text-foreground">14-day free trial</span>. 
+            Cancel anytime. No hidden fees.
           </p>
         </div>
 
