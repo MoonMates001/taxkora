@@ -31,7 +31,7 @@ const CTA = () => {
             </h2>
             
             <p className="text-primary-foreground/75 text-lg sm:text-xl mb-8 max-w-2xl mx-auto">
-              TAXKORA's smart compliance platform helps businesses in 50+ countries save on taxes with automated deductions and seamless filing.
+              TAXKORA's smart compliance platform helps Nigerian businesses save on taxes with automated deductions and seamless filing.
             </p>
 
             {/* Benefits grid */}
@@ -72,7 +72,7 @@ const CTA = () => {
               </div>
               <div className="flex items-center gap-2">
                 <CheckCircle2 className="w-4 h-4 text-green-400" />
-                <span>50+ countries supported</span>
+                <span>NRS certified</span>
               </div>
             </div>
           </div>

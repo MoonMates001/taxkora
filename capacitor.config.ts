@@ -11,10 +11,7 @@ const config: CapacitorConfig = {
   android: {
     allowMixedContent: true,
     captureInput: true,
-    webContentsDebuggingEnabled: true,
-    // Android 15 (SDK 35) edge-to-edge compliance
-    edgeToEdgeEnforcement: true,
-    backgroundColor: '#0D9488'
+    webContentsDebuggingEnabled: true
   },
   plugins: {
     SplashScreen: {
@@ -28,8 +25,7 @@ const config: CapacitorConfig = {
     },
     StatusBar: {
       style: 'LIGHT',
-      backgroundColor: '#0D9488',
-      overlaysWebView: false
+      backgroundColor: '#0D9488'
     },
     Keyboard: {
       resize: 'body',

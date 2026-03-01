@@ -4,14 +4,14 @@ import { Check, Star } from "lucide-react";
 const Pricing = () => {
   const plans = [
     {
-      name: "Individual",
-      description: "Perfect for employed individuals",
-      price: "$3",
-      period: "/year",
+      name: "Starter",
+      description: "Perfect for freelancers and individuals",
+      price: "₦5,000",
+      period: "/month",
       features: [
         "Personal tax computation",
-        "Multi-country support (50+)",
         "Income & expense tracking",
+        "Up to 50 invoices/month",
         "Basic reports",
         "Email support"
       ],
@@ -19,18 +19,18 @@ const Pricing = () => {
       buttonVariant: "outline" as const
     },
     {
-      name: "Business",
+      name: "Professional",
       description: "Best for growing businesses",
-      price: "$7",
-      period: "/year",
+      price: "₦15,000",
+      period: "/month",
       features: [
-        "Everything in Individual",
+        "Everything in Starter",
         "Unlimited invoices",
         "Business tax computation",
-        "VAT & WHT management",
+        "Bank account integration",
         "Advanced analytics",
         "Priority support",
-        "Capital asset tracking"
+        "Done-for-you filing"
       ],
       popular: true,
       buttonVariant: "default" as const
@@ -38,16 +38,16 @@ const Pricing = () => {
     {
       name: "Enterprise",
       description: "For larger organizations",
-      price: "$25",
-      period: "/year",
+      price: "₦50,000",
+      period: "/month",
       features: [
-        "Everything in Business",
-        "CIT computation",
-        "Corporate tax filing",
+        "Everything in Professional",
+        "Multi-user access",
+        "Custom integrations",
         "Dedicated account manager",
-        "Audit trail & compliance",
-        "Assisted filing service",
-        "Multi-year tax planning"
+        "On-site training",
+        "API access",
+        "Custom reports"
       ],
       popular: false,
       buttonVariant: "outline" as const
@@ -57,6 +57,7 @@ const Pricing = () => {
   return (
     <section id="pricing" className="py-24 bg-background">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Section Header */}
         <div className="text-center max-w-3xl mx-auto mb-16">
           <span className="text-accent font-semibold text-sm uppercase tracking-wider">Pricing</span>
           <h2 className="font-display text-3xl sm:text-4xl md:text-5xl font-bold text-foreground mt-3 mb-4">
@@ -67,6 +68,7 @@ const Pricing = () => {
           </p>
         </div>
 
+        {/* Pricing Cards */}
         <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
           {plans.map((plan, index) => (
             <div
@@ -134,6 +136,7 @@ const Pricing = () => {
           ))}
         </div>
 
+        {/* Bottom Note */}
         <p className="text-center text-muted-foreground mt-12">
           Need a custom solution?{" "}
           <a href="#contact" className="text-primary font-semibold hover:underline">

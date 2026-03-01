@@ -4,9 +4,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useIncome } from "@/hooks/useIncome";
 import { useStatutoryDeductions } from "@/hooks/useStatutoryDeductions";
 import { useTaxPayments } from "@/hooks/useTaxPayments";
-import { useCountryTaxEngine } from "@/hooks/useCountryTaxEngine";
 import { computeTax2026, TAX_EXEMPT_THRESHOLD } from "@/lib/taxEngine2026";
-import { computeCountryPIT, formatCountryCurrency } from "@/lib/tax/countryEngine";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -19,7 +17,6 @@ import {
   ArrowRight,
   Clock,
   FileText,
-  Globe,
 } from "lucide-react";
 import { format, differenceInDays, isBefore } from "date-fns";
 
@@ -33,34 +30,18 @@ const TaxSummaryWidget = ({ selectedYear }: TaxSummaryWidgetProps) => {
   const currentYear = selectedYear || new Date().getFullYear();
   const { deductions } = useStatutoryDeductions(currentYear);
   const { confirmedTotal } = useTaxPayments(currentYear);
-  const { engineType, country, config } = useCountryTaxEngine();
   const isBusinessAccount = profile?.account_type === "business";
 
+  // Calculate yearly income
   const yearlyIncome = useMemo(() => {
     return incomeRecords
       .filter((record) => new Date(record.date).getFullYear() === currentYear)
       .reduce((sum, record) => sum + Number(record.amount), 0);
   }, [incomeRecords, currentYear]);
 
-  // Unified tax result
-  const taxResult = useMemo(() => {
-    if (engineType === "country" && config) {
-      const result = computeCountryPIT(config, yearlyIncome);
-      return {
-        taxableIncome: result.taxableIncome,
-        netTaxPayable: result.totalTax,
-        effectiveRate: result.effectiveRate,
-        isExempt: result.isExempt,
-        taxByBracket: result.taxByBracket,
-        currency: config.currency,
-        locale: config.locale,
-        currencySymbol: config.currencySymbol,
-        countryName: config.countryName,
-        taxAuthority: config.taxAuthority,
-      };
-    }
-    // Nigeria engine (default)
-    const nigeriaResult = computeTax2026(yearlyIncome, {
+  // Compute tax using 2025 rules
+  const taxComputation = useMemo(() => {
+    return computeTax2026(yearlyIncome, {
       pension_contribution: deductions.pension_contribution,
       nhis_contribution: deductions.nhis_contribution,
       nhf_contribution: deductions.nhf_contribution,
@@ -71,66 +52,53 @@ const TaxSummaryWidget = ({ selectedYear }: TaxSummaryWidgetProps) => {
       gifts_received: deductions.gifts_received,
       pension_benefits_received: deductions.pension_benefits_received,
     });
-    return {
-      taxableIncome: nigeriaResult.taxableIncome,
-      netTaxPayable: nigeriaResult.netTaxPayable,
-      effectiveRate: nigeriaResult.effectiveRate,
-      isExempt: nigeriaResult.isExempt,
-      taxByBracket: nigeriaResult.taxByBracket,
-      currency: "NGN",
-      locale: "en-NG",
-      currencySymbol: "₦",
-      countryName: "Nigeria",
-      taxAuthority: "FIRS / NRS",
-    };
-  }, [engineType, config, yearlyIncome, deductions]);
+  }, [yearlyIncome, deductions]);
 
-  const balanceOwed = Math.max(0, taxResult.netTaxPayable - confirmedTotal);
-  const paymentProgress = taxResult.netTaxPayable > 0
-    ? Math.min(100, (confirmedTotal / taxResult.netTaxPayable) * 100)
+  const balanceOwed = Math.max(0, taxComputation.netTaxPayable - confirmedTotal);
+  const paymentProgress = taxComputation.netTaxPayable > 0 
+    ? Math.min(100, (confirmedTotal / taxComputation.netTaxPayable) * 100)
     : 100;
-
-  const fmtCurrency = (amount: number) => {
-    if (engineType === "country" && config) {
-      return formatCountryCurrency(amount, config);
-    }
-    return new Intl.NumberFormat("en-NG", {
-      style: "currency",
-      currency: "NGN",
-      minimumFractionDigits: 0,
-    }).format(amount);
-  };
 
   // Tax filing deadlines
   const deadlines = useMemo(() => {
     const items = [
       {
         name: "Annual Tax Return",
-        date: new Date(currentYear + 1, 2, 31),
-        description: `File annual returns with ${taxResult.taxAuthority}`,
+        date: new Date(currentYear + 1, 2, 31), // March 31
+        description: "File annual PIT returns with NRS",
       },
       {
         name: "Q1 Provisional Tax",
-        date: new Date(currentYear, 2, 31),
+        date: new Date(currentYear, 2, 31), // March 31
         description: "First quarter provisional payment",
       },
       {
         name: "Q2 Provisional Tax",
-        date: new Date(currentYear, 5, 30),
+        date: new Date(currentYear, 5, 30), // June 30
         description: "Second quarter provisional payment",
+      },
+      {
+        name: "Q3 Provisional Tax",
+        date: new Date(currentYear, 8, 30), // Sept 30
+        description: "Third quarter provisional payment",
+      },
+      {
+        name: "Q4 Provisional Tax",
+        date: new Date(currentYear, 11, 31), // Dec 31
+        description: "Fourth quarter provisional payment",
       },
     ];
 
-    if (isBusinessAccount && engineType === "nigeria") {
+    if (isBusinessAccount) {
       items.push(
         {
           name: "VAT Return",
-          date: new Date(currentYear, new Date().getMonth() + 1, 21),
+          date: new Date(currentYear, new Date().getMonth() + 1, 21), // 21st of next month
           description: "Monthly VAT filing deadline",
         },
         {
           name: "WHT Remittance",
-          date: new Date(currentYear, new Date().getMonth() + 1, 21),
+          date: new Date(currentYear, new Date().getMonth() + 1, 21), // 21st of next month
           description: "Monthly withholding tax remittance",
         }
       );
@@ -143,10 +111,18 @@ const TaxSummaryWidget = ({ selectedYear }: TaxSummaryWidgetProps) => {
         daysUntil: differenceInDays(item.date, now),
         isPast: isBefore(item.date, now),
       }))
-      .filter((item) => !item.isPast || item.daysUntil >= -30)
+      .filter((item) => !item.isPast || item.daysUntil >= -30) // Show deadlines within 30 days past
       .sort((a, b) => a.date.getTime() - b.date.getTime())
       .slice(0, 4);
-  }, [currentYear, isBusinessAccount, engineType, taxResult.taxAuthority]);
+  }, [currentYear, isBusinessAccount]);
+
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat("en-NG", {
+      style: "currency",
+      currency: "NGN",
+      minimumFractionDigits: 0,
+    }).format(amount);
+  };
 
   const getDeadlineStatus = (daysUntil: number, isPast: boolean) => {
     if (isPast) return { color: "bg-red-100 text-red-800", icon: AlertTriangle };
@@ -163,18 +139,12 @@ const TaxSummaryWidget = ({ selectedYear }: TaxSummaryWidgetProps) => {
             <Calculator className="w-5 h-5 text-primary" />
             Tax Summary {currentYear}
           </CardTitle>
-          <div className="flex items-center gap-2">
-            <Badge variant="outline" className="gap-1">
-              <Globe className="w-3 h-3" />
-              {taxResult.countryName}
-            </Badge>
-            <Link to="/dashboard/filing">
-              <Button variant="ghost" size="sm" className="text-primary">
-                View Details
-                <ArrowRight className="w-4 h-4 ml-1" />
-              </Button>
-            </Link>
-          </div>
+          <Link to="/dashboard/filing">
+            <Button variant="ghost" size="sm" className="text-primary">
+              View Details
+              <ArrowRight className="w-4 h-4 ml-1" />
+            </Button>
+          </Link>
         </div>
       </CardHeader>
       <CardContent className="space-y-6">
@@ -183,9 +153,9 @@ const TaxSummaryWidget = ({ selectedYear }: TaxSummaryWidgetProps) => {
           <div className="space-y-1">
             <p className="text-sm text-muted-foreground">Taxable Income</p>
             <p className="font-display text-xl font-bold text-foreground">
-              {fmtCurrency(taxResult.taxableIncome)}
+              {formatCurrency(taxComputation.taxableIncome)}
             </p>
-            {taxResult.isExempt && (
+            {taxComputation.isExempt && (
               <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
                 Tax Exempt
               </Badge>
@@ -194,27 +164,27 @@ const TaxSummaryWidget = ({ selectedYear }: TaxSummaryWidgetProps) => {
           <div className="space-y-1">
             <p className="text-sm text-muted-foreground">Tax Payable</p>
             <p className="font-display text-xl font-bold text-orange-500">
-              {fmtCurrency(taxResult.netTaxPayable)}
+              {formatCurrency(taxComputation.netTaxPayable)}
             </p>
             <p className="text-xs text-muted-foreground">
-              {taxResult.effectiveRate.toFixed(1)}% effective rate
+              {taxComputation.effectiveRate.toFixed(1)}% effective rate
             </p>
           </div>
         </div>
 
         {/* Payment Progress */}
-        {taxResult.netTaxPayable > 0 && (
+        {taxComputation.netTaxPayable > 0 && (
           <div className="space-y-2">
             <div className="flex items-center justify-between text-sm">
               <span className="text-muted-foreground">Payment Progress</span>
               <span className="font-medium">
-                {fmtCurrency(confirmedTotal)} / {fmtCurrency(taxResult.netTaxPayable)}
+                {formatCurrency(confirmedTotal)} / {formatCurrency(taxComputation.netTaxPayable)}
               </span>
             </div>
             <Progress value={paymentProgress} className="h-2" />
             {balanceOwed > 0 && (
               <p className="text-sm text-orange-600 font-medium">
-                Balance owed: {fmtCurrency(balanceOwed)}
+                Balance owed: {formatCurrency(balanceOwed)}
               </p>
             )}
             {balanceOwed === 0 && confirmedTotal > 0 && (
@@ -227,22 +197,22 @@ const TaxSummaryWidget = ({ selectedYear }: TaxSummaryWidgetProps) => {
         )}
 
         {/* Tax Brackets Applied */}
-        {taxResult.taxByBracket.filter((b) => b.income > 0).length > 0 && (
+        {taxComputation.taxableIncome > TAX_EXEMPT_THRESHOLD && (
           <div className="bg-secondary/50 rounded-lg p-3 space-y-2">
             <p className="text-sm font-medium text-foreground">Tax Brackets Applied</p>
             <div className="space-y-1">
-              {taxResult.taxByBracket
+              {taxComputation.taxByBracket
                 .filter((b) => b.income > 0)
                 .slice(0, 3)
                 .map((bracket, idx) => (
                   <div key={idx} className="flex justify-between text-xs">
                     <span className="text-muted-foreground">{bracket.bracket} @ {bracket.rate}%</span>
-                    <span className="font-medium">{fmtCurrency(bracket.tax)}</span>
+                    <span className="font-medium">{formatCurrency(bracket.tax)}</span>
                   </div>
                 ))}
-              {taxResult.taxByBracket.filter((b) => b.income > 0).length > 3 && (
+              {taxComputation.taxByBracket.filter((b) => b.income > 0).length > 3 && (
                 <p className="text-xs text-muted-foreground">
-                  +{taxResult.taxByBracket.filter((b) => b.income > 0).length - 3} more brackets
+                  +{taxComputation.taxByBracket.filter((b) => b.income > 0).length - 3} more brackets
                 </p>
               )}
             </div>
@@ -274,9 +244,9 @@ const TaxSummaryWidget = ({ selectedYear }: TaxSummaryWidgetProps) => {
                     </div>
                   </div>
                   <Badge className={status.color}>
-                    {deadline.isPast
+                    {deadline.isPast 
                       ? `${Math.abs(deadline.daysUntil)}d overdue`
-                      : deadline.daysUntil === 0
+                      : deadline.daysUntil === 0 
                         ? "Today"
                         : `${deadline.daysUntil}d left`}
                   </Badge>

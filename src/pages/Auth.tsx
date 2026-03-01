@@ -4,14 +4,12 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/hooks/useAuth";
-import { Building2, User, ArrowLeft, Loader2, Gift, Globe } from "lucide-react";
+import { Building2, User, ArrowLeft, Loader2, Gift } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
 import logoImage from "@/assets/logo.png";
 import { SEOHead } from "@/components/seo";
-import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { AFRICAN_COUNTRIES, OTHER_COUNTRIES } from "@/lib/countries";
 
 const emailSchema = z.string().email("Please enter a valid email address");
 const passwordSchema = z.string().min(6, "Password must be at least 6 characters");
@@ -28,7 +26,6 @@ const Auth = () => {
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
   const [businessName, setBusinessName] = useState("");
-  const [countryOfResidence, setCountryOfResidence] = useState("Nigeria");
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
   const [referrerName, setReferrerName] = useState<string | null>(null);
@@ -128,7 +125,7 @@ const Auth = () => {
           return;
         }
 
-        const { error } = await signUp(email, password, fullName, accountType, businessName, countryOfResidence);
+        const { error } = await signUp(email, password, fullName, accountType, businessName);
         if (error) {
           if (error.message.includes("already registered")) {
             toast({
@@ -270,7 +267,6 @@ const Auth = () => {
     setPassword("");
     setFullName("");
     setBusinessName("");
-    setCountryOfResidence("Nigeria");
     setAccountType(null);
     setErrors({});
     setReferrerName(null);
@@ -419,32 +415,6 @@ const Auth = () => {
                     value={businessName}
                     onChange={(e) => setBusinessName(e.target.value)}
                   />
-                </div>
-              )}
-
-              {!isLogin && (
-                <div className="space-y-2">
-                  <Label>Country of Residence</Label>
-                  <Select value={countryOfResidence} onValueChange={setCountryOfResidence}>
-                    <SelectTrigger className="w-full">
-                      <Globe className="w-4 h-4 mr-2 text-muted-foreground" />
-                      <SelectValue placeholder="Select your country" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectGroup>
-                        <SelectLabel>Africa</SelectLabel>
-                        {AFRICAN_COUNTRIES.map((country) => (
-                          <SelectItem key={country} value={country}>{country}</SelectItem>
-                        ))}
-                      </SelectGroup>
-                      <SelectGroup>
-                        <SelectLabel>Rest of World</SelectLabel>
-                        {OTHER_COUNTRIES.map((country) => (
-                          <SelectItem key={country} value={country}>{country}</SelectItem>
-                        ))}
-                      </SelectGroup>
-                    </SelectContent>
-                  </Select>
                 </div>
               )}
 

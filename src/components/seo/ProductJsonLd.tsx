@@ -17,7 +17,7 @@ const ProductJsonLd = ({
   name,
   description,
   price,
-  priceCurrency = "USD",
+  priceCurrency = "NGN",
   sku,
   brand = "TAXKORA",
   image = "https://taxkora.com/favicon.png",
@@ -42,7 +42,7 @@ const ProductJsonLd = ({
       price,
       priceCurrency,
       availability,
-      priceValidUntil: "2027-12-31",
+      priceValidUntil: "2026-12-31",
       seller: {
         "@id": "https://taxkora.com/#organization",
       },
@@ -61,6 +61,7 @@ const ProductJsonLd = ({
     })),
   };
 
+  // Clean undefined/empty values
   const cleanJsonLd = JSON.parse(JSON.stringify(jsonLd));
 
   return (
@@ -72,45 +73,49 @@ const ProductJsonLd = ({
 
 export default ProductJsonLd;
 
+// Pre-configured products for pricing page
 export const PricingProducts = () => (
   <>
     <ProductJsonLd
-      name="TAXKORA Individual Plan"
-      description="Personal income tax compliance for individuals worldwide. Includes multi-country tax computation, income tracking, and tax reports."
-      price="3"
-      sku="TAXKORA-INDIVIDUAL"
+      name="TAXKORA Individual PIT Plan"
+      description="Personal income tax compliance for employed individuals. Includes income tracking, PIT computation, tax filing, and TCC support."
+      price="2500"
+      sku="TAXKORA-PIT-IND"
       features={[
-        "Personal income tax computation",
-        "Multi-country tax support (50+)",
-        "Income & expense tracking",
-        "Tax liability tracking",
-        "Payment reminders",
-        "Basic tax reports",
+        "Personal income tracking",
+        "Multi-source income aggregation",
+        "Personal expense categorization",
+        "PIT tax computation",
+        "Personal tax filing",
+        "TCC support",
+        "Email support",
       ]}
     />
     <ProductJsonLd
-      name="TAXKORA Business Plan"
-      description="Complete tax compliance for SMEs, freelancers, and self-employed professionals worldwide. Includes invoicing, VAT, WHT, and business tax computation."
-      price="7"
-      sku="TAXKORA-BUSINESS"
+      name="TAXKORA Business PIT Plan"
+      description="Complete tax compliance for SMEs, freelancers, and self-employed. Includes invoicing, VAT, WHT, and business tax computation."
+      price="7500"
+      sku="TAXKORA-PIT-BUS"
       features={[
         "Unlimited professional invoicing",
-        "VAT & WHT management",
+        "Business income & expense tracking",
+        "VAT management & returns",
+        "WHT transaction tracking",
         "Capital asset depreciation",
         "Business tax computation",
-        "Advanced analytics & reports",
-        "Priority support",
+        "Priority email support",
       ]}
     />
     <ProductJsonLd
-      name="TAXKORA Enterprise Plan"
-      description="Enterprise tax compliance for incorporated businesses worldwide. Includes CIT computation, corporate filing, and dedicated support."
-      price="25"
-      sku="TAXKORA-ENTERPRISE"
+      name="TAXKORA Companies Income Tax Plan"
+      description="Enterprise tax compliance for incorporated businesses. Includes CIT computation, corporate filing, and dedicated support."
+      price="25000"
+      sku="TAXKORA-CIT"
       features={[
-        "CIT computation",
+        "CIT tax computation",
         "Corporate tax filing",
-        "Multi-year tax planning",
+        "Multi-year tax records",
+        "Advanced financial reports",
         "Audit trail & compliance logs",
         "Dedicated support",
         "Assisted filing service",

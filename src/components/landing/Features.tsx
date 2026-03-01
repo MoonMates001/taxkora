@@ -10,8 +10,7 @@ import {
   Receipt,
   TrendingUp,
   PieChart,
-  ArrowRight,
-  Globe
+  ArrowRight
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
@@ -33,11 +32,11 @@ const Features = () => {
       benefits: ["Smart categories", "Receipt upload", "Reports"]
     },
     {
-      icon: Globe,
-      title: "Multi-Country Tax Engine",
-      description: "Compute PIT, CIT, VAT & WHT across 50+ jurisdictions with country-specific rules and brackets.",
-      highlight: "50+ countries",
-      benefits: ["Auto-detection", "Local currencies", "WHT rates"]
+      icon: Calculator,
+      title: "VAT & WHT Management",
+      description: "Track VAT input/output, manage withholding tax transactions, and generate returns.",
+      highlight: "NRS compliant",
+      benefits: ["Monthly returns", "Filing tracker", "WHT reports"]
     },
     {
       icon: TrendingUp,
@@ -48,17 +47,17 @@ const Features = () => {
     },
     {
       icon: PieChart,
-      title: "Smart Tax Computation",
-      description: "Accurate PIT and CIT calculations using local tax laws, brackets, and deduction rules.",
+      title: "Tax Computation Engine",
+      description: "Accurate PIT and CIT calculations based on current Nigerian tax laws (NRS 2025).",
       highlight: "Real-time updates",
-      benefits: ["Progressive rates", "Deduction optimizer", "Projections"]
+      benefits: ["PIT/CIT ready", "Deduction optimizer", "Projections"]
     },
     {
       icon: Send,
       title: "Assisted Tax Filing",
-      description: "Review computed taxes and file returns with professional support when needed.",
-      highlight: "Guided filing",
-      benefits: ["Pre-filled forms", "Review tools", "Compliance checks"]
+      description: "Review computed taxes and file directly to NRS with professional support when needed.",
+      highlight: "One-click filing",
+      benefits: ["Pre-filled forms", "Review tools", "TCC support"]
     }
   ];
 
@@ -77,9 +76,9 @@ const Features = () => {
     },
     {
       icon: Shield,
-      title: "Tax Filing & Compliance",
-      description: "Simple personal tax filing with country-specific compliance support.",
-      benefits: ["Easy filing", "Multi-country"]
+      title: "Tax Filing & TCC",
+      description: "Simple personal tax filing with Tax Clearance Certificate generation support.",
+      benefits: ["Easy filing", "TCC ready"]
     }
   ];
 
@@ -98,11 +97,11 @@ const Features = () => {
           </div>
           <h2 className="font-display text-3xl sm:text-4xl md:text-5xl font-bold text-foreground mb-6">
             Everything You Need for{" "}
-            <span className="text-gradient">Global Tax Compliance</span>
+            <span className="text-gradient">Tax Compliance</span>
           </h2>
           <p className="text-muted-foreground text-lg">
-            Whether you're running a business or managing personal finances across borders, 
-            TAXKORA provides the complete toolkit for tax compliance in 50+ countries.
+            Whether you're running a business or managing personal finances, 
+            TAXKORA provides the complete toolkit for Nigerian tax compliance.
           </p>
         </div>
 
@@ -114,7 +113,7 @@ const Features = () => {
             </div>
             <div>
               <h3 className="font-display text-2xl sm:text-3xl font-bold text-foreground">Business Module</h3>
-              <p className="text-muted-foreground">For SMEs, Self-Employed & Incorporated Businesses Worldwide</p>
+              <p className="text-muted-foreground">For SMEs, Self-Employed & Incorporated Businesses</p>
             </div>
           </div>
           
@@ -124,8 +123,10 @@ const Features = () => {
                 key={index}
                 className="group relative p-6 bg-card rounded-2xl border border-border hover:border-primary/40 transition-all duration-300 hover:shadow-xl hover:shadow-primary/5 hover:-translate-y-1"
               >
+                {/* Gradient overlay on hover */}
                 <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 
+                {/* Highlight badge */}
                 {feature.highlight && (
                   <span className="absolute top-4 right-4 text-xs font-semibold px-2.5 py-1 bg-gradient-to-r from-teal-50 to-teal-100 text-teal-700 rounded-full border border-teal-200">
                     {feature.highlight}
@@ -144,6 +145,7 @@ const Features = () => {
                     {feature.description}
                   </p>
                   
+                  {/* Benefits pills */}
                   <div className="flex flex-wrap gap-2">
                     {feature.benefits.map((benefit, i) => (
                       <span key={i} className="text-xs px-2 py-1 bg-secondary rounded-md text-muted-foreground">
@@ -165,7 +167,7 @@ const Features = () => {
             </div>
             <div>
               <h3 className="font-display text-2xl sm:text-3xl font-bold text-foreground">Personal Module</h3>
-              <p className="text-muted-foreground">For Individual Taxpayers & Employees Globally</p>
+              <p className="text-muted-foreground">For Individual Taxpayers & Employees</p>
             </div>
           </div>
           
@@ -175,6 +177,7 @@ const Features = () => {
                 key={index}
                 className="group relative p-6 bg-card rounded-2xl border border-border hover:border-accent/40 transition-all duration-300 hover:shadow-xl hover:shadow-accent/5 hover:-translate-y-1"
               >
+                {/* Gradient overlay on hover */}
                 <div className="absolute inset-0 bg-gradient-to-br from-accent/5 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 
                 <div className="relative">
@@ -189,6 +192,7 @@ const Features = () => {
                     {feature.description}
                   </p>
                   
+                  {/* Benefits pills */}
                   <div className="flex flex-wrap gap-2">
                     {feature.benefits.map((benefit, i) => (
                       <span key={i} className="text-xs px-2 py-1 bg-secondary rounded-md text-muted-foreground">
@@ -206,7 +210,7 @@ const Features = () => {
         <div className="mt-20 text-center">
           <div className="inline-flex flex-col sm:flex-row items-center gap-4 p-6 bg-secondary/50 rounded-2xl border border-border w-full sm:w-auto">
             <div className="text-center sm:text-left">
-              <p className="font-semibold text-foreground">Ready to simplify your global tax compliance?</p>
+              <p className="font-semibold text-foreground">Ready to simplify your tax compliance?</p>
               <p className="text-sm text-muted-foreground">Start your 90-day free trial today. No credit card required.</p>
             </div>
             <Link to="/auth" className="w-full sm:w-auto">

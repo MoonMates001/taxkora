@@ -14,43 +14,43 @@ const defaultServices: Service[] = [
   {
     name: "Personal Income Tax (PIT) Calculation",
     description:
-      "Accurate computation of Personal Income Tax using country-specific progressive tax brackets for 50+ countries. Includes local reliefs, deductions, and allowances.",
+      "Accurate computation of Personal Income Tax using Nigeria's progressive tax rates (7% to 24%). Includes Consolidated Relief Allowance (CRA), pension deductions, and rent relief calculations.",
     url: "https://taxkora.com/dashboard/tax-computation",
   },
   {
     name: "Company Income Tax (CIT) Calculation",
     description:
-      "Corporate tax calculation with country-specific rates and thresholds. Supports small business concessions, R&D credits, and industry-specific incentives.",
+      "Corporate tax calculation based on company turnover. 0% for small companies (≤₦25m), 20% for medium (₦25m-₦100m), and 30% for large companies (>₦100m).",
     url: "https://taxkora.com/dashboard/business-tax",
   },
   {
     name: "VAT Management & Filing",
     description:
-      "Track VAT/GST input and output transactions with country-specific rates. Calculate monthly or quarterly liability and generate compliant returns.",
+      "Track VAT input and output transactions, calculate monthly VAT liability at 7.5%, and file returns to FIRS. NRS-compliant monthly VAT return generation.",
     url: "https://taxkora.com/dashboard/vat-returns",
   },
   {
     name: "Withholding Tax (WHT) Management",
     description:
-      "Calculate and track Withholding Tax deductions using country-specific WHT rates for dividends, interest, royalties, and professional fees.",
+      "Calculate and track Withholding Tax deductions on payments. Supports all WHT categories including dividends, interest, royalties, rent, and professional fees.",
     url: "https://taxkora.com/dashboard/wht-management",
   },
   {
     name: "Professional E-Invoicing",
     description:
-      "Create and send professional branded invoices in any currency. Track payments, send automated reminders, and export to PDF.",
+      "Create and send professional branded invoices. Track payments, send automated reminders, and export to PDF. Unlimited invoicing with VAT calculation.",
     url: "https://taxkora.com/dashboard/invoices",
   },
   {
-    name: "Tax Filing Support",
+    name: "Tax Filing & TCC Support",
     description:
-      "Assisted tax filing with pre-filled forms and review tools. Support for local tax authority submissions across multiple jurisdictions.",
+      "Assisted tax filing service with pre-filled forms and review tools. Support for Tax Clearance Certificate (TCC) generation and FIRS/SIRS submissions.",
     url: "https://taxkora.com/dashboard/tax-filing",
   },
   {
     name: "Capital Asset Depreciation",
     description:
-      "Track capital assets and compute annual depreciation allowances using country-specific capital allowance rules and rates.",
+      "Track capital assets and compute annual depreciation allowances. Optimize tax deductions with proper capital allowance calculations per Nigerian tax law.",
     url: "https://taxkora.com/dashboard/capital-assets",
   },
   {
@@ -66,25 +66,17 @@ const ServiceJsonLd = ({ services = defaultServices }: ServiceJsonLdProps) => {
     "@context": "https://schema.org",
     "@type": "Service",
     "@id": "https://taxkora.com/#service",
-    serviceType: "Global Tax Compliance Software",
+    serviceType: "Tax Compliance Software",
     provider: {
       "@id": "https://taxkora.com/#organization",
     },
-    areaServed: [
-      { "@type": "Country", name: "United States" },
-      { "@type": "Country", name: "United Kingdom" },
-      { "@type": "Country", name: "India" },
-      { "@type": "Country", name: "Germany" },
-      { "@type": "Country", name: "Nigeria" },
-      { "@type": "Country", name: "Canada" },
-      { "@type": "Country", name: "Australia" },
-      { "@type": "Country", name: "France" },
-      { "@type": "Country", name: "Singapore" },
-      { "@type": "Country", name: "South Africa" },
-    ],
+    areaServed: {
+      "@type": "Country",
+      name: "Nigeria",
+    },
     hasOfferCatalog: {
       "@type": "OfferCatalog",
-      name: "TAXKORA Global Tax Compliance Services",
+      name: "TAXKORA Tax Compliance Services",
       itemListElement: services.map((service, index) => ({
         "@type": "Offer",
         itemOffered: {
@@ -99,17 +91,18 @@ const ServiceJsonLd = ({ services = defaultServices }: ServiceJsonLdProps) => {
     audience: {
       "@type": "Audience",
       audienceType: [
-        "Global Businesses",
-        "SMEs",
-        "Freelancers",
-        "Accountants",
-        "Entrepreneurs",
-        "Self-Employed Professionals",
+        "Nigerian Businesses",
+        "Nigerian SMEs",
+        "Nigerian Freelancers",
+        "Nigerian Accountants",
+        "Nigerian Entrepreneurs",
+        "Self-Employed Nigerians",
       ],
     },
     availableChannel: {
       "@type": "ServiceChannel",
       serviceUrl: "https://taxkora.com",
+      servicePhone: "+234-707-770-6706",
       availableLanguage: ["English"],
     },
   };

@@ -649,7 +649,6 @@ export type Database = {
           business_city: string | null
           business_name: string | null
           business_state: string | null
-          country_of_residence: string | null
           created_at: string
           email: string | null
           full_name: string | null
@@ -666,7 +665,6 @@ export type Database = {
           business_city?: string | null
           business_name?: string | null
           business_state?: string | null
-          country_of_residence?: string | null
           created_at?: string
           email?: string | null
           full_name?: string | null
@@ -683,7 +681,6 @@ export type Database = {
           business_city?: string | null
           business_name?: string | null
           business_state?: string | null
-          country_of_residence?: string | null
           created_at?: string
           email?: string | null
           full_name?: string | null

@@ -3,45 +3,45 @@ import { Star, Quote } from "lucide-react";
 const Testimonials = () => {
   const testimonials = [
     {
-      name: "Sarah Chen",
-      role: "Founder, TechBridge Solutions",
-      country: "Singapore",
-      content: "TAXKORA has completely transformed how we handle our business taxes across multiple jurisdictions. The automated GST tracking alone saves us hours every month.",
+      name: "Adebayo Ogundimu",
+      role: "Founder, TechStart Nigeria",
+      image: null,
+      content: "TAXKORA has completely transformed how we handle our business taxes. The automated VAT tracking alone saves us hours every month.",
       rating: 5
     },
     {
-      name: "Marcus Thompson",
+      name: "Chinwe Okwu",
       role: "Freelance Consultant",
-      country: "United Kingdom",
-      content: "As a freelancer working with international clients, keeping track of multiple income sources was a nightmare. Now I just log my invoices and TAXKORA computes everything automatically.",
+      image: null,
+      content: "As a freelancer, keeping track of multiple income sources was a nightmare. Now I just log my invoices and TAXKORA computes everything automatically.",
       rating: 5
     },
     {
-      name: "Priya Sharma",
-      role: "CFO, NovaTech India",
-      country: "India",
-      content: "The multi-country tax engine is incredibly accurate. We've streamlined compliance across our offices in three countries since switching to TAXKORA.",
+      name: "Ibrahim Musa",
+      role: "MD, Musa & Sons Ltd",
+      image: null,
+      content: "The CIT computation feature is incredibly accurate. We've never had issues with NRS since we started using TAXKORA for our company filings.",
       rating: 5
     },
     {
-      name: "Elena Rodriguez",
-      role: "HR Manager, GlobalCorp",
-      country: "Spain",
-      content: "I recommend TAXKORA to all our employees for their personal tax filing. It's so easy to use and the support team is very responsive.",
+      name: "Folake Adeyemi",
+      role: "HR Manager, FinCorp",
+      image: null,
+      content: "I recommend TAXKORA to all my employees for their personal tax filing. It's so easy to use and the support team is very responsive.",
       rating: 5
     },
     {
-      name: "James Okafor",
-      role: "Owner, Okafor Logistics",
-      country: "Nigeria",
+      name: "Emeka Nwosu",
+      role: "Owner, Nwosu Logistics",
+      image: null,
       content: "The invoicing system is brilliant. My clients get professional invoices and I can track payments without switching between apps.",
       rating: 5
     },
     {
-      name: "Katrin Müller",
-      role: "Tax Advisor, Müller & Partners",
-      country: "Germany",
-      content: "Finally, a global tax platform that understands local tax laws. The progressive bracket calculations are spot-on for every country I've tested.",
+      name: "Amina Bello",
+      role: "Accountant, Bello Associates",
+      image: null,
+      content: "Finally, a Nigerian tax platform that understands our tax laws. The capital allowance calculations are spot-on every time.",
       rating: 5
     }
   ];
@@ -60,10 +60,10 @@ const Testimonials = () => {
             Customer Stories
           </div>
           <h2 className="font-display text-3xl sm:text-4xl md:text-5xl font-bold text-foreground mb-6">
-            Loved by Businesses Worldwide
+            Loved by Businesses Across Nigeria
           </h2>
           <p className="text-muted-foreground text-lg">
-            Join thousands of businesses and professionals across 50+ countries who trust TAXKORA for their tax compliance needs.
+            Join thousands of Nigerian businesses and individuals who trust TAXKORA for their tax compliance needs.
           </p>
         </div>
 
@@ -98,7 +98,7 @@ const Testimonials = () => {
                 </div>
                 <div>
                   <div className="font-semibold text-foreground text-sm">{testimonial.name}</div>
-                  <div className="text-muted-foreground text-xs">{testimonial.role} • {testimonial.country}</div>
+                  <div className="text-muted-foreground text-xs">{testimonial.role}</div>
                 </div>
               </div>
             </div>
@@ -107,9 +107,9 @@ const Testimonials = () => {
 
         {/* Trust indicators */}
         <div className="mt-16 text-center">
-          <p className="text-muted-foreground text-sm mb-6">Trusted by businesses across the globe</p>
+          <p className="text-muted-foreground text-sm mb-6">Trusted by businesses of all sizes</p>
           <div className="flex flex-wrap justify-center items-center gap-8 opacity-50">
-            {["TechBridge", "NovaTech", "GlobalCorp", "Müller & Partners", "Okafor Logistics"].map((company, i) => (
+            {["TechStart", "FinCorp", "Musa & Sons", "Nwosu Logistics", "Bello Associates"].map((company, i) => (
               <div key={i} className="font-display font-bold text-lg text-muted-foreground">
                 {company}
               </div>

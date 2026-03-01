@@ -11,28 +11,28 @@ const HowItWorks = () => {
       number: "01",
       icon: UserPlus,
       title: "Create Your Account",
-      description: "Sign up in 2 minutes. Select your country and choose between Business or Personal module based on your tax needs.",
+      description: "Sign up in 2 minutes. Choose between Business or Personal module based on your tax needs.",
       color: "teal"
     },
     {
       number: "02",
       icon: FileSpreadsheet,
       title: "Record Your Transactions",
-      description: "Add income, expenses, and invoices. Our smart system auto-categorizes and tracks everything in your local currency.",
+      description: "Add income, expenses, and invoices. Our smart system auto-categorizes and tracks everything.",
       color: "teal"
     },
     {
       number: "03",
       icon: Calculator,
       title: "Auto Tax Computation",
-      description: "TAXKORA calculates your PIT, CIT, VAT, and WHT in real-time using your country's current tax regulations.",
+      description: "TAXKORA calculates your PIT, CIT, VAT, and WHT in real-time based on current NRS regulations.",
       color: "teal"
     },
     {
       number: "04",
       icon: Send,
       title: "File with Confidence",
-      description: "Review your tax summary and file with your local tax authority. Get instant confirmation and keep records organized.",
+      description: "Review your tax summary and file directly to NRS. Get instant confirmation and keep records organized.",
       color: "coral"
     }
   ];
@@ -85,17 +85,17 @@ const HowItWorks = () => {
                     <div className="grid grid-cols-3 gap-3">
                       <div className={`bg-gray-800/60 rounded-lg p-3 border border-gray-700/30 transition-all duration-700 ${isPlaying ? 'translate-y-0 opacity-100' : 'translate-y-2 opacity-70'}`} style={{ transitionDelay: '0ms' }}>
                         <div className="text-[10px] text-gray-400">Income</div>
-                        <div className={`text-sm font-bold text-white transition-all duration-1000 ${isPlaying ? 'scale-100' : 'scale-95'}`}>$84,200</div>
+                        <div className={`text-sm font-bold text-white transition-all duration-1000 ${isPlaying ? 'scale-100' : 'scale-95'}`}>₦4.2M</div>
                         <div className="text-[10px] text-green-400">↑ 12.5%</div>
                       </div>
                       <div className={`bg-gray-800/60 rounded-lg p-3 border border-gray-700/30 transition-all duration-700 ${isPlaying ? 'translate-y-0 opacity-100' : 'translate-y-2 opacity-70'}`} style={{ transitionDelay: '100ms' }}>
                         <div className="text-[10px] text-gray-400">Expenses</div>
-                        <div className={`text-sm font-bold text-white transition-all duration-1000 ${isPlaying ? 'scale-100' : 'scale-95'}`}>$36,100</div>
+                        <div className={`text-sm font-bold text-white transition-all duration-1000 ${isPlaying ? 'scale-100' : 'scale-95'}`}>₦1.8M</div>
                         <div className="text-[10px] text-coral-400">↓ 3.2%</div>
                       </div>
                       <div className={`bg-teal-600/20 rounded-lg p-3 border border-teal-500/30 transition-all duration-700 ${isPlaying ? 'translate-y-0 opacity-100' : 'translate-y-2 opacity-70'}`} style={{ transitionDelay: '200ms' }}>
                         <div className="text-[10px] text-teal-300">Tax Due</div>
-                        <div className={`text-sm font-bold text-white transition-all duration-1000 ${isPlaying ? 'scale-100' : 'scale-95'}`}>$9,450</div>
+                        <div className={`text-sm font-bold text-white transition-all duration-1000 ${isPlaying ? 'scale-100' : 'scale-95'}`}>₦245K</div>
                         <div className="text-[10px] text-teal-400">Auto-computed</div>
                       </div>
                     </div>
@@ -123,12 +123,12 @@ const HowItWorks = () => {
                           <FileSpreadsheet className="w-4 h-4 text-coral-400" />
                         </div>
                         <div>
-                          <div className="text-xs font-medium text-white">INV-2026-0142</div>
+                          <div className="text-xs font-medium text-white">INV-2025-0142</div>
                           <div className="text-[10px] text-gray-400">Acme Corp</div>
                         </div>
                       </div>
                       <div className="text-right">
-                        <div className="text-xs font-bold text-white">$8,500</div>
+                        <div className="text-xs font-bold text-white">₦850,000</div>
                         <span className="text-[10px] px-1.5 py-0.5 bg-green-500/20 text-green-400 rounded">Paid</span>
                       </div>
                     </div>
@@ -171,7 +171,7 @@ const HowItWorks = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <h3 className="font-semibold text-foreground text-sm">See TAXKORA in Action</h3>
-                  <p className="text-muted-foreground text-xs">Watch how easy it is to manage your taxes globally</p>
+                  <p className="text-muted-foreground text-xs">Watch how easy it is to manage your taxes</p>
                 </div>
                 <Link to="/auth">
                   <Button size="sm" variant="outline" className="text-xs">

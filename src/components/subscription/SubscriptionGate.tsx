@@ -75,7 +75,7 @@ const SubscriptionRequired = ({ feature }: { feature: string }) => {
               <span className="font-semibold">New User?</span>
             </div>
             <p className="text-sm text-green-600 dark:text-green-400">
-              Start your <strong>14-day free trial</strong> today — no payment required!
+              Start your <strong>3-month free trial</strong> today — no payment required!
             </p>
           </div>
 

@@ -1,4 +1,4 @@
-import { Mail, Phone, Globe } from "lucide-react";
+import { Mail, Phone, MapPin } from "lucide-react";
 import logo from "@/assets/logo.png";
 
 const Footer = () => {
@@ -39,21 +39,21 @@ const Footer = () => {
               <span className="font-display font-bold text-xl text-gray-100">TAXKORA</span>
             </div>
             <p className="text-gray-400 mb-6 max-w-sm">
-              The global tax compliance platform for businesses and individuals. 
-              Making tax simple across 50+ countries.
+              Nigeria's leading tax and financial compliance platform. 
+              Making tax simple for businesses and individuals.
             </p>
             <div className="space-y-3">
               <div className="flex items-center gap-3 text-sm">
                 <Mail className="w-4 h-4 text-primary" />
-                <span>alphalinkprime@gmail.com</span>
+                <span>hello@taxkora.com</span>
               </div>
               <div className="flex items-center gap-3 text-sm">
                 <Phone className="w-4 h-4 text-primary" />
-                <span>+234 707 770 6706</span>
+                <span>+234 800 123 4567</span>
               </div>
               <div className="flex items-center gap-3 text-sm">
-                <Globe className="w-4 h-4 text-primary" />
-                <span>Serving 50+ countries worldwide</span>
+                <MapPin className="w-4 h-4 text-primary" />
+                <span>Lagos, Nigeria</span>
               </div>
             </div>
           </div>
@@ -102,7 +102,7 @@ const Footer = () => {
         {/* Bottom Bar */}
         <div className="border-t border-gray-800 mt-12 pt-8 flex flex-col md:flex-row items-center justify-between gap-4">
           <p className="text-sm text-gray-500">
-            © {new Date().getFullYear()} TAXKORA. All rights reserved.
+            © 2025 TAXKORA. All rights reserved.
           </p>
           <div className="flex items-center gap-6">
             {footerLinks.legal.map((link, index) => (

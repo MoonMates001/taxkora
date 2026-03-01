@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Mail, Phone, MapPin, Linkedin, Twitter, Instagram, Globe } from "lucide-react";
+import { Mail, Phone, MapPin, Linkedin, Twitter, Instagram } from "lucide-react";
 import logo from "@/assets/logo.png";
 
 const Footer = () => {
@@ -44,8 +44,8 @@ const Footer = () => {
               <span className="font-display font-bold text-2xl text-white">TAXKORA</span>
             </Link>
             <p className="text-gray-400 mb-6 leading-relaxed">
-              The global tax compliance platform trusted by businesses and individuals in 50+ countries. 
-              Making tax simple, wherever you are.
+              Nigeria's leading tax and financial compliance platform. 
+              Making tax simple for businesses and individuals since 2024.
             </p>
             
             {/* Contact info */}
@@ -59,8 +59,8 @@ const Footer = () => {
                 <span>+234 707 770 6706</span>
               </a>
               <div className="flex items-center gap-3 text-sm">
-                <Globe className="w-4 h-4 text-teal-500" />
-                <span>Serving 50+ countries worldwide</span>
+                <MapPin className="w-4 h-4 text-teal-500" />
+                <span>Lagos, Nigeria</span>
               </div>
             </div>
 

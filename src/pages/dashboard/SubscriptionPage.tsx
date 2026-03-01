@@ -124,9 +124,9 @@ export default function SubscriptionPage() {
   };
 
   const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat("en-US", {
+    return new Intl.NumberFormat("en-NG", {
       style: "currency",
-      currency: "USD",
+      currency: "NGN",
       minimumFractionDigits: 0,
     }).format(amount);
   };
@@ -150,11 +150,11 @@ export default function SubscriptionPage() {
               <div className="flex items-center gap-2">
                 <Gift className="h-5 w-5 text-green-600" />
                 <CardTitle className="text-lg text-green-700 dark:text-green-400">
-                  🎉 Start Your 14-Day Free Trial!
+                  🎉 Start Your 3-Month Free Trial!
                 </CardTitle>
               </div>
               <CardDescription className="text-green-600 dark:text-green-400">
-                New to TaxKora? Try any plan free for 14 days. A card is required for automatic billing after the trial.
+                New to TaxKora? Try any plan free for 3 months. A card is required for automatic billing after the trial.
               </CardDescription>
             </CardHeader>
           </Card>
@@ -260,8 +260,8 @@ export default function SubscriptionPage() {
                       <span className="text-muted-foreground">/year</span>
                       {canStartTrial && !isSubscriptionActive && (
                         <div className="mt-2">
-                         <Badge variant="outline" className="text-green-600 border-green-600">
-                            14-day free trial
+                          <Badge variant="outline" className="text-green-600 border-green-600">
+                            3 months free trial
                           </Badge>
                         </div>
                       )}
@@ -513,13 +513,13 @@ export default function SubscriptionPage() {
           <div className="space-y-4 py-4">
             <div className="p-4 bg-green-50 dark:bg-green-950/20 rounded-lg border border-green-200 dark:border-green-800">
               <div className="flex items-start gap-3">
-                 <Gift className="h-5 w-5 text-green-600 mt-0.5" />
-                 <div>
-                   <p className="font-medium text-green-700 dark:text-green-400">
-                     14-Day Free Access
-                   </p>
-                   <p className="text-sm text-green-600 dark:text-green-400">
-                     Enjoy full access to {pendingTrialPlan ? SUBSCRIPTION_PLANS[pendingTrialPlan].name : "your selected plan"} features.
+                <Gift className="h-5 w-5 text-green-600 mt-0.5" />
+                <div>
+                  <p className="font-medium text-green-700 dark:text-green-400">
+                    3 Months Free Access
+                  </p>
+                  <p className="text-sm text-green-600 dark:text-green-400">
+                    Enjoy full access to {pendingTrialPlan ? SUBSCRIPTION_PLANS[pendingTrialPlan].name : "your selected plan"} features.
                   </p>
                 </div>
               </div>
@@ -531,7 +531,7 @@ export default function SubscriptionPage() {
                 <div className="text-sm">
                   <p className="font-medium">Why we need your card:</p>
                   <ul className="mt-1 space-y-1 text-muted-foreground">
-                    <li>• A $1 verification charge will be made and <strong>immediately refunded</strong></li>
+                    <li>• A ₦50 verification charge will be made and <strong>immediately refunded</strong></li>
                     <li>• Your card is saved for automatic billing when your trial ends</li>
                     <li>• You can cancel anytime before trial ends to avoid charges</li>
                   </ul>
