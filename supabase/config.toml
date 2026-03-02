@@ -1,37 +1,29 @@
 project_id = "xvrmtsgagzcbdgxrwdly"
 
-[functions.tax-advisor]
-verify_jwt = false
-
-[functions.tax-deadline-reminders]
-verify_jwt = false
-
-[functions.subscription-reminders]
-verify_jwt = false
-
-[functions.subscription-auto-renew]
-verify_jwt = false
-
-[functions.trial-welcome-email]
-verify_jwt = false
-
-[functions.onboarding-email-sequence]
-verify_jwt = false
-
-[functions.send-referral-invite]
-verify_jwt = false
-
-[functions.referral-notification]
-verify_jwt = false
-
-[functions.flutterwave-tokenize]
-verify_jwt = false
-
-[functions.flutterwave-trial-verify]
-verify_jwt = false
-
-[functions.flutterwave-webhook]
-verify_jwt = false
-
-[functions.admin-manage-subscription]
-verify_jwt = false
+[functions]
+  [functions.admin-manage-subscription]
+    verify_jwt = false
+  [functions.auth-email-hook]
+    verify_jwt = false
+  [functions.flutterwave-tokenize]
+    verify_jwt = false
+  [functions.flutterwave-trial-verify]
+    verify_jwt = false
+  [functions.flutterwave-webhook]
+    verify_jwt = false
+  [functions.onboarding-email-sequence]
+    verify_jwt = false
+  [functions.referral-notification]
+    verify_jwt = false
+  [functions.send-referral-invite]
+    verify_jwt = false
+  [functions.subscription-auto-renew]
+    verify_jwt = false
+  [functions.subscription-reminders]
+    verify_jwt = false
+  [functions.tax-advisor]
+    verify_jwt = false
+  [functions.tax-deadline-reminders]
+    verify_jwt = false
+  [functions.trial-welcome-email]
+    verify_jwt = false
