@@ -1,16 +1,13 @@
 import { useAuth } from "@/hooks/useAuth";
-import { useUserRole } from "@/hooks/useUserRole";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Building2, User } from "lucide-react";
 import { BusinessProfileForm } from "@/components/settings/BusinessProfileForm";
 import { InvoiceCustomizationForm } from "@/components/settings/InvoiceCustomizationForm";
-import AdminSubscriptionManager from "@/components/settings/AdminSubscriptionManager";
 import UpdateReminderSettings from "@/components/settings/UpdateReminderSettings";
 
 const SettingsPage = () => {
   const { profile } = useAuth();
-  const { isAdmin } = useUserRole();
   const isBusinessAccount = profile?.account_type === "business";
 
   return (
@@ -32,8 +29,8 @@ const SettingsPage = () => {
       {/* Invoice Customization - Only for business accounts */}
       {isBusinessAccount && <InvoiceCustomizationForm />}
 
-      {/* Admin Subscription Management */}
-      {isAdmin && <AdminSubscriptionManager />}
+
+      {/* Account Type */}
 
       {/* Account Type */}
       <Card className="shadow-card">

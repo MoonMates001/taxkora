@@ -74,7 +74,8 @@ const DashboardSidebar = () => {
 
   // Add admin-only links
   const adminLinks = isAdmin ? [
-    { href: "/dashboard/subscriptions", label: "Subscriptions", icon: Shield },
+    { href: "/dashboard/admin", label: "Admin Panel", icon: Shield },
+    { href: "/dashboard/subscriptions", label: "Subscriptions", icon: Crown },
     { href: "/dashboard/blog", label: "Blog Management", icon: PenTool },
   ] : [];
 
