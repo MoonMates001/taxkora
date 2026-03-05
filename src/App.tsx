@@ -38,6 +38,7 @@ const PaymentCallbackPage = lazy(() => import("./pages/dashboard/PaymentCallback
 const ReferralsPage = lazy(() => import("./pages/dashboard/ReferralsPage"));
 const BlogManagementPage = lazy(() => import("./pages/dashboard/BlogManagementPage"));
 const AdminSubscriptionsPage = lazy(() => import("./pages/dashboard/AdminSubscriptionsPage"));
+const AdminDashboardPage = lazy(() => import("./pages/dashboard/AdminDashboardPage"));
 const BlogPage = lazy(() => import("./pages/BlogPage"));
 const BlogPostPage = lazy(() => import("./pages/BlogPostPage"));
 const InstallApp = lazy(() => import("./pages/InstallApp"));
@@ -94,6 +95,7 @@ const App = () => (
                 <Route path="settings" element={<SettingsPage />} />
                 <Route path="blog" element={<BlogManagementPage />} />
                 <Route path="subscriptions" element={<AdminSubscriptionsPage />} />
+                <Route path="admin" element={<AdminDashboardPage />} />
               </Route>
               <Route path="/blog" element={<BlogPage />} />
               <Route path="/blog/:slug" element={<BlogPostPage />} />
