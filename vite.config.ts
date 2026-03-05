@@ -225,6 +225,7 @@ export default defineConfig(({ mode }) => ({
         cleanupOutdatedCaches: true,
         skipWaiting: true,
         clientsClaim: true,
+        navigateFallbackDenylist: [/^\/~oauth/, /^\/auth/],
       },
       devOptions: {
         enabled: true
