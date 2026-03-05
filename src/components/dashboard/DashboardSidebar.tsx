@@ -27,6 +27,7 @@ import {
   Clock,
   Gift,
   PenTool,
+  Shield,
 } from "lucide-react";
 import logo from "@/assets/logo.png";
 
@@ -73,6 +74,7 @@ const DashboardSidebar = () => {
 
   // Add admin-only links
   const adminLinks = isAdmin ? [
+    { href: "/dashboard/subscriptions", label: "Subscriptions", icon: Shield },
     { href: "/dashboard/blog", label: "Blog Management", icon: PenTool },
   ] : [];
 
