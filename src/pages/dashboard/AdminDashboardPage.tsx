@@ -2,7 +2,13 @@ import { useEffect, lazy, Suspense } from "react";
 import { useNavigate } from "react-router-dom";
 import { useUserRole } from "@/hooks/useUserRole";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Loader2, LayoutDashboard, Users, Crown, MessageSquare, ScrollText, Mail } from "lucide-react";
+import { Loader2, LayoutDashboard, Users, Crown, MessageSquare, ScrollText, Mail, Bell, UserPlus, Ticket, X } from "lucide-react";
+import { useAdminRealtimeNotifications } from "@/hooks/useAdminRealtimeNotifications";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { formatDistanceToNow } from "date-fns";
 
 const AdminOverviewTab = lazy(() => import("@/components/admin/AdminOverviewTab"));
 const AdminUsersTab = lazy(() => import("@/components/admin/AdminUsersTab"));
