@@ -149,6 +149,10 @@ export default function AdminDashboardPage() {
             <Mail className="w-4 h-4 hidden sm:block" />
             Newsletter
           </TabsTrigger>
+          <TabsTrigger value="app-analytics" className="gap-1.5 text-xs sm:text-sm py-2">
+            <Smartphone className="w-4 h-4 hidden sm:block" />
+            App
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview">
