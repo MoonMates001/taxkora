@@ -16,6 +16,7 @@ const AdminTicketsTab = lazy(() => import("@/components/admin/AdminTicketsTab"))
 const AdminLogsTab = lazy(() => import("@/components/admin/AdminLogsTab"));
 const AdminNewsletterTab = lazy(() => import("@/components/admin/AdminNewsletterTab"));
 const AdminActivityTab = lazy(() => import("@/components/admin/AdminActivityTab"));
+const AdminAppAnalyticsTab = lazy(() => import("@/components/admin/AdminAppAnalyticsTab"));
 
 // Re-use existing subscription management
 const AdminSubscriptionsContent = lazy(() => import("@/pages/dashboard/AdminSubscriptionsPage").then(mod => {
