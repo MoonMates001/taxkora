@@ -32,6 +32,7 @@ const TabFallback = () => (
 export default function AdminDashboardPage() {
   const { isAdmin, isLoading: roleLoading } = useUserRole();
   const navigate = useNavigate();
+  const { notifications, unreadCount, markAllRead, clearAll } = useAdminRealtimeNotifications();
 
   useEffect(() => {
     if (!roleLoading && !isAdmin) {
@@ -48,8 +49,6 @@ export default function AdminDashboardPage() {
   }
 
   if (!isAdmin) return null;
-
-  const { notifications, unreadCount, markAllRead, clearAll } = useAdminRealtimeNotifications();
 
   return (
     <div className="space-y-6">
