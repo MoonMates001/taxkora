@@ -196,6 +196,12 @@ export default function AdminDashboardPage() {
             <AdminNewsletterTab />
           </Suspense>
         </TabsContent>
+
+        <TabsContent value="app-analytics">
+          <Suspense fallback={<TabFallback />}>
+            <AdminAppAnalyticsTab />
+          </Suspense>
+        </TabsContent>
       </Tabs>
     </div>
   );

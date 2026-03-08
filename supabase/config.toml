@@ -29,3 +29,5 @@ project_id = "xvrmtsgagzcbdgxrwdly"
     verify_jwt = false
   [functions.admin-platform]
     verify_jwt = false
+  [functions.firebase-analytics]
+    verify_jwt = false
