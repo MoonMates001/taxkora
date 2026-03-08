@@ -2,7 +2,7 @@ import { useEffect, lazy, Suspense } from "react";
 import { useNavigate } from "react-router-dom";
 import { useUserRole } from "@/hooks/useUserRole";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Loader2, LayoutDashboard, Users, Crown, MessageSquare, ScrollText, Mail, Bell, UserPlus, Ticket, X, Activity } from "lucide-react";
+import { Loader2, LayoutDashboard, Users, Crown, MessageSquare, ScrollText, Mail, Bell, UserPlus, Ticket, X, Activity, Smartphone } from "lucide-react";
 import { useAdminRealtimeNotifications } from "@/hooks/useAdminRealtimeNotifications";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
