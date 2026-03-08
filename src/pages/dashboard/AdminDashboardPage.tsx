@@ -120,10 +120,14 @@ export default function AdminDashboardPage() {
       </div>
 
       <Tabs defaultValue="overview" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-3 lg:grid-cols-6 h-auto">
+        <TabsList className="grid w-full grid-cols-4 lg:grid-cols-7 h-auto">
           <TabsTrigger value="overview" className="gap-1.5 text-xs sm:text-sm py-2">
             <LayoutDashboard className="w-4 h-4 hidden sm:block" />
             Overview
+          </TabsTrigger>
+          <TabsTrigger value="activity" className="gap-1.5 text-xs sm:text-sm py-2">
+            <Activity className="w-4 h-4 hidden sm:block" />
+            Activity
           </TabsTrigger>
           <TabsTrigger value="users" className="gap-1.5 text-xs sm:text-sm py-2">
             <Users className="w-4 h-4 hidden sm:block" />
