@@ -337,16 +337,29 @@ serve(async (req) => {
         .sort((a, b) => b.count - a.count)
         .slice(0, 10);
 
+      // Platform & device breakdown
+      const platformCounts: Record<string, number> = { web: 0, android: 0, ios: 0 };
+      const deviceCounts: Record<string, number> = { desktop: 0, mobile: 0, tablet: 0 };
+      events.forEach(e => {
+        const meta = e.metadata as Record<string, any> | null;
+        const plat = meta?.platform || "web";
+        const dev = meta?.device_type || "desktop";
+        platformCounts[plat] = (platformCounts[plat] || 0) + 1;
+        deviceCounts[dev] = (deviceCounts[dev] || 0) + 1;
+      });
+      const nativeAppEvents = events.filter(e => (e.metadata as any)?.is_native_app === true).length;
+
       // Most active users - get profiles
-      const userEventCounts: Record<string, { count: number; sessions: Set<string>; lastActive: string }> = {};
+      const userEventCounts: Record<string, { count: number; sessions: Set<string>; lastActive: string; platform: string }> = {};
       events.forEach(e => {
         if (!userEventCounts[e.user_id]) {
-          userEventCounts[e.user_id] = { count: 0, sessions: new Set(), lastActive: e.created_at };
+          userEventCounts[e.user_id] = { count: 0, sessions: new Set(), lastActive: e.created_at, platform: "web" };
         }
         userEventCounts[e.user_id].count++;
         if (e.session_id) userEventCounts[e.user_id].sessions.add(e.session_id);
         if (e.created_at > userEventCounts[e.user_id].lastActive) {
           userEventCounts[e.user_id].lastActive = e.created_at;
+          userEventCounts[e.user_id].platform = (e.metadata as any)?.platform || "web";
         }
       });
 
@@ -370,6 +383,7 @@ serve(async (req) => {
           event_count: stats.count,
           session_count: stats.sessions.size,
           last_active: stats.lastActive,
+          platform: stats.platform,
         };
       });
 
@@ -389,6 +403,9 @@ serve(async (req) => {
           top_pages: topPages,
           most_active_users: mostActiveUsers,
           recent_events: recentEvents,
+          platform_breakdown: platformCounts,
+          device_breakdown: deviceCounts,
+          native_app_events: nativeAppEvents,
         }
       }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
