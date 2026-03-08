@@ -76,6 +76,16 @@ export default function SubscriptionPage() {
           txRef: result.tx_ref,
         });
 
+        // Fire X conversion tracking event
+        try {
+          twq('event', 'tw-r6tc6-r8oet', {
+            value: planDetails.amount,
+            currency: 'USD',
+            conversion_id: result.tx_ref,
+            email_address: user.email,
+          });
+        } catch (_) {}
+
         if (result.payment_link) {
           window.location.href = result.payment_link;
         }

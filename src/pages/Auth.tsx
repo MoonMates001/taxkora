@@ -242,6 +242,13 @@ const Auth = () => {
             }
           }
 
+          // Fire X conversion tracking event
+          try {
+            twq('event', 'tw-r6tc6-r8oet', {
+              email_address: email,
+            });
+          } catch (_) {}
+
           toast({
             title: "Account Created!",
             description: accountType === "business" 
