@@ -2,7 +2,7 @@ import { useEffect, lazy, Suspense } from "react";
 import { useNavigate } from "react-router-dom";
 import { useUserRole } from "@/hooks/useUserRole";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Loader2, LayoutDashboard, Users, Crown, MessageSquare, ScrollText, Mail, Bell, UserPlus, Ticket, X } from "lucide-react";
+import { Loader2, LayoutDashboard, Users, Crown, MessageSquare, ScrollText, Mail, Bell, UserPlus, Ticket, X, Activity } from "lucide-react";
 import { useAdminRealtimeNotifications } from "@/hooks/useAdminRealtimeNotifications";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -15,6 +15,7 @@ const AdminUsersTab = lazy(() => import("@/components/admin/AdminUsersTab"));
 const AdminTicketsTab = lazy(() => import("@/components/admin/AdminTicketsTab"));
 const AdminLogsTab = lazy(() => import("@/components/admin/AdminLogsTab"));
 const AdminNewsletterTab = lazy(() => import("@/components/admin/AdminNewsletterTab"));
+const AdminActivityTab = lazy(() => import("@/components/admin/AdminActivityTab"));
 
 // Re-use existing subscription management
 const AdminSubscriptionsContent = lazy(() => import("@/pages/dashboard/AdminSubscriptionsPage").then(mod => {
@@ -31,6 +32,7 @@ const TabFallback = () => (
 export default function AdminDashboardPage() {
   const { isAdmin, isLoading: roleLoading } = useUserRole();
   const navigate = useNavigate();
+  const { notifications, unreadCount, markAllRead, clearAll } = useAdminRealtimeNotifications();
 
   useEffect(() => {
     if (!roleLoading && !isAdmin) {
@@ -47,8 +49,6 @@ export default function AdminDashboardPage() {
   }
 
   if (!isAdmin) return null;
-
-  const { notifications, unreadCount, markAllRead, clearAll } = useAdminRealtimeNotifications();
 
   return (
     <div className="space-y-6">
@@ -119,10 +119,14 @@ export default function AdminDashboardPage() {
       </div>
 
       <Tabs defaultValue="overview" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-3 lg:grid-cols-6 h-auto">
+        <TabsList className="grid w-full grid-cols-4 lg:grid-cols-7 h-auto">
           <TabsTrigger value="overview" className="gap-1.5 text-xs sm:text-sm py-2">
             <LayoutDashboard className="w-4 h-4 hidden sm:block" />
             Overview
+          </TabsTrigger>
+          <TabsTrigger value="activity" className="gap-1.5 text-xs sm:text-sm py-2">
+            <Activity className="w-4 h-4 hidden sm:block" />
+            Activity
           </TabsTrigger>
           <TabsTrigger value="users" className="gap-1.5 text-xs sm:text-sm py-2">
             <Users className="w-4 h-4 hidden sm:block" />
@@ -149,6 +153,12 @@ export default function AdminDashboardPage() {
         <TabsContent value="overview">
           <Suspense fallback={<TabFallback />}>
             <AdminOverviewTab />
+          </Suspense>
+        </TabsContent>
+
+        <TabsContent value="activity">
+          <Suspense fallback={<TabFallback />}>
+            <AdminActivityTab />
           </Suspense>
         </TabsContent>
 
