@@ -4,9 +4,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Loader2, Activity, Users, Eye, MousePointerClick, LogIn } from "lucide-react";
+import { Loader2, Activity, Users, Eye, LogIn, Smartphone, Monitor, Tablet } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from "recharts";
-import { format, subDays, parseISO } from "date-fns";
+import { format, parseISO } from "date-fns";
 
 const COLORS = ["hsl(var(--primary))", "hsl(var(--chart-2))", "hsl(var(--chart-3))", "hsl(var(--chart-4))", "hsl(var(--chart-5))"];
 
@@ -14,6 +14,21 @@ const eventLabels: Record<string, string> = {
   page_view: "Page View",
   login: "Login",
   feature_use: "Feature Use",
+};
+
+const platformLabels: Record<string, string> = {
+  web: "Web Browser",
+  android: "Android App",
+  ios: "iOS App",
+};
+
+const platformIcons: Record<string, typeof Monitor> = {
+  web: Monitor,
+  android: Smartphone,
+  ios: Smartphone,
+  desktop: Monitor,
+  mobile: Smartphone,
+  tablet: Tablet,
 };
 
 export default function AdminActivityTab() {
@@ -40,6 +55,26 @@ export default function AdminActivityTab() {
     }));
   }, [report]);
 
+  const platformChartData = useMemo(() => {
+    if (!report?.platform_breakdown) return [];
+    return Object.entries(report.platform_breakdown as Record<string, number>)
+      .filter(([, count]) => count > 0)
+      .map(([platform, count]) => ({
+        name: platformLabels[platform] || platform,
+        value: count,
+      }));
+  }, [report]);
+
+  const deviceChartData = useMemo(() => {
+    if (!report?.device_breakdown) return [];
+    return Object.entries(report.device_breakdown as Record<string, number>)
+      .filter(([, count]) => count > 0)
+      .map(([device, count]) => ({
+        name: device.charAt(0).toUpperCase() + device.slice(1),
+        value: count,
+      }));
+  }, [report]);
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-16">
@@ -47,6 +82,9 @@ export default function AdminActivityTab() {
       </div>
     );
   }
+
+  const platformBreakdown = (report?.platform_breakdown || {}) as Record<string, number>;
+  const deviceBreakdown = (report?.device_breakdown || {}) as Record<string, number>;
 
   return (
     <div className="space-y-6">
@@ -67,7 +105,7 @@ export default function AdminActivityTab() {
       </div>
 
       {/* Summary Cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
         <Card>
           <CardContent className="pt-6">
             <div className="flex items-center gap-3">
@@ -112,6 +150,53 @@ export default function AdminActivityTab() {
             </div>
           </CardContent>
         </Card>
+        <Card>
+          <CardContent className="pt-6">
+            <div className="flex items-center gap-3">
+              <div className="p-2 rounded-lg bg-purple-500/10"><Smartphone className="w-5 h-5 text-purple-500" /></div>
+              <div>
+                <p className="text-2xl font-bold">{report?.native_app_events ?? 0}</p>
+                <p className="text-xs text-muted-foreground">Native App Events</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Platform & Device Breakdown */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        {Object.entries(platformBreakdown).map(([platform, count]) => {
+          const Icon = platformIcons[platform] || Monitor;
+          return (
+            <Card key={platform}>
+              <CardContent className="pt-5 pb-4">
+                <div className="flex items-center gap-2.5">
+                  <Icon className="w-4 h-4 text-muted-foreground" />
+                  <div>
+                    <p className="text-lg font-semibold">{count}</p>
+                    <p className="text-xs text-muted-foreground">{platformLabels[platform] || platform}</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          );
+        })}
+        {Object.entries(deviceBreakdown).filter(([, c]) => c > 0).map(([device, count]) => {
+          const Icon = platformIcons[device] || Monitor;
+          return (
+            <Card key={device}>
+              <CardContent className="pt-5 pb-4">
+                <div className="flex items-center gap-2.5">
+                  <Icon className="w-4 h-4 text-muted-foreground" />
+                  <div>
+                    <p className="text-lg font-semibold">{count}</p>
+                    <p className="text-xs text-muted-foreground">{device.charAt(0).toUpperCase() + device.slice(1)}</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          );
+        })}
       </div>
 
       {/* Charts */}
@@ -135,6 +220,27 @@ export default function AdminActivityTab() {
         </Card>
 
         <Card>
+          <CardHeader><CardTitle className="text-base">Platform Distribution</CardTitle></CardHeader>
+          <CardContent>
+            {platformChartData.length > 0 ? (
+              <ResponsiveContainer width="100%" height={260}>
+                <PieChart>
+                  <Pie data={platformChartData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={90} label={({ name, percent }) => `${name} (${(percent * 100).toFixed(0)}%)`}>
+                    {platformChartData.map((_, i) => (
+                      <Cell key={i} fill={COLORS[i % COLORS.length]} />
+                    ))}
+                  </Pie>
+                  <Tooltip />
+                  <Legend />
+                </PieChart>
+              </ResponsiveContainer>
+            ) : (
+              <p className="text-center text-muted-foreground py-10">No platform data yet</p>
+            )}
+          </CardContent>
+        </Card>
+
+        <Card>
           <CardHeader><CardTitle className="text-base">Top Pages</CardTitle></CardHeader>
           <CardContent>
             {pageChartData.length > 0 ? (
@@ -153,6 +259,27 @@ export default function AdminActivityTab() {
             )}
           </CardContent>
         </Card>
+
+        <Card>
+          <CardHeader><CardTitle className="text-base">Device Types</CardTitle></CardHeader>
+          <CardContent>
+            {deviceChartData.length > 0 ? (
+              <ResponsiveContainer width="100%" height={260}>
+                <PieChart>
+                  <Pie data={deviceChartData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={90} label={({ name, percent }) => `${name} (${(percent * 100).toFixed(0)}%)`}>
+                    {deviceChartData.map((_, i) => (
+                      <Cell key={i} fill={COLORS[i % COLORS.length]} />
+                    ))}
+                  </Pie>
+                  <Tooltip />
+                  <Legend />
+                </PieChart>
+              </ResponsiveContainer>
+            ) : (
+              <p className="text-center text-muted-foreground py-10">No device data yet</p>
+            )}
+          </CardContent>
+        </Card>
       </div>
 
       {/* Most Active Users */}
@@ -165,6 +292,7 @@ export default function AdminActivityTab() {
                 <TableRow>
                   <TableHead>User</TableHead>
                   <TableHead>Email</TableHead>
+                  <TableHead>Platform</TableHead>
                   <TableHead className="text-right">Events</TableHead>
                   <TableHead className="text-right">Sessions</TableHead>
                   <TableHead>Last Active</TableHead>
@@ -175,6 +303,11 @@ export default function AdminActivityTab() {
                   <TableRow key={u.user_id}>
                     <TableCell className="font-medium">{u.full_name || "—"}</TableCell>
                     <TableCell className="text-muted-foreground text-sm">{u.email}</TableCell>
+                    <TableCell>
+                      <Badge variant={u.platform === "android" || u.platform === "ios" ? "default" : "outline"} className="text-xs capitalize">
+                        {u.platform === "android" ? "🤖 Android" : u.platform === "ios" ? "🍎 iOS" : "🌐 Web"}
+                      </Badge>
+                    </TableCell>
                     <TableCell className="text-right">
                       <Badge variant="secondary">{u.event_count}</Badge>
                     </TableCell>
@@ -203,26 +336,35 @@ export default function AdminActivityTab() {
                   <TableHead>Time</TableHead>
                   <TableHead>User</TableHead>
                   <TableHead>Event</TableHead>
+                  <TableHead>Platform</TableHead>
                   <TableHead>Page / Feature</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {(report.recent_events as Array<any>).map((e: any) => (
-                  <TableRow key={e.id}>
-                    <TableCell className="text-sm text-muted-foreground whitespace-nowrap">
-                      {format(parseISO(e.created_at), "MMM d, h:mm a")}
-                    </TableCell>
-                    <TableCell className="text-sm">{e.email || "—"}</TableCell>
-                    <TableCell>
-                      <Badge variant={e.event_type === "login" ? "default" : "outline"} className="text-xs">
-                        {eventLabels[e.event_type] || e.event_type}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="text-sm text-muted-foreground">
-                      {e.feature_name || e.page_path || "—"}
-                    </TableCell>
-                  </TableRow>
-                ))}
+                {(report.recent_events as Array<any>).map((e: any) => {
+                  const platform = e.metadata?.platform || "web";
+                  return (
+                    <TableRow key={e.id}>
+                      <TableCell className="text-sm text-muted-foreground whitespace-nowrap">
+                        {format(parseISO(e.created_at), "MMM d, h:mm a")}
+                      </TableCell>
+                      <TableCell className="text-sm">{e.email || "—"}</TableCell>
+                      <TableCell>
+                        <Badge variant={e.event_type === "login" ? "default" : "outline"} className="text-xs">
+                          {eventLabels[e.event_type] || e.event_type}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        <span className="text-xs text-muted-foreground capitalize">
+                          {platform === "android" ? "🤖" : platform === "ios" ? "🍎" : "🌐"} {platform}
+                        </span>
+                      </TableCell>
+                      <TableCell className="text-sm text-muted-foreground">
+                        {e.feature_name || e.page_path || "—"}
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
               </TableBody>
             </Table>
           ) : (
