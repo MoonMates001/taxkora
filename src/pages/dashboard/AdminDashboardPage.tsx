@@ -157,6 +157,12 @@ export default function AdminDashboardPage() {
           </Suspense>
         </TabsContent>
 
+        <TabsContent value="activity">
+          <Suspense fallback={<TabFallback />}>
+            <AdminActivityTab />
+          </Suspense>
+        </TabsContent>
+
         <TabsContent value="users">
           <Suspense fallback={<TabFallback />}>
             <AdminUsersTab />

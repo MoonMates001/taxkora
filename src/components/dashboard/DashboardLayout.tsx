@@ -1,12 +1,15 @@
 import { useEffect } from "react";
 import { useNavigate, Outlet } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
+import { useActivityTracker } from "@/hooks/useActivityTracker";
 import DashboardSidebar from "./DashboardSidebar";
 import { Loader2 } from "lucide-react";
 
 const DashboardLayout = () => {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
+  // Track user activity across all dashboard pages
+  useActivityTracker();
 
   useEffect(() => {
     if (!loading && !user) {

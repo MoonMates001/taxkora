@@ -291,6 +291,110 @@ serve(async (req) => {
       });
     }
 
+    // ========================
+    // USER ACTIVITY REPORT
+    // ========================
+    if (action === "get_activity_report") {
+      const { days = 7 } = body;
+      const since = new Date();
+      since.setDate(since.getDate() - Number(days));
+      const sinceStr = since.toISOString();
+
+      // All activity in period
+      const { data: activities } = await adminClient
+        .from("user_activity")
+        .select("*")
+        .gte("created_at", sinceStr)
+        .order("created_at", { ascending: false })
+        .limit(5000);
+
+      const events = activities || [];
+      const totalEvents = events.length;
+      const totalPageViews = events.filter(e => e.event_type === "page_view").length;
+      const totalLogins = events.filter(e => e.event_type === "login").length;
+      const activeUserIds = [...new Set(events.map(e => e.user_id))];
+      const activeUsers = activeUserIds.length;
+
+      // Daily events
+      const dailyEvents: Record<string, number> = {};
+      for (let i = Number(days) - 1; i >= 0; i--) {
+        const d = new Date();
+        d.setDate(d.getDate() - i);
+        dailyEvents[d.toISOString().split("T")[0]] = 0;
+      }
+      events.forEach(e => {
+        const day = e.created_at.split("T")[0];
+        if (dailyEvents[day] !== undefined) dailyEvents[day]++;
+      });
+
+      // Top pages
+      const pageCounts: Record<string, number> = {};
+      events.filter(e => e.event_type === "page_view" && e.page_path).forEach(e => {
+        pageCounts[e.page_path] = (pageCounts[e.page_path] || 0) + 1;
+      });
+      const topPages = Object.entries(pageCounts)
+        .map(([page, count]) => ({ page, count }))
+        .sort((a, b) => b.count - a.count)
+        .slice(0, 10);
+
+      // Most active users - get profiles
+      const userEventCounts: Record<string, { count: number; sessions: Set<string>; lastActive: string }> = {};
+      events.forEach(e => {
+        if (!userEventCounts[e.user_id]) {
+          userEventCounts[e.user_id] = { count: 0, sessions: new Set(), lastActive: e.created_at };
+        }
+        userEventCounts[e.user_id].count++;
+        if (e.session_id) userEventCounts[e.user_id].sessions.add(e.session_id);
+        if (e.created_at > userEventCounts[e.user_id].lastActive) {
+          userEventCounts[e.user_id].lastActive = e.created_at;
+        }
+      });
+
+      const topUserIds = Object.entries(userEventCounts)
+        .sort((a, b) => b[1].count - a[1].count)
+        .slice(0, 15)
+        .map(([uid]) => uid);
+
+      // Get user details
+      const { data: allUsers } = await adminClient.auth.admin.listUsers({ perPage: 1000 });
+      const { data: profiles } = await adminClient.from("profiles").select("user_id, full_name");
+
+      const mostActiveUsers = topUserIds.map(uid => {
+        const authUser = allUsers?.users?.find(u => u.id === uid);
+        const profile = profiles?.find(p => p.user_id === uid);
+        const stats = userEventCounts[uid];
+        return {
+          user_id: uid,
+          email: authUser?.email || "—",
+          full_name: profile?.full_name || null,
+          event_count: stats.count,
+          session_count: stats.sessions.size,
+          last_active: stats.lastActive,
+        };
+      });
+
+      // Recent events (last 50) with user email
+      const recentEvents = events.slice(0, 50).map(e => {
+        const authUser = allUsers?.users?.find(u => u.id === e.user_id);
+        return { ...e, email: authUser?.email || null };
+      });
+
+      return new Response(JSON.stringify({
+        report: {
+          total_events: totalEvents,
+          total_page_views: totalPageViews,
+          total_logins: totalLogins,
+          active_users: activeUsers,
+          daily_events: dailyEvents,
+          top_pages: topPages,
+          most_active_users: mostActiveUsers,
+          recent_events: recentEvents,
+        }
+      }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
     return new Response(JSON.stringify({ error: "Invalid action" }), {
       status: 400,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
