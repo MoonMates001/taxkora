@@ -2,7 +2,7 @@ import { useEffect, lazy, Suspense } from "react";
 import { useNavigate } from "react-router-dom";
 import { useUserRole } from "@/hooks/useUserRole";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Loader2, LayoutDashboard, Users, Crown, MessageSquare, ScrollText, Mail, Bell, UserPlus, Ticket, X, Activity } from "lucide-react";
+import { Loader2, LayoutDashboard, Users, Crown, MessageSquare, ScrollText, Mail, Bell, UserPlus, Ticket, X, Activity, Smartphone } from "lucide-react";
 import { useAdminRealtimeNotifications } from "@/hooks/useAdminRealtimeNotifications";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -16,6 +16,7 @@ const AdminTicketsTab = lazy(() => import("@/components/admin/AdminTicketsTab"))
 const AdminLogsTab = lazy(() => import("@/components/admin/AdminLogsTab"));
 const AdminNewsletterTab = lazy(() => import("@/components/admin/AdminNewsletterTab"));
 const AdminActivityTab = lazy(() => import("@/components/admin/AdminActivityTab"));
+const AdminAppAnalyticsTab = lazy(() => import("@/components/admin/AdminAppAnalyticsTab"));
 
 // Re-use existing subscription management
 const AdminSubscriptionsContent = lazy(() => import("@/pages/dashboard/AdminSubscriptionsPage").then(mod => {
@@ -119,7 +120,7 @@ export default function AdminDashboardPage() {
       </div>
 
       <Tabs defaultValue="overview" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-4 lg:grid-cols-7 h-auto">
+        <TabsList className="grid w-full grid-cols-4 lg:grid-cols-8 h-auto">
           <TabsTrigger value="overview" className="gap-1.5 text-xs sm:text-sm py-2">
             <LayoutDashboard className="w-4 h-4 hidden sm:block" />
             Overview
@@ -147,6 +148,10 @@ export default function AdminDashboardPage() {
           <TabsTrigger value="newsletter" className="gap-1.5 text-xs sm:text-sm py-2">
             <Mail className="w-4 h-4 hidden sm:block" />
             Newsletter
+          </TabsTrigger>
+          <TabsTrigger value="app-analytics" className="gap-1.5 text-xs sm:text-sm py-2">
+            <Smartphone className="w-4 h-4 hidden sm:block" />
+            App
           </TabsTrigger>
         </TabsList>
 
@@ -189,6 +194,12 @@ export default function AdminDashboardPage() {
         <TabsContent value="newsletter">
           <Suspense fallback={<TabFallback />}>
             <AdminNewsletterTab />
+          </Suspense>
+        </TabsContent>
+
+        <TabsContent value="app-analytics">
+          <Suspense fallback={<TabFallback />}>
+            <AdminAppAnalyticsTab />
           </Suspense>
         </TabsContent>
       </Tabs>
